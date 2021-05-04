@@ -1,0 +1,47 @@
+viabill_capture_single_payment:
+  path: /{orderId}/viabill/capture
+  methods: [GET]
+  defaults:
+    _controller: ViaBill\Controller\OrderListActionController::capturePayment
+    _legacy_controller: AdminOrders
+  requirements:
+    orderId: \d+
+
+viabill_cancel_single_payment:
+  path: /{orderId}/viabill/cancel
+  methods: [GET]
+  defaults:
+    _controller: ViaBill\Controller\OrderListActionController::cancelPayment
+    _legacy_controller: AdminOrders
+  requirements:
+    orderId: \d+
+
+viabill_refund_single_payment:
+  path: /{orderId}/viabill/refund
+  methods: [GET]
+  defaults:
+    _controller: ViaBill\Controller\OrderListActionController::refundPayment
+    _legacy_controller: AdminOrders
+  requirements:
+    orderId: \d+
+
+capture_multiple_payments:
+  path: /viabill/capture/multiple
+  methods: [POST]
+  defaults:
+    _controller: ViaBill\Controller\OrderListActionController::bulkCapturePayments
+    _legacy_controller: AdminOrders
+
+cancel_multiple_payments:
+  path: /viabill/cancel/multiple
+  methods: [POST]
+  defaults:
+    _controller: ViaBill\Controller\OrderListActionController::bulkCancelPayments
+    _legacy_controller: AdminOrders
+
+refund_multiple_payments:
+  path: /viabill/refund/multiple
+  methods: [POST]
+  defaults:
+    _controller: ViaBill\Controller\OrderListActionController::bulkRefundPayments
+    _legacy_controller: AdminOrders

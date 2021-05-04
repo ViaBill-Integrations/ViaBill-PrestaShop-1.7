@@ -1,0 +1,24 @@
+/**
+* NOTICE OF LICENSE
+*
+* @author    Written for or by ViaBill
+* @copyright Copyright (c) Viabill
+* @license   Addons PrestaShop license limitation
+* @see       /LICENSE
+*
+*/
+
+.hidden-form-group {
+  display: none;
+}
+
+.order-status-multiselect .chosen-container-multi,
+.order-status-multiselect .chosen-container-multi .search-field > input {
+  width: 100% !important;
+}
+
+.order-status-multiselect .chosen-container-multi .chosen-choices .search-choice {
+  line-height: 14px;
+  margin: 6px 5px 0;
+  width: calc(100% - 10px);
+}

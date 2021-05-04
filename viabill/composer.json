@@ -1,0 +1,38 @@
+{
+    "name": "viabill",
+    "config": {
+        "prepend-autoloader": false,
+        "platform": {
+            "php": "5.4"
+        }
+    },
+    "type": "prestashop-module",
+    "authors": [
+        {
+            "name": "Written for or by ViaBill",
+            "email": "tech@viabill.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "ViaBill\\": "src/"
+        },
+        "classmap": [
+            "src/Entity"
+        ]
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^2.9.1",
+        "phpunit/phpunit": "^4.8"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "php -r \"copy('config/pre-commit', '.git/hooks/pre-commit');\""
+        ],
+        "post-update-cmd": [
+            "php -r \"copy('config/pre-commit', '.git/hooks/pre-commit');\""
+        ]
+    },
+    "author": "PrestaShop",
+    "license": "OSL-3.0"
+}

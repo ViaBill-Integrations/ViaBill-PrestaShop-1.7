@@ -1,0 +1,423 @@
+services:
+    ViaBill:
+        class: 'ViaBill'
+        factory: ['Module', 'getInstanceByName']
+        arguments:
+            - 'viabill'
+# Config
+    config:
+        class: 'ViaBill\Config\Config'
+
+# Installers
+    installer:
+        class: 'ViaBill\Install\Installer'
+        arguments:
+            - '@ViaBill'
+            - '%module_settings%'
+            - '@adapter.tools'
+
+    unInstaller:
+        class: 'ViaBill\Install\UnInstaller'
+        arguments:
+            - '@ViaBill'
+            - '%module_settings%'
+            - '@adapter.tools'
+
+    tab:
+        class: 'ViaBill\Install\Tab'
+        arguments:
+            - '@ViaBill'
+
+# Builders
+    builder.template.tagScript:
+        class: 'ViaBill\Builder\Template\TagScriptTemplate'
+        arguments:
+            - '@ViaBill'
+
+    builder.template.tagBody:
+        class: 'ViaBill\Builder\Template\TagBodyTemplate'
+        arguments:
+            - '@ViaBill'
+            - '@adapter.tools'
+
+    builder.template.authentication:
+        class: 'ViaBill\Builder\Template\AuthenticationTemplate'
+        arguments:
+            - '@ViaBill'
+
+    builder.template.contact:
+        class: 'ViaBill\Builder\Template\ContactTemplate'
+        arguments:
+            - '@ViaBill'        
+
+    builder.payment.paymentOption:
+        class: 'ViaBill\Builder\Payment\PaymentOptionsBuilder'
+        arguments:
+            - '@ViaBill'
+            - '@builder.template.tagBody'
+            - '@service.validator.currency'
+
+    builder.template.tagPriceHolder:
+        class: 'ViaBill\Builder\Template\DynamicPriceTemplate'
+        arguments:
+            - '@ViaBill'
+
+    builder.template.paymentManagement:
+        class: 'ViaBill\Builder\Template\PaymentManagementTemplate'
+        arguments:
+            - '@ViaBill'
+            - '@adapter.configuration'
+            - '@service.provider.orderStatus'
+            - '@adapter.tools'
+
+    builder.template.infoBlock:
+        class: 'ViaBill\Builder\Template\InfoBlockTemplate'
+        arguments:
+            - '@ViaBill'
+
+    builder.message.order:
+        class: 'ViaBill\Builder\Message\OrderMessageBuilder'
+        arguments:
+            - '@adapter.tools'
+
+    builder.template.listButton:
+        class: 'ViaBill\Builder\Template\ListButtonTemplate'
+        arguments:
+            - '@ViaBill'
+
+    builder.template.termsAndConditions:
+        class: 'ViaBill\Builder\Template\TermsAndConditionsTemplate'
+        arguments:
+            - '@ViaBill'
+
+# Factories
+    factory.http.client:
+        class: 'ViaBill\Factory\HttpClientFactory'
+        arguments:
+            - '@config'
+
+    factory.serializer:
+        class: 'ViaBill\Factory\SerializerFactory'
+        arguments:
+            - '@ViaBill'
+
+    factory.logger:
+        class: 'ViaBill\Factory\LoggerFactory'
+        arguments:
+            - '@ViaBill'
+            - '@config'
+
+    factory.request:
+        class: 'ViaBill\Factory\RequestFactory'
+
+# Adapters
+    adapter.context:
+        class: 'ViaBill\Adapter\Context'
+
+    adapter.tools:
+        class: 'ViaBill\Adapter\Tools'
+
+    adapter.order:
+        class: 'ViaBill\Adapter\Order'
+
+    adapter.configuration:
+        class: 'ViaBill\Adapter\Configuration'
+
+    adapter.validate:
+        class: 'ViaBill\Adapter\Validate'
+
+# Services
+#    Api
+    service.api.request:
+        class: 'ViaBill\Service\Api\ApiRequest'
+        arguments:
+            - '@ViaBill'
+            - '@factory.http.client'
+            - '@adapter.tools'
+
+    service.api.payment:
+        class: 'ViaBill\Service\Api\Payment\PaymentService'
+        arguments:
+            - '@service.api.request'
+            - '@adapter.tools'
+            - '@factory.logger'
+
+    service.api.cancel:
+        class: 'ViaBill\Service\Api\Cancel\CancelService'
+        arguments:
+            - '@ViaBill'
+            - '@service.api.request'
+            - '@factory.serializer'
+
+    service.api.capture:
+        class: 'ViaBill\Service\Api\Capture\CaptureService'
+        arguments:
+            - '@ViaBill'
+            - '@service.api.request'
+            - '@factory.serializer'
+
+    service.api.renew:
+        class: 'ViaBill\Service\Api\Renew\RenewService'
+        arguments:
+            - '@ViaBill'
+            - '@service.api.request'
+            - '@factory.serializer'
+
+    service.api.status:
+        class: 'ViaBill\Service\Api\Status\StatusService'
+        arguments:
+              - '@service.api.request'
+              - '@factory.serializer'
+              - '@adapter.tools'
+
+    service.api.refund:
+        class: 'ViaBill\Service\Api\Refund\RefundService'
+        arguments:
+              - '@ViaBill'
+              - '@service.api.request'
+              - '@factory.serializer'
+
+    service.api.locale:
+        class: 'ViaBill\Service\Api\Locale\LocaleService'
+        arguments:
+            - '@service.api.request'
+            - '@adapter.tools'
+
+    service.country:
+        class: 'ViaBill\Service\Api\Countries\CountryService'
+        arguments:
+            - '@service.api.request'
+            - '@adapter.tools'
+
+    service.register:
+        class: 'ViaBill\Service\Api\Authentication\RegisterService'
+        arguments:
+            - '@service.api.request'
+            - '@adapter.tools'
+
+    service.login:
+        class: 'ViaBill\Service\Api\Authentication\LoginService'
+        arguments:
+            - '@service.api.request'
+            - '@factory.serializer'
+            - '@adapter.tools'
+
+    service.link:
+            class: 'ViaBill\Service\Api\Link\LinkService'
+            arguments:
+                - '@service.api.request'
+                - '@service.user'
+                - '@util.signatureGenerator'
+
+    service.order.orderStatus:
+        class: 'ViaBill\Service\Order\OrderStatusService'
+        arguments:
+            - '@adapter.configuration'
+            - '@factory.logger'
+            - '@ViaBill'
+
+    service.order.createOrder:
+        class: 'ViaBill\Service\Order\CreateOrderService'
+        arguments:
+            - '@ViaBill'
+            - '@adapter.order'
+            - '@adapter.configuration'
+
+    service.order.orderListActions:
+        class: 'ViaBill\Service\Order\OrderListActionsService'
+        arguments:
+            - '@service.handler.paymentManagement'
+            - '@service.message'
+            - '@service.provider.orderStatus'
+
+    service.user:
+        class: 'ViaBill\Service\UserService'
+        arguments:
+            - '@ViaBill'
+            - '@config'
+            - '@adapter.configuration'
+
+    service.message:
+        class: 'ViaBill\Service\MessageService'
+        arguments:
+            - '@builder.message.order'
+            - '@adapter.context'
+
+    service.notification:
+        class: 'ViaBill\Service\Api\Notification\NotificationService'
+        arguments:
+            - '@service.api.request'
+            - '@service.user'
+            - '@adapter.tools'
+# Handlers
+    service.handler.paymentManagement:
+        class: 'ViaBill\Service\Handler\PaymentManagementHandler'
+        arguments:
+            - '@ViaBill'
+            - '@factory.logger'
+            - '@service.handler.cancelPayment'
+            - '@service.handler.capturePayment'
+            - '@service.handler.refundPayment'
+            - '@service.handler.renewPayment'
+
+    service.handler.cancelPayment:
+        class: 'ViaBill\Service\Handler\CancelPaymentHandler'
+        arguments:
+            - '@ViaBill'
+            - '@service.api.cancel'
+            - '@service.user'
+            - '@util.signatureGenerator'
+            - '@adapter.configuration'
+            - '@service.provider.orderStatus'
+            - '@adapter.tools'
+
+    service.handler.capturePayment:
+        class: 'ViaBill\Service\Handler\CapturePaymentHandler'
+        arguments:
+            - '@ViaBill'
+            - '@factory.logger'
+            - '@service.api.capture'
+            - '@service.user'
+            - '@util.signatureGenerator'
+            - '@adapter.tools'
+            - '@adapter.validate'
+            - '@adapter.configuration'
+
+    service.handler.refundPayment:
+        class: 'ViaBill\Service\Handler\RefundPaymentHandler'
+        arguments:
+            - '@ViaBill'
+            - '@adapter.configuration'
+            - '@factory.logger'
+            - '@adapter.validate'
+            - '@adapter.tools'
+            - '@service.api.refund'
+            - '@service.user'
+            - '@util.signatureGenerator'
+
+    service.handler.renewPayment:
+        class: 'ViaBill\Service\Handler\RenewPaymentHandler'
+        arguments:
+            - '@ViaBill'
+            - '@service.api.renew'
+            - '@service.user'
+            - '@util.signatureGenerator'
+
+    service.handler.moduleRestriction:
+        class: 'ViaBill\Service\Handler\ModuleRestrictionHandler'
+        arguments:
+            - '@ViaBill'
+            - '@service.api.locale'
+            - '@service.country'
+
+# Providers
+    service.provider.orderStatus:
+        class: 'ViaBill\Service\Provider\OrderStatusProvider'
+        arguments:
+            - '@service.api.status'
+            - '@util.signatureGenerator'
+            - '@service.user'
+            - '@adapter.tools'
+
+#    Validators
+    service.validator.payment:
+        class: 'ViaBill\Service\Validator\Payment\PaymentValidator'
+        arguments:
+            - '@ViaBill'
+            - '@config'
+            - '@adapter.tools'
+            - '@service.validator.payment.cart'
+            - '@service.validator.payment.order'
+            - '@service.validator.currency'
+
+    service.validator.order.callBack:
+        class: 'ViaBill\Service\Validator\CallBack\OrderCallBackValidator'
+        arguments:
+            - '@service.user'
+            - '@adapter.tools'
+            - '@factory.logger'
+            - '@util.signatureGenerator'
+            - '@adapter.validate'
+
+    service.validator.payment.cart:
+        class: 'ViaBill\Service\Validator\Payment\CartValidator'
+
+    service.validator.payment.order:
+        class: 'ViaBill\Service\Validator\Payment\OrderValidator'
+        arguments:
+            - '@ViaBill'
+            - '@adapter.configuration'
+
+    service.validator.currency:
+        class: 'ViaBill\Service\Validator\Payment\CurrencyValidator'
+        arguments:
+            - '@service.api.locale'
+            - '@adapter.tools'
+
+    service.validator.locale:
+        class: 'ViaBill\Service\Validator\LocaleValidator'
+        arguments:
+            - '@service.api.locale'
+            - '@adapter.tools'
+
+# Adapters
+    adapter.media:
+        class: 'ViaBill\Adapter\Media'
+        arguments:
+            - '@ViaBill'
+
+    adapter.currency:
+        class: 'ViaBill\Adapter\Currency'
+
+# Util
+    util.signatureGenerator:
+        class: 'ViaBill\Util\SignaturesGenerator'
+        arguments:
+            - '@ViaBill'
+            - '@adapter.tools'
+
+    util.linkGenerator:
+        class: 'ViaBill\Util\LinksGenerator'
+        arguments:
+            - '@ViaBill'
+# Cart
+    cart.cartDuplicationService:
+        class: 'ViaBill\Service\Cart\CartDuplicationService'
+
+    cart.orderCartAssociationService:
+        class: 'ViaBill\Service\Cart\OrderCartAssociationService'
+        arguments:
+            - '@cart.cartDuplicationService'
+
+    cart.memorizeCartService:
+        class: 'ViaBill\Service\Cart\MemorizeCartService'
+        arguments:
+            - '@cart.orderCartAssociationService'
+            - '@repository.pendingOrderCartReadOnly'
+
+    cart.restorePendingCartService:
+        class: 'ViaBill\Service\Cart\RestorePendingCartService'
+        arguments:
+            - '@repository.pendingOrderCartReadOnly'
+
+# Repository
+    repository.pendingOrderCartReadOnly:
+        class: 'ViaBill\Repository\PendingOrderCartRepository'
+        arguments:
+            - 'ViaBillPendingOrderCart'
+
+# AccessibilityChecker
+    grid.row.refundAccessibilityChecker:
+        class: 'ViaBill\Grid\Row\RefundAccessibilityChecker'
+        arguments:
+            - '@service.provider.orderStatus'
+
+    grid.row.captureAccessibilityChecker:
+        class: 'ViaBill\Grid\Row\CaptureAccessibilityChecker'
+        arguments:
+            - '@service.provider.orderStatus'
+
+    grid.row.cancelAccessibilityChecker:
+        class: 'ViaBill\Grid\Row\CancelAccessibilityChecker'
+        arguments:
+            - '@service.provider.orderStatus'
