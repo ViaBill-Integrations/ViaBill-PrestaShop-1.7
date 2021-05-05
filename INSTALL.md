@@ -12,11 +12,7 @@ Before you start the installation of the module, make sure you meet the requirem
 
 ## Manual Installation
 
-In order to install manually the module you need to download and copy the `viabill` folder from this repository and copy it under the PrestaShop site as:
-
-`{Prestashop root directory}`/modules/viabill 
-
-Then, you need to login in the backend of the PrestaShop site and navigate to menu Modules → Module. Search for the ViaBill module, under the `Payment` section and click on the the “Configure” button to start the configuration process.
+In order to install manually the module you need to download the repository on your local disk and then create a zip file out of the `viabill` folder. Then, you need to login in the backend of the PrestaShop site and navigate to menu Modules → Module Catalog. Click on the “Upload a module” button and select the zip file viabill.zip you created previously from the repository. If everything goes smoothly, you will see the "Module installed" success message. Click on the Configure button to continue with the configuration process.
 
 ## Installation via Marketplace
 
@@ -24,7 +20,7 @@ Please follow these instructions to install the module through the PrestaShop Ad
 
 # Configuration
 
-From the PrestaShop backend navigate to Modules -> Modules Manager and search for the ViaBill module under the Payment section. Click on the “Configure” button to start the configuration process.
+From the PrestaShop backend navigate to Modules -> Module Manager and search for the ViaBill module under the Payment section. Click on the “Configure” button to start the configuration process.
 
 ## New or Existing User
 
@@ -51,9 +47,11 @@ This method describes how to upgrade the module manually, without any references
 a) Make a backup of the following folder:
 `{Prestashop root directory}`/modules/viabill 
 This is helpful in case something goes wrong and you want to restore the latest working version.
-b) Overwrite the files of the folder above using the latest version.
-c) Login in the backend of the Prestashop site and navigate to menu Modules → Module → Viabill → Upgrade. 
-Note that if the button's label is still “Configure” instead of “Upgrade” it means that you haven't copied the new files to the correct folder (`{Prestashop root directory}`/modules/viabill) or the version of the module is not set properly. If you see a “success” message after the upgrade action, refresh the page so the button becomes again “Configure”. 
+b) Download the repository files on your local disk and locate the contained  `viabill` folder.
+c) Copy the contents of this `viabill` folder into `{Prestashop root directory}`/modules/viabill and overwrite all existing files.
+d) Login in the backend of the Prestashop site and navigate to menu Modules → Module Manager → Viabill where you click on the “Upgrade” button.
+
+> Note that if the button's label is still “Configure” instead of “Upgrade” it means that you haven't copied the new files to the correct folder (`{Prestashop root directory}`/modules/viabill) or the version of the module is up to date (i.e. you have already copied the files). See the module version number to verify that. If you see a “success” message after the upgrade action it means that the upgrade operation was successful. You may need to refresh the page in order to see the “Configure” button label again.
 If not, click on the “Upgrade” button once again.
 
 ## Marketplace Upgrade
@@ -75,8 +73,3 @@ The proper way to uninstall the Viabill Payment module is by login in the backen
 If you are experiencing any technical issues, please navigate to Modules -> Module Manager -> Payment section and click on the ViaBill Module's “Configure” button. Set the Enable Debug to Yes and then try to replicate your issue by repeating the action which caused it. Finally, click on the “Contact” tab that you will find at the top of the ViaBill Module configutation page. Fill out the form and submit it to our technical support team. This contact form is auto-populated with vital information that will help us to resolve your issue faster.
 
 Alternatively, contact us via email at tech@viabill.com.
-
-
-
-
-
