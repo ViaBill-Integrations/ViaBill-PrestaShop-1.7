@@ -226,6 +226,8 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
             $cancelUrl
         );
 
+        $customerInfo = $this->getCustomerInfo($order);
+
         return new \ViaBill\Object\Api\Payment\PaymentRequest(
             $user->getKey(),
             $transaction,
@@ -236,7 +238,8 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
             $cancelUrl,
             $callBackUrl,
             $config->isTestingEnvironment(),
-            $md5Check
+            $md5Check,
+            $customerInfo
         );
     }
 
@@ -270,5 +273,81 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
             'return',
             $params
         );
+    }
+
+    /**
+     * Get information about the customer for the active order
+     * 
+     * @param Order $order
+     * 
+     * @return array
+     */
+    private function getCustomerInfo(Order $order) {        
+        $info = array(
+          'email'=>'',
+          'phone'=>'',
+          'first_name'=>'',
+          'last_name'=>'',
+          'full_name'=>'',
+          'address'=>'',
+          'city'=>'',
+          'postal_code'=>'',
+          'country'=>''
+        );
+
+        // sanity check
+        if (empty($order)) return $info;
+
+        $id_address_delivery = (int) $order->id_address_delivery;
+        if (!empty($id_address_delivery)) {
+            $details = new Address($id_address_delivery);
+
+            if (property_exists($details, 'email')) {
+                $info['email'] = $details->email;
+            }
+            $phone = '';
+            if (property_exists($details, 'phone_mobile')) {
+                $phone = trim($details->phone_mobile);
+            } 
+            if (empty($phone)) {
+                if (property_exists($details, 'phone')) {
+                    $phone = trim($details->phone);
+                }
+            }                        
+            $info['phone'] = $phone;
+            if (property_exists($details, 'firstname')) {
+                $info['first_name'] = $details->firstname;
+            }
+            if (property_exists($details, 'lastname')) {
+                $info['last_name'] = $details->lastname;
+            }
+            $info['full_name'] = trim($info['first_name'].' '.$info['last_name']);
+            $address = '';
+            if (property_exists($details, 'address1')) {
+                $address .= $details->address1;
+            }
+            if (property_exists($details, 'address2')) {
+                $address .= ' '.$details->address2;
+            }
+            $info['address'] = trim($address);
+            if (property_exists($details, 'city')) {
+                $info['city'] = $details->city;
+            }
+            if (property_exists($details, 'postcode')) {
+                $info['postal_code'] = $details->postcode;
+            }
+            if (property_exists($details, 'country')) {
+                $info['country'] = $details->country;
+            }            
+           
+            if (!empty($details->id_customer)) {
+                $customer = new Customer((int)($details->id_customer));
+                if (property_exists($customer, 'email')) {
+                    $info['email'] = $customer->email;
+                }
+            }            
+        }
+          
+        return $info;
     }
 }

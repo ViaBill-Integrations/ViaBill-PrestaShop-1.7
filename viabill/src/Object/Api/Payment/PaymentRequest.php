@@ -97,6 +97,13 @@ class PaymentRequest implements SerializedObjectInterface
     private $md5Check;
 
     /**
+     * Payment Request Customer Info
+     *
+     * @var array
+     */
+    private $customer_info;
+
+    /**
      * PaymentRequest constructor.
      *
      * @param $apiKey
@@ -107,8 +114,9 @@ class PaymentRequest implements SerializedObjectInterface
      * @param string $success_url
      * @param string $cancel_url
      * @param string $callback_url
-     * @param bool $test
+     * @param bool $test     
      * @param string $md5Check
+     * @param array $ustomer_info
      */
     public function __construct(
         $apiKey,
@@ -119,8 +127,9 @@ class PaymentRequest implements SerializedObjectInterface
         $success_url,
         $cancel_url,
         $callback_url,
-        $test,
-        $md5Check
+        $test,        
+        $md5Check,
+        $customer_info
     ) {
         $this->apiKey = $apiKey;
         $this->transaction = $transaction;
@@ -129,9 +138,10 @@ class PaymentRequest implements SerializedObjectInterface
         $this->currency = $currency;
         $this->success_url = $success_url;
         $this->cancel_url = $cancel_url;
-        $this->test = $test;
+        $this->test = $test;        
         $this->md5Check = $md5Check;
         $this->callback_url = $callback_url;
+        $this->customer_info = $customer_info;
     }
 
     /**
@@ -245,6 +255,16 @@ class PaymentRequest implements SerializedObjectInterface
     }
 
     /**
+     * Gets Customer Info.
+     *
+     * @return string
+     */
+    public function getCustomerInfo()
+    {
+        return $this->customer_info;
+    }
+
+    /**
      * Gets Payment Request Serialized Data.
      *
      * @return array
@@ -262,7 +282,8 @@ class PaymentRequest implements SerializedObjectInterface
             'cancel_url' => $this->cancel_url,
             'callback_url' => $this->callback_url,
             'test' => (bool) $this->test,
-            'md5check' => $this->md5Check
+            'md5check' => $this->md5Check,
+            'customer_info' => json_encode($this->customer_info)
         );
     }
 }

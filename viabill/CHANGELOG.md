@@ -165,11 +165,14 @@
   - AdminOrdersController doesn't support legacy grids, so new functionality added GridDefinitions to display actions and bulk actions in Admin order list page
   - PS1.7.7 doesn't support overrides on Symfony migrated pages, so new controller and service added for all module functions in order view page
 
-  ### Changed
+### Changed
 ## [1.1.16] - 2021-04-19
 - Bug fixes & code refactoring
 - Improved logging capabilities
 - Built-in contact form for technical support
 - Troubleshooting section
 
+### Changed
+## [1.1.17] - 2021-07-01
+- Added customer info to the checkout API request
     

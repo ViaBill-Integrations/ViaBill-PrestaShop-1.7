@@ -51,7 +51,7 @@ class ViaBill extends PaymentModule
         $this->description = 'ViaBill Official - Try, before you buy!';
         $this->tab = 'payments_gateways';
         $this->displayName = $this->l('ViaBill');
-        $this->version = '1.1.16';
+        $this->version = '1.1.17';
         $this->ps_versions_compliancy = array('min' => '1.7.3.0', 'max' => _PS_VERSION_);
         $this->module_key = '026cfbb4e50aac4d9074eb7c9ddc2584';
 

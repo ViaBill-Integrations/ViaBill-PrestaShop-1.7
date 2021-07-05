@@ -25,6 +25,7 @@ parameters:
             'VB_PAYMENT_COMPLETED' : 0
             'VB_PAYMENT_CANCELED' : 0
             'VB_PAYMENT_REFUNDED' : 0
+            'VB_ENABLE_DEBUG': 0
 
         hooks:
             - 'moduleRoutes'
