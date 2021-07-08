@@ -7,7 +7,7 @@
  * @license   Addons PrestaShop license limitation
  * @see       /LICENSE
  *
-  */
+ */
 
 use ViaBill\Config\Config;
 

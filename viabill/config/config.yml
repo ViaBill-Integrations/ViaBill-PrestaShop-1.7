@@ -42,3 +42,4 @@ parameters:
             - 'actionOrderHistoryAddAfter'
             - 'displayAdminOrderTabContent'
             - 'actionOrderGridDefinitionModifier'
+            - 'actionEmailSendBefore'

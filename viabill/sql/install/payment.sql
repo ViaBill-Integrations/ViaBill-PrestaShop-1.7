@@ -32,3 +32,12 @@ CREATE TABLE IF NOT EXISTS `PREFIX_viabill_pending_order_cart` (
     `order_id` INT(64) NOT NULL,
     `cart_id` INT(64) NOT NULL
 ) ENGINE=ENGINE_TYPE DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `PREFIX_viabill_order_conf_mail` (
+    `id_viabill_order_conf_mail`  INT(64)  NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `order_id` INT(64) NOT NULL,
+    `lang_id` INT(32) NOT NULL,
+    `subject` varchar(512) NOT NULL,
+    `template_vars` text NOT NULL,
+    `date_created` datetime NOT NULL
+) ENGINE=ENGINE_TYPE DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

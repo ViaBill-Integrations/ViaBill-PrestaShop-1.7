@@ -176,3 +176,6 @@
 ## [1.1.17] - 2021-07-01
 - Added customer info to the checkout API request
     
+### Changed
+## [1.1.18] - 2021-07-08
+- Send an email message for order confirmation only after a successful payment

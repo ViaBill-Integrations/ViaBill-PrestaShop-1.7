@@ -174,6 +174,7 @@ class Installer extends AbstractInstaller
             switch ($stateConfig) {
                 case Config::PAYMENT_PENDING:
                     $orderState->color = '#4169E1';
+                    $orderState->send_email = false;                    
                     $this->fillMultiLangName(
                         $orderState,
                         $languages,
@@ -185,12 +186,18 @@ class Installer extends AbstractInstaller
                 case Config::PAYMENT_ACCEPTED:
                     $orderState->color = '#4169E1';
                     $orderState->paid = true;
+                    $orderState->send_email = true;
                     $orderState->logable = true;
                     $this->fillMultiLangName(
                         $orderState,
                         $languages,
                         $this->module->l('Payment accepted by ViaBill', self::FILENAME)
                     );
+                    $this->fillMultiLangTemplate(
+                        $orderState,
+                        $languages,
+                        'order_conf'
+                    );             
                     $imagePathFull = $imagePath.'accept.gif';
                     $configName = Config::PAYMENT_ACCEPTED;
                     break;
@@ -219,6 +226,7 @@ class Installer extends AbstractInstaller
                     break;
                 case Config::PAYMENT_CANCELED:
                     $orderState->color = '#DC143C';
+                    $orderState->send_email = false;
                     $this->fillMultiLangName(
                         $orderState,
                         $languages,
@@ -258,6 +266,20 @@ class Installer extends AbstractInstaller
     {
         foreach ($languages as $language) {
             $orderState->name[$language['id_lang']] = $name;
+        }
+    }
+
+    /**
+     * Fills Multi Language Order State Template
+     *
+     * @param \OrderState $orderState
+     * @param array $languages
+     * @param string $name
+     */
+    private function fillMultiLangTemplate(\OrderState $orderState, array $languages, $name)
+    {
+        foreach ($languages as $language) {
+            $orderState->template[$language['id_lang']] = $name;            
         }
     }
 

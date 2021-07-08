@@ -51,7 +51,7 @@ class ViaBill extends PaymentModule
         $this->description = 'ViaBill Official - Try, before you buy!';
         $this->tab = 'payments_gateways';
         $this->displayName = $this->l('ViaBill');
-        $this->version = '1.1.17';
+        $this->version = '1.1.18';
         $this->ps_versions_compliancy = array('min' => '1.7.3.0', 'max' => _PS_VERSION_);
         $this->module_key = '026cfbb4e50aac4d9074eb7c9ddc2584';
 
@@ -1035,4 +1035,95 @@ class ViaBill extends PaymentModule
         $mediaAdapter->addJs($this->context, 'views/js/front/cart_update_handler.js');
         $mediaAdapter->addCss($this->context, 'views/css/front/price-tag.css');
     }
+
+    /**
+     * Examine if you need to block the submission of an email when order status changes
+     *
+     * @param Array $params
+     *
+     * @throws Exception
+     */
+    public function hookActionEmailSendBefore(&$params) {
+        $db = Db::getInstance();
+               
+        $sendEmail = true;
+        $order_id = null;
+        $order_state = null;
+        $order_module = null;
+
+        $template = null;
+        if (isset($params['template'])) {
+            $template = $params['template'];
+            if ($template == 'order_conf') {                
+                if (isset($params['templateVars'])) {
+                    $templateVars = $params['templateVars'];
+                    if (isset($templateVars['{id_order}'])) {
+                        $order_id = (int) $templateVars['{id_order}'];
+                        $order = new Order((int)($order_id));
+                        $order_state = $order->current_state;
+                        $order_module = strtolower($order->module);
+
+                        $lang_id = (isset($params['idLang']))?(int)$params['idLang']:0; 
+                        $subject = (isset($params['subject']))?$params['subject']:'';
+                        
+                        $paymentPendingState = Configuration::get(Config::PAYMENT_PENDING);                        
+                        $paymentAcceptedState = Configuration::get(Config::PAYMENT_ACCEPTED);
+
+                        if ($order_module == 'viabill') {
+                            $sendEmail = false;                            
+                          
+                            if ($order_state == $paymentPendingState) {                                
+                                $template_vars = serialize($templateVars);
+                                $date_created = date('Y-m-d H:i:s');
+                                
+                                $db->insert('viabill_order_conf_mail', array(
+                                    'order_id' => (int) $order_id,
+                                    'lang_id' => (int) $lang_id,
+                                    'subject' => pSQL($subject),
+                                    'template_vars'=> pSQL($template_vars, true),
+                                    'date_created'=> pSQL($date_created),
+                                ));                                
+                            } else if ($order_state == $paymentAcceptedState) {                                                                
+                                $query = 'SELECT * FROM `'._DB_PREFIX_.
+                                    'viabill_order_conf_mail` WHERE order_id = '.$order_id;
+
+                                $row = $db->getRow($query);
+                                if (!empty($row)) {
+                                    $sendEmail = true;
+                                                                     
+                                    $params['subject'] = $row['subject'];
+
+                                    $u_params = unserialize($row['template_vars']);
+                                    foreach ($u_params as $key => $value) {
+                                        if (!isset($templateVars[$key])) {
+                                            $params['templateVars'][$key] = $value;
+                                        }                                            
+                                    }
+                                    $params['templateVars']['{payment}'] = $this->l('Payment accepted by ViaBill');
+
+                                    $db->delete('viabill_order_conf_mail', 'order_id = '.(int) $order_id);
+                                }                                                              
+                            }                            
+                        }                                                                        
+                    }
+                }                
+            }
+        }
+
+        // sanity check, remove confirmation email messages for all orders that did not
+        // receive a callback call
+        $cutoff_date = date('Y-m-d H:i:s', strtotime('-2 days'));
+        $db->delete('viabill_order_conf_mail', 'date_created < '.pSQL($cutoff_date));
+
+        if ($sendEmail) {
+            $debug_str = "** Action Hook Order #{$order_id} [SENT] state: $order_state module: $order_module";
+            DebugLog::msg($debug_str);        
+        } else {
+            $debug_str = "** Action Hook Order #{$order_id} [IGNORED] state: $order_state module: $order_module";
+            DebugLog::msg($debug_str);        
+        }
+                        
+        return $sendEmail;
+    }
+
 }
