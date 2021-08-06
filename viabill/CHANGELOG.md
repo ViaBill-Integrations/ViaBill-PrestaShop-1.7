@@ -179,3 +179,11 @@
 ### Changed
 ## [1.1.18] - 2021-07-08
 - Send an email message for order confirmation only after a successful payment
+
+### Changed
+## [1.1.19] - 2021-07-22
+- Improved order confirmation functionality for older Prestashop versions
+
+### Changed
+## [1.1.22] - 2021-08-04
+- Display a warning when there is a conflict with third party payment gateways

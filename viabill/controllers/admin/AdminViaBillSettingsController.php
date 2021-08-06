@@ -147,161 +147,177 @@ class AdminViaBillSettingsController extends ModuleAdminController
             $orderStatusMultiselectClasses .= ' hidden-form-group';
         }
 
-        $moduleInfoBlockText = $this->getDebugInfo();
+        $moduleInfoBlockText = $this->getDebugInfo();        
 
-        $this->fields_options = array(
-            Config::SETTINGS_PRICETAG_SETTINGS_SECTION => array(
-                'title' => $this->l('Pricetag Settings'),
-                'icon' => 'icon-money',
+        $this->fields_options = array();
+
+        $moduleConflictBlockText = $this->getConflictWarning();
+        if (!empty($moduleConflictBlockText)) {
+            $this->fields_options[Config::SETTINGS_MODULE_CONFLICT_WARNING] = array(
+                'title' => $this->l('Module Conflict'),
+                'icon' => 'icon-exclamation-circle',
                 'fields' => array(
-                    Config::PRICETAG_SETTINGS_INFO_BLOCK_FIELD => array(
+                    Config::MODULE_CONFLICT_WARNING_BLOCK_FIELD => array(
                         'type' => 'free',
-                        'desc' => $this->getInfoBlockTemplate($pricetagSettingsInfoBlockText),
+                        'desc' => $moduleConflictBlockText,
                         'class' => 'hidden',
-                        'form_group_class' => 'viabill-info-block'
+                        'form_group_class' => 'viabill-warning-block'
                     ),
-                    Config::ENABLE_PRICE_TAG_ON_PRODUCT_PAGE => array(
-                        'title' => $this->l('Enable on Product page'),
-                        'validation' => 'isBool',
-                        'cast' => 'boolval',
-                        'type' => 'bool',
-                    ),
-                    Config::ENABLE_PRICE_TAG_ON_CART_SUMMARY => array(
-                        'title' => $this->l('Enable on Cart Summary'),
-                        'validation' => 'isBool',
-                        'cast' => 'boolval',
-                        'type' => 'bool',
-                    ),
-                    Config::ENABLE_PRICE_TAG_ON_PAYMENT_SELECTION => array(
-                        'title' => $this->l('Enable on Payment selection'),
-                        'validation' => 'isBool',
-                        'cast' => 'boolval',
-                        'type' => 'bool',
-                    ),
+                )
+            );
+        }
+
+        $this->fields_options[Config::SETTINGS_PRICETAG_SETTINGS_SECTION] = array(
+            'title' => $this->l('Pricetag Settings'),
+            'icon' => 'icon-money',
+            'fields' => array(
+                Config::PRICETAG_SETTINGS_INFO_BLOCK_FIELD => array(
+                    'type' => 'free',
+                    'desc' => $this->getInfoBlockTemplate($pricetagSettingsInfoBlockText),
+                    'class' => 'hidden',
+                    'form_group_class' => 'viabill-info-block'
                 ),
-                'submit' => array(
-                    'title' => $this->l('Save'),
+                Config::ENABLE_PRICE_TAG_ON_PRODUCT_PAGE => array(
+                    'title' => $this->l('Enable on Product page'),
+                    'validation' => 'isBool',
+                    'cast' => 'boolval',
+                    'type' => 'bool',
                 ),
-            ),
-            Config::SETTINGS_GENERAL_CONFIGURATION_SECTION => array(
-                'title' => $this->l('General Configuration'),
-                'icon' => 'icon-cog',
-                'fields' => array(
-                    Config::VIABILL_TEST_MODE => array(
-                        'title' => $this->l('ViaBill Test Mode'),
-                        'validation' => 'isBool',
-                        'cast' => 'boolval',
-                        'type' => 'bool',
-                    ),
-                    Config::VIABILL_LOGO_DISPLAY_IN_CHECKOUT => array(
-                        'title' => $this->l('Display ViaBill logo in the checkout payment step'),
-                        'validation' => 'isBool',
-                        'cast' => 'boolval',
-                        'type' => 'bool',
-                    ),
-                    Config::SINGLE_ACTION_CAPTURE_CONF_MESSAGE => array(
-                        'title' => $this->l('Capture confirmation message for single action'),
-                        'validation' => 'isBool',
-                        'cast' => 'boolval',
-                        'type' => 'bool',
-                    ),
-                    Config::BULK_ACTION_CAPTURE_CONF_MESSAGE => array(
-                        'title' => $this->l('Capture confirmation message for bulk action'),
-                        'validation' => 'isBool',
-                        'cast' => 'boolval',
-                        'type' => 'bool',
-                    ),
-                    Config::SINGLE_ACTION_REFUND_CONF_MESSAGE => array(
-                        'title' => $this->l('Refund confirmation message for single action'),
-                        'validation' => 'isBool',
-                        'cast' => 'boolval',
-                        'type' => 'bool',
-                    ),
-                    Config::BULK_ACTION_REFUND_CONF_MESSAGE => array(
-                        'title' => $this->l('Refund confirmation message for bulk action'),
-                        'validation' => 'isBool',
-                        'cast' => 'boolval',
-                        'type' => 'bool',
-                    ),
-                    Config::SINGLE_ACTION_CANCEL_CONF_MESSAGE => array(
-                        'title' => $this->l('Cancel confirmation message for single action'),
-                        'validation' => 'isBool',
-                        'cast' => 'boolval',
-                        'type' => 'bool',
-                    ),
-                    Config::BULK_ACTION_CANCEL_CONF_MESSAGE => array(
-                        'title' => $this->l('Cancel confirmation message for bulk action'),
-                        'validation' => 'isBool',
-                        'cast' => 'boolval',
-                        'type' => 'bool',
-                    ),
+                Config::ENABLE_PRICE_TAG_ON_CART_SUMMARY => array(
+                    'title' => $this->l('Enable on Cart Summary'),
+                    'validation' => 'isBool',
+                    'cast' => 'boolval',
+                    'type' => 'bool',
                 ),
-                'submit' => array(
-                    'title' => $this->l('Save'),
+                Config::ENABLE_PRICE_TAG_ON_PAYMENT_SELECTION => array(
+                    'title' => $this->l('Enable on Payment selection'),
+                    'validation' => 'isBool',
+                    'cast' => 'boolval',
+                    'type' => 'bool',
                 ),
             ),
-            Config::SETTINGS_PAYMENT_CAPTURE_SECTION => array(
-                'title' => $this->l('Payment Capture Configuration'),
-                'icon' => 'icon-money',
-                'fields' => array(
-                    Config::ENABLE_AUTO_PAYMENT_CAPTURE => array(
-                        'title' => $this->l('Enable ViaBill payment auto-capture'),
-                        'validation' => 'isBool',
-                        'cast' => 'boolval',
-                        'type' => 'bool',
-                    ),
-                    Config::CAPTURE_ORDER_STATUS_MULTISELECT => array(
-                        'title' => $this->l('Auto-capture ViaBill payment when status is set to'),
-                        'type' => 'orders_status_multiselect',
-                        'class' => 'fixed-width-xxl',
-                        'form_group_class' => $orderStatusMultiselectClasses
-                    ),
+            'submit' => array(
+                'title' => $this->l('Save'),
+            ),
+        );
+        $this->fields_options[Config::SETTINGS_GENERAL_CONFIGURATION_SECTION] = array(
+            'title' => $this->l('General Configuration'),
+            'icon' => 'icon-cog',
+            'fields' => array(
+                Config::VIABILL_TEST_MODE => array(
+                    'title' => $this->l('ViaBill Test Mode'),
+                    'validation' => 'isBool',
+                    'cast' => 'boolval',
+                    'type' => 'bool',
                 ),
-                'submit' => array(
-                    'title' => $this->l('Save'),
+                Config::VIABILL_LOGO_DISPLAY_IN_CHECKOUT => array(
+                    'title' => $this->l('Display ViaBill logo in the checkout payment step'),
+                    'validation' => 'isBool',
+                    'cast' => 'boolval',
+                    'type' => 'bool',
+                ),
+                Config::SINGLE_ACTION_CAPTURE_CONF_MESSAGE => array(
+                    'title' => $this->l('Capture confirmation message for single action'),
+                    'validation' => 'isBool',
+                    'cast' => 'boolval',
+                    'type' => 'bool',
+                ),
+                Config::BULK_ACTION_CAPTURE_CONF_MESSAGE => array(
+                    'title' => $this->l('Capture confirmation message for bulk action'),
+                    'validation' => 'isBool',
+                    'cast' => 'boolval',
+                    'type' => 'bool',
+                ),
+                Config::SINGLE_ACTION_REFUND_CONF_MESSAGE => array(
+                    'title' => $this->l('Refund confirmation message for single action'),
+                    'validation' => 'isBool',
+                    'cast' => 'boolval',
+                    'type' => 'bool',
+                ),
+                Config::BULK_ACTION_REFUND_CONF_MESSAGE => array(
+                    'title' => $this->l('Refund confirmation message for bulk action'),
+                    'validation' => 'isBool',
+                    'cast' => 'boolval',
+                    'type' => 'bool',
+                ),
+                Config::SINGLE_ACTION_CANCEL_CONF_MESSAGE => array(
+                    'title' => $this->l('Cancel confirmation message for single action'),
+                    'validation' => 'isBool',
+                    'cast' => 'boolval',
+                    'type' => 'bool',
+                ),
+                Config::BULK_ACTION_CANCEL_CONF_MESSAGE => array(
+                    'title' => $this->l('Cancel confirmation message for bulk action'),
+                    'validation' => 'isBool',
+                    'cast' => 'boolval',
+                    'type' => 'bool',
                 ),
             ),
-            Config::SETTINGS_MY_VIABILL_SECTION => array(
-                'title' => $this->l('My ViaBill'),
-                'icon' => 'icon-info-sign',
-                'fields' => array(
-                    Config::MY_VIABILL_INFO_BLOCK_FIELD => array(
-                        'type' => 'free',
-                        'desc' => $this->getInfoBlockTemplate($myViaBillInfoBlockText),
-                        'class' => 'hidden',
-                        'form_group_class' => 'viabill-info-block',
-                    ),
+            'submit' => array(
+                'title' => $this->l('Save'),
+            ),
+        );
+        $this->fields_options[Config::SETTINGS_PAYMENT_CAPTURE_SECTION] = array(
+            'title' => $this->l('Payment Capture Configuration'),
+            'icon' => 'icon-money',
+            'fields' => array(
+                Config::ENABLE_AUTO_PAYMENT_CAPTURE => array(
+                    'title' => $this->l('Enable ViaBill payment auto-capture'),
+                    'validation' => 'isBool',
+                    'cast' => 'boolval',
+                    'type' => 'bool',
                 ),
-                'buttons' => array(
-                    array(
-                        'title' => $this->l('Go to MyViaBill'),
-                        'icon' => 'process-icon-next',
-                        'name' => 'goToMyViaBill',
-                        'class' => $myViaBillButtonClasses,
-                        'href' => $myViaBillUrl,
-                    ),
+                Config::CAPTURE_ORDER_STATUS_MULTISELECT => array(
+                    'title' => $this->l('Auto-capture ViaBill payment when status is set to'),
+                    'type' => 'orders_status_multiselect',
+                    'class' => 'fixed-width-xxl',
+                    'form_group_class' => $orderStatusMultiselectClasses
                 ),
             ),
-            Config::SETTINGS_DEBUG_SECTION => array(
-                'title' => $this->l('Debug and troubleshooting information'),
-                'icon' => 'icon-clipboard',
-                'fields' => array(
-                    Config::ENABLE_DEBUG => array(
-                        'title' => $this->l('Enable Debug'),
-                        'validation' => 'isBool',
-                        'cast' => 'boolval',
-                        'type' => 'bool',
-                    ),
-                    Config::MODULE_INFO_FIELD => array(
-                        'type' => 'free',
-                        'desc' => $this->getInfoBlockTemplate($moduleInfoBlockText),
-                        'class' => 'module_info',
-                        'form_group_class' => 'viabill-info-block',
-                    ),
+            'submit' => array(
+                'title' => $this->l('Save'),
+            ),
+        );
+        $this->fields_options[Config::SETTINGS_MY_VIABILL_SECTION] = array(
+            'title' => $this->l('My ViaBill'),
+            'icon' => 'icon-info-sign',
+            'fields' => array(
+                Config::MY_VIABILL_INFO_BLOCK_FIELD => array(
+                    'type' => 'free',
+                    'desc' => $this->getInfoBlockTemplate($myViaBillInfoBlockText),
+                    'class' => 'hidden',
+                    'form_group_class' => 'viabill-info-block',
                 ),
-                'submit' => array(
-                    'title' => $this->l('Save'),
+            ),
+            'buttons' => array(
+                array(
+                    'title' => $this->l('Go to MyViaBill'),
+                    'icon' => 'process-icon-next',
+                    'name' => 'goToMyViaBill',
+                    'class' => $myViaBillButtonClasses,
+                    'href' => $myViaBillUrl,
                 ),
+            ),
+        );
+        $this->fields_options[Config::SETTINGS_DEBUG_SECTION] = array(
+            'title' => $this->l('Debug and troubleshooting information'),
+            'icon' => 'icon-clipboard',
+            'fields' => array(
+                Config::ENABLE_DEBUG => array(
+                    'title' => $this->l('Enable Debug'),
+                    'validation' => 'isBool',
+                    'cast' => 'boolval',
+                    'type' => 'bool',
+                ),
+                Config::MODULE_INFO_FIELD => array(
+                    'type' => 'free',
+                    'desc' => $this->getInfoBlockTemplate($moduleInfoBlockText),
+                    'class' => 'module_info',
+                    'form_group_class' => 'viabill-info-block',
+                ),
+            ),
+            'submit' => array(
+                'title' => $this->l('Save'),
             ),
         );
     }
@@ -443,6 +459,26 @@ class AdminViaBillSettingsController extends ModuleAdminController
         $html = $this->l('If you are having trouble displaying the PriceTags visit the'). ' <a href="'.$url.'">'.$this->l('Troubleshooting').'</a>';
 
         return $html;
+    }
+
+    protected function getConflictWarning() 
+    {
+        $show_conflict_warning = false;
+        $conflict_key = Config::MODULE_CONFLICT_THIRD_PARTY_KEY;
+        $warning = '';
+        
+        if (Configuration::hasKey($conflict_key)) {
+            $conflict_found = (int) Configuration::get($conflict_key);
+            if ($conflict_found) {
+                $html = $this->l('IMPORTANT! You have ViaBill payments enabled through a payment gateway. The ViaBill payment method provided by this ViaBill Prestashop module requires that ViaBill as a payment method is disabled in that gateway. Fortunately, we’ve made it easy for you; simply click the button below and it is instantly disabled (everything else stays enabled, of course)');
+                $html .= '<br/><br/><input class="btn btn-danger" style="margin-bottom:10px;" type="button" value="'.$this->l('Disable now').'" id="DisableThirdPartyPaymentBtn" >';
+                $html .= '<input type="hidden" id="thirdparty_disable_url" value="'.$this->context->link->getAdminLink('AdminViaBillConflict').'" />';
+                                                
+                $warning = '<div class="alert alert-warning">'.$html.'</div>';
+            }
+        }
+
+        return $warning;
     }
 
     protected function fileTail($filepath, $num_of_lines = 100)

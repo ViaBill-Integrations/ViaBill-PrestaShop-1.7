@@ -26,3 +26,22 @@
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+.form-group.viabill-warning-block div {
+    margin-left: 0;
+    width: 100%;
+}
+
+.viabill-warning-block .help-block {
+    margin: 0;
+}
+
+.form-group.viabill-warning-block .alert-warning {
+    margin-bottom: 0;
+    font: 400 12px/1.42857 "Open Sans",Helvetica,Arial,sans-serif;
+}
+
+.viabill-payment-management-container .alert-warning {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

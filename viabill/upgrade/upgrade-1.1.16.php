@@ -31,10 +31,22 @@ function upgrade_module_1_1_16(Viabill $module)
         return true;
     }
     
+    // Check if the columns 'enabled' is present or not
+	$enabled_column_name = '';
+	$enabled_column_value = '';
+	
+    $query = 'SELECT * FROM `'._DB_PREFIX_.'tab` WHERE class_name = "AdminViaBillSettings"';
+	$parent_row = $db->getRow($query);   
+    if (!empty($parent_row)) {
+        if (isset($parent_row['enabled'])) {
+			$enabled_column_name = '`enabled`, ';
+			$enabled_column_value = '1, ';
+		}
+    }
+    
     $query = 'INSERT INTO `'._DB_PREFIX_.'tab`
-        (`id_parent`, `position`, `module`, `class_name`, `route_name`, `active`, `enabled`,
-         `hide_host_mode`, `icon`) VALUES '.
-        '('.$parent_id.', 4, "viabill", "AdminViaBillContact", "", 1, 1, 0, "")';
+        (`id_parent`, `position`, `module`, `class_name`, `active`, '.$enabled_column_name.'`hide_host_mode`) VALUES '.
+        '('.$parent_id.', 4, "viabill", "AdminViaBillContact", 1, '.$enabled_column_value.'0)';
     $db->execute($query);
     $id = $db->insert_id();
     $count = (int) $db->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'lang');
@@ -48,9 +60,8 @@ function upgrade_module_1_1_16(Viabill $module)
     }
 
     $query = 'INSERT INTO `'._DB_PREFIX_.'tab`
-        (`id_parent`, `position`, `module`, `class_name`, `route_name`, `active`, `enabled`,
-         `hide_host_mode`, `icon`) VALUES '.
-        '('.$parent_id.', 5, "viabill", "AdminViaBillTroubleshoot", "", 1, 1, 0, "")';
+        (`id_parent`, `position`, `module`, `class_name`, `active`, '.$enabled_column_name.'`hide_host_mode`) VALUES '.
+        '('.$parent_id.', 5, "viabill", "AdminViaBillTroubleshoot", 1, '.$enabled_column_value.'0)';
     $db->execute($query);
     $id = $db->insert_id();
     $count = (int) Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'lang');

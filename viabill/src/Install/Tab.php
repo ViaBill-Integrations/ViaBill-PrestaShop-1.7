@@ -66,6 +66,13 @@ class Tab
     private $controllerTroubleshootName = 'AdminViaBillTroubleshoot';
 
     /**
+     * Defines Conflict Controller Name.
+     *
+     * @var string
+     */
+    private $controllerConflictName = 'AdminViaBillConflict';
+
+    /**
      * Module Main Class Variable Declaration.
      *
      * @var \ViaBill
@@ -129,6 +136,13 @@ class Tab
                 'ParentClassName' => $this->controllerInvisibleName,
                 'class_name' => $this->controllerTroubleshootName,
                 'visible' => true,
+                'module_tab' => true
+            ),
+            array(
+                'name' => $this->module->l('Ajax', self::FILENAME),
+                'ParentClassName' => 'AdminParentModulesSf',
+                'class_name' => $this->controllerActionsName,
+                'visible' => false,
                 'module_tab' => true
             ),
         );

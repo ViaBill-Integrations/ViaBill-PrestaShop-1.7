@@ -27,4 +27,25 @@ $(document).ready(function() {
             orderStatusMultiselect.hide();
         }
     }
+
+    if ($("#DisableThirdPartyPaymentBtn").length) {
+        $("#DisableThirdPartyPaymentBtn").click(function() {
+            var disable_third_party_gateway_url = $('#thirdparty_disable_url').val();
+            console.log(disable_third_party_gateway_url);
+            $.ajax({
+                method: 'get',
+                url: disable_third_party_gateway_url,
+                data: null,
+                dataType: "text",
+                success: function(data) {
+                    alert(data); 
+                    location.reload();
+                },
+                error: function(e) {
+                    console.log(e);
+                }
+            });             
+        });
+    }
+
 });
