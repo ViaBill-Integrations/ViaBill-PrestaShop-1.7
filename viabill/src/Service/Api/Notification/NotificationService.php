@@ -71,9 +71,10 @@ class NotificationService
         $user = $this->userService->getUser();
         $requestUrl =
             sprintf(
-                '/api/addon/prestashop/notifications?key=%s&signature=%s',
+                '/api/addon/prestashop/notifications?key=%s&signature=%s&platform=%s',
                 $user->getKey(),
-                $user->getSignature()
+                $user->getSignature(),
+                $this->getPlatformInfo()
             );
 
         // debug info
@@ -102,5 +103,27 @@ class NotificationService
         }
 
         return $result;
+    }
+
+    /**
+     * Get platform info used with the notifications call.
+     *
+     * @return string
+     */
+    private function getPlatformInfo() {      
+        $info = 'prestashop';
+        
+        $platform_version = \Configuration::get('PS_VERSION_DB');
+        if (!empty($platform_version)) {
+            $info .= '&platform_ver='.$platform_version;
+        }
+
+        $moduleInstance = \Module::getInstanceByName('viabill');        
+        $module_version = $moduleInstance->version;
+        if (!empty($module_version)) {
+            $info .= '&module_ver='.$module_version;
+        }
+        
+        return $info;             
     }
 }

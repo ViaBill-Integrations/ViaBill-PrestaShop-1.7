@@ -187,3 +187,7 @@
 ### Changed
 ## [1.1.22] - 2021-08-04
 - Display a warning when there is a conflict with third party payment gateways
+
+### Changed
+## [1.1.23] - 2021-08-09
+- Added platform info to the notifications request

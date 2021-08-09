@@ -51,7 +51,7 @@ class ViaBill extends PaymentModule
         $this->description = 'ViaBill Official - Try, before you buy!';
         $this->tab = 'payments_gateways';
         $this->displayName = $this->l('ViaBill');
-        $this->version = '1.1.22';
+        $this->version = '1.1.23';
         $this->ps_versions_compliancy = array('min' => '1.7.3.0', 'max' => _PS_VERSION_);
         $this->module_key = '026cfbb4e50aac4d9074eb7c9ddc2584';
 
@@ -455,15 +455,22 @@ class ViaBill extends PaymentModule
             return;
         }
 
-        if (!$this->context->controller instanceof AdminOrdersController) {
+        if (!$this->context->controller instanceof AdminDashboardController) {
             return;
-        }
+        }        
 
         $idOrder = Tools::getValue('id_order');
-
         if ($idOrder) {
             return;
         }
+
+        // Add some randomness, you don't want to be executed all the times
+        $freq_num = 15;
+		mt_srand();
+		$rand_id = mt_rand(1, $freq_num);
+		if ($rand_id != 1) {			
+			return;
+		}
 
         /** @var \ViaBill\Service\Api\Notification\NotificationService $notificationService */
         $notificationService = $this->getModuleContainer()->get('service.notification');
