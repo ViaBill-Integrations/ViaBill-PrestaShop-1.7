@@ -46,7 +46,7 @@ function upgrade_module_1_1_20(Viabill $module)
     
     $query = 'INSERT INTO `'._DB_PREFIX_.'tab`
         (`id_parent`, `position`, `module`, `class_name`, `active`, '.$enabled_column_name.'`hide_host_mode`) VALUES '.
-        '('.$parent_id.', 4, "viabill", "AdminViaBillConflict", 1, '.$enabled_column_value.'0)';
+        '('.$parent_id.', 4, "viabill", "AdminViaBillConflict", 0, '.$enabled_column_value.'0)';
     $db->execute($query);
     $id = $db->insert_id();
     $count = (int) $db->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'lang');

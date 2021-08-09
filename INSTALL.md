@@ -44,12 +44,11 @@ Once you have created successfully your ViaBill account, or login into your exis
 
 This method describes how to upgrade the module manually, without any references to the PrestaShop's marketplace. 
 
-a) Make a backup of the following folder:
-`{Prestashop root directory}`/modules/viabill 
-This is helpful in case something goes wrong and you want to restore the latest working version.
-b) Download the repository files on your local disk and locate the contained  `viabill` folder.
-c) Copy the contents of this `viabill` folder into `{Prestashop root directory}`/modules/viabill and overwrite all existing files.
-d) Login in the backend of the Prestashop site and navigate to menu Modules → Module Manager → Viabill where you click on the “Upgrade” button.
+1. Make a backup of the following folder: `{Prestashop root directory}`/modules/viabill This is helpful in case something goes wrong and you want to restore the latest working version. 
+2. Download the repository files on your local disk and locate the contained viabill folder. 
+3. Copy the contents of this viabill folder into `{Prestashop root directory}`/modules/viabill and overwrite all existing files. 
+4. Clean the contents of the `{Prestashop root directory}`/modules/viabill/var/cache, with the exception of the index.php file.
+5. Login in the backend of the Prestashop site and navigate to menu Modules → Module Manager → Viabill where you click on the “Upgrade” button.
 
 > Note that if the button's label is still “Configure” instead of “Upgrade” it means that you haven't copied the new files to the correct folder (`{Prestashop root directory}`/modules/viabill) or the version of the module is up to date (i.e. you have already copied the files). See the module version number to verify that. If you see a “success” message after the upgrade action it means that the upgrade operation was successful. You may need to refresh the page in order to see the “Configure” button label again.
 If not, click on the “Upgrade” button once again.
