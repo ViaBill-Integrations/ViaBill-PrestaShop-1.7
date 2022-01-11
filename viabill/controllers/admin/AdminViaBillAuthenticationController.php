@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 use ViaBill\Config\Config;
@@ -14,7 +14,7 @@ use ViaBill\Controller\AbstractAdminController as ModuleAdminController;
 use ViaBill\Object\Api\Authentication\LoginRequest;
 use ViaBill\Object\Api\Authentication\RegisterRequest;
 
-require_once dirname(__FILE__).'/../../vendor/autoload.php';
+require_once dirname(__FILE__) . '/../../vendor/autoload.php';
 
 /**
  * ViaBill Authentication Controller Class.
@@ -26,7 +26,7 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
     /**
      * ViaBill Supported Countries Variable Declaration.
      *
-     * @var $viaBillCountries
+     * @var
      */
     private $viaBillCountries;
 
@@ -100,16 +100,16 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
             $this->context->link->getAdminLink(
                 $this->controller_name,
                 true,
-                array(),
-                array('registerUser' => '1')
+                [],
+                ['registerUser' => '1']
             )
         );
         $authenticationTemplate->setExistingUser(
             $this->context->link->getAdminLink(
                 $this->controller_name,
                 true,
-                array(),
-                array('loginUser' => '1')
+                [],
+                ['loginUser' => '1']
             )
         );
 
@@ -134,9 +134,9 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
          */
         $mediaAdapter = $this->module->getModuleContainer()->get('adapter.media');
 
-        $mediaAdapter->addJsDef(array(
+        $mediaAdapter->addJsDef([
             'termsLink' => Config::TERMS_AND_CONDITIONS_LINK,
-        ));
+        ]);
 
         $this->addCSS($this->module->getLocalPath() . '/views/css/admin/authentication.css');
         $this->addCSS($this->module->getLocalPath() . '/views/css/admin/info-block.css');
@@ -147,12 +147,13 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
      * Login And Registration Forms Validation.
      *
      * @return bool|ObjectModel
+     *
      * @throws Exception
      */
     public function postProcess()
     {
         if (Tools::isSubmit('submitRegisterForm')) {
-            $errorsArray = array();
+            $errorsArray = [];
 
             $regEmail = Tools::getValue('register_user_email');
             $regCountry = Tools::getValue('register_user_country');
@@ -181,7 +182,7 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
                 $this->context->cookie->authErrorMessage = json_encode($errorsArray);
 
                 Tools::redirectAdmin(
-                    $this->context->link->getAdminLink('AdminViaBillAuthentication').'&registerUser=1'
+                    $this->context->link->getAdminLink('AdminViaBillAuthentication') . '&registerUser=1'
                 );
 
                 return parent::postProcess();
@@ -205,7 +206,7 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
                 $this->context->cookie->authErrorMessage = json_encode($errorsArray);
 
                 Tools::redirectAdmin(
-                    $this->context->link->getAdminLink('AdminViaBillAuthentication').'&registerUser=1'
+                    $this->context->link->getAdminLink('AdminViaBillAuthentication') . '&registerUser=1'
                 );
 
                 return parent::postProcess();
@@ -219,7 +220,7 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
             $loginPassword = Tools::getValue('login_user_password');
 
             if (!$loginEmail || !$loginPassword) {
-                $errorsArray = array();
+                $errorsArray = [];
                 if (!$loginEmail) {
                     $errorsArray[] = $this->l('Email is required to create an account');
                 }
@@ -230,7 +231,7 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
 
                 $this->context->cookie->authErrorMessage = json_encode($errorsArray);
                 Tools::redirectAdmin(
-                    $this->context->link->getAdminLink('AdminViaBillAuthentication').'&loginUser=1'
+                    $this->context->link->getAdminLink('AdminViaBillAuthentication') . '&loginUser=1'
                 );
 
                 return parent::postProcess();
@@ -284,67 +285,67 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
         $registrationInfoBlockText =
             $this->l('This gives you a ViaBill account and allows your webshop to handle ViaBill transactions');
 
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Register'),
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'free',
                     'name' => 'registration_hint',
                     'desc' => $this->getInfoBlockTemplate($registrationInfoBlockText),
                     'class' => 'hidden',
-                    'form_group_class' => 'viabill-info-block'
-                ),
-                array(
+                    'form_group_class' => 'viabill-info-block',
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Email'),
                     'name' => 'register_user_email',
                     'class' => 'fixed-width-xxl',
-                    'required' => true
-                ),
-                array(
+                    'required' => true,
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Country'),
                     'name' => 'register_user_country',
                     'class' => 'fixed-width-xxl js-country-select',
-                    'options' => array(
+                    'options' => [
                         'query' => $this->getRegFormCountriesOptions(),
                         'id' => 'id',
                         'name' => 'name',
-                    ),
-                    'required' => true
-                ),
-                array(
+                    ],
+                    'required' => true,
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Live shop URL'),
                     'name' => 'register_user_shop_url',
                     'class' => 'fixed-width-xxl',
-                    'required' => true
-                ),
-                array(
+                    'required' => true,
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Contact name'),
                     'name' => 'register_user_name',
-                    'class' => 'fixed-width-xxl'
-                ),
-                array(
+                    'class' => 'fixed-width-xxl',
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Phone'),
                     'name' => 'register_user_phone',
-                    'class' => 'fixed-width-xxl'
-                ),
-                array(
+                    'class' => 'fixed-width-xxl',
+                ],
+                [
                     'type' => 'free',
-                    'name' => 'terms_and_conditions'
-                ),
-            ),
-            'submit' => array(
+                    'name' => 'terms_and_conditions',
+                ],
+            ],
+            'submit' => [
                 'title' => $this->l('Create ViaBill user'),
                 'icon' => 'process-icon-ok',
-                'name' => 'submitRegisterForm'
-            )
-        );
+                'name' => 'submitRegisterForm',
+            ],
+        ];
     }
 
     /**
@@ -352,42 +353,42 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
      */
     protected function getUserLoginForm()
     {
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Login'),
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Email'),
                     'name' => 'login_user_email',
                     'required' => true,
-                    'class' => 'fixed-width-xxl'
-                ),
-                array(
+                    'class' => 'fixed-width-xxl',
+                ],
+                [
                     'type' => 'password',
                     'label' => $this->l('Password'),
                     'name' => 'login_user_password',
                     'required' => true,
-                    'class' => 'login-password-field'
-                ),
-            ),
-            'buttons' => array(
-                array(
+                    'class' => 'login-password-field',
+                ],
+            ],
+            'buttons' => [
+                [
                     'title' => $this->l('Forgot password?'),
                     'icon' => 'process-icon-help',
                     'name' => 'forgotPassword',
                     'type' => 'button',
                     'class' => 'pull-left vd-auth-additional-button',
                     'href' => Config::getLoginForgotPassUrl($this->context->language->iso_code),
-                ),
-            ),
-            'submit' => array(
+                ],
+            ],
+            'submit' => [
                 'title' => $this->l('Connect'),
                 'icon' => 'process-icon-ok',
-                'name' => 'submitLoginForm'
-            )
-        );
+                'name' => 'submitLoginForm',
+            ],
+        ];
     }
 
     /**
@@ -405,7 +406,7 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
         $regName = Tools::getValue('register_user_name');
         $regPhone = Tools::getValue('register_user_phone');
 
-        $resigterRequest = new RegisterRequest($regEmail, $regShopUrl, $regCountryIso, array($regName, $regPhone));
+        $resigterRequest = new RegisterRequest($regEmail, $regShopUrl, $regCountryIso, [$regName, $regPhone]);
 
         /** @var \ViaBill\Service\Api\Authentication\RegisterService $registerService */
         $registerService = $this->module->getModuleContainer()->get('service.register');
@@ -415,13 +416,13 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
             $errors = $registerResponse->getErrors();
 
             foreach ($errors as $error) {
-                $errorField = "";
+                $errorField = '';
 
-                if ($error->getField() != "") {
-                    $errorField = 'Field: '.$error->getField().'. ';
+                if ($error->getField() != '') {
+                    $errorField = 'Field: ' . $error->getField() . '. ';
                 }
 
-                $this->context->controller->errors[] = $errorField.' Error: '.$error->getError();
+                $this->context->controller->errors[] = $errorField . ' Error: ' . $error->getError();
             }
 
             return false;
@@ -472,14 +473,14 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
             $errors = $loginResponse->getErrors();
 
             foreach ($errors as $error) {
-                $errorField = "";
+                $errorField = '';
 
-                if ($error->getField() != "") {
+                if ($error->getField() != '') {
                     $errorField = sprintf($this->l('Field: %s. '), $error->getField());
                 }
 
                 $this->context->controller->errors[] =
-                    $errorField.sprintf($this->l('Error: %s '), $error->getError());
+                    $errorField . sprintf($this->l('Error: %s '), $error->getError());
             }
 
             return false;
@@ -526,14 +527,14 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
             return false;
         }
 
-        $countriesOptions = array();
+        $countriesOptions = [];
 
-        /** @var \ViaBill\Object\Api\Countries\CountryResponse $country*/
+        /** @var \ViaBill\Object\Api\Countries\CountryResponse $country */
         foreach ($countries as $country) {
-            $countriesOptions[] = array(
+            $countriesOptions[] = [
                 'id' => $country->getCode(),
-                'name' => $country->getName()
-            );
+                'name' => $country->getName(),
+            ];
         }
 
         return $countriesOptions;
@@ -564,7 +565,7 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
         $termsLinkCountry = '';
 
         if ($this->viaBillCountries) {
-            /** @var \ViaBill\Object\Api\Countries\CountryResponse $viaBillCountry*/
+            /** @var \ViaBill\Object\Api\Countries\CountryResponse $viaBillCountry */
             foreach ($this->viaBillCountries as $viaBillCountry) {
                 $termsLinkCountry = Config::formatCountryCodeForTCLink($viaBillCountry->getCode());
                 break;
@@ -592,7 +593,7 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
     {
         /** @var \ViaBill\Service\Handler\ModuleRestrictionHandler $restrictionHandler */
         $restrictionHandler = $this->module->getModuleContainer()->get('service.handler.moduleRestriction');
-        $warnings = array();
+        $warnings = [];
 
         $failedCountry =
         $this->l('Unable to save module country restrictions. It can be done manually in payment preferences tab.');

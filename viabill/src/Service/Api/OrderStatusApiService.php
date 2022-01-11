@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Api;
@@ -16,8 +16,6 @@ use ViaBill\Object\Api\ApiResponseError;
 
 /**
  * Class OrderStatusApiService
- *
- * @package ViaBill\Service\Api
  */
 abstract class OrderStatusApiService
 {
@@ -51,7 +49,7 @@ abstract class OrderStatusApiService
 
         $apiError = new ApiResponseError('', $errorBody);
         $allErrors = array_merge(
-            array($apiError),
+            [$apiError],
             $errors
         );
 

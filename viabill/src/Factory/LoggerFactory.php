@@ -5,22 +5,20 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Factory;
 
-use ViaBill\Config\Config;
 use Monolog\Handler\FirePHPHandler;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use ViaBill\Config\Config;
 
 /**
  * Class LoggerFactory
- *
- * @package ViaBill\Factory
  */
 class LoggerFactory
 {
@@ -63,7 +61,7 @@ class LoggerFactory
 
         $isDebugLogEnabled = $this->config->isDebug();
 
-        $fileName = $this->module->getLocalPath().'var/log/'.$this->module->name.'.log';
+        $fileName = $this->module->getLocalPath() . 'var/log/' . $this->module->name . '.log';
 
         $logger->pushHandler(new StreamHandler($fileName));
         $logger->pushHandler(new RotatingFileHandler($fileName));

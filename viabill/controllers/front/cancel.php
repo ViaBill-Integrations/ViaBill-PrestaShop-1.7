@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 use ViaBill\Util\DebugLog;
@@ -65,13 +65,13 @@ class ViaBillCancelModuleFrontController extends ModuleFrontController
         $order = new Order((int) $this->id_order);
 
         // Debug info
-        $debug_str = '[Cart id: '.$this->id_cart.'][Order id: '.$this->id_order.'][Secure key: '.$this->secure_key.']';
-        $order_str = (empty($order))?'empty':var_export($order, true);
+        $debug_str = '[Cart id: ' . $this->id_cart . '][Order id: ' . $this->id_order . '][Secure key: ' . $this->secure_key . ']';
+        $order_str = (empty($order)) ? 'empty' : var_export($order, true);
         $debug_str .= "[order: {$order_str}]";
-        DebugLog::msg("Cancel init / ".$debug_str);
+        DebugLog::msg('Cancel init / ' . $debug_str);
 
         if (!$this->id_order || !$this->module->id || !$this->secure_key || empty($this->secure_key)) {
-            Tools::redirect($redirectLink.(Tools::isSubmit('slowvalidation') ? '&slowvalidation' : ''));
+            Tools::redirect($redirectLink . (Tools::isSubmit('slowvalidation') ? '&slowvalidation' : ''));
         }
 
         if ((string) $this->secure_key !== (string) $order->secure_key ||
@@ -98,9 +98,9 @@ class ViaBillCancelModuleFrontController extends ModuleFrontController
         parent::initContent();
 
         $order = new Order($this->id_order);
-        $this->context->smarty->assign(array(
-            'order' => $this->order_presenter->present($order)
-        ));
+        $this->context->smarty->assign([
+            'order' => $this->order_presenter->present($order),
+        ]);
 
         $this->setTemplate(
             sprintf('module:%s/views/templates/front/cancel.tpl', $this->module->name)

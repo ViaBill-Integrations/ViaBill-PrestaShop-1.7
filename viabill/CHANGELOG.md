@@ -191,3 +191,11 @@
 ### Changed
 ## [1.1.23] - 2021-08-09
 - Added platform info to the notifications request
+
+### Changed
+## [1.1.24] - 2021-10-04
+- Add filter the js script
+
+### Changed
+## [1.1.25] - 2021-10-04
+- Add customer info during checkout

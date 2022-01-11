@@ -5,6 +5,7 @@
  * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
+*
  * @see       /LICENSE
  *
  * International Registered Trademark & Property of Viabill */
@@ -24,7 +25,6 @@ class AbstractRepository implements ReadOnlyRepositoryInterface
 
     /**
      * @param string $fullyClassifiedClassName
-     *
      */
     public function __construct($fullyClassifiedClassName)
     {
@@ -38,6 +38,7 @@ class AbstractRepository implements ReadOnlyRepositoryInterface
 
     /**
      * @param array $keyValueCriteria
+     *
      * @return ObjectModel|null
      *
      * @throws PrestaShopException
@@ -49,7 +50,7 @@ class AbstractRepository implements ReadOnlyRepositoryInterface
         foreach ($keyValueCriteria as $field => $value) {
             $psCollection = $psCollection->where($field, '=', $value);
         }
-        
+
         $results = $psCollection->getAll();
         if (!empty($results)) {
             if (isset($results[0])) {
@@ -58,7 +59,7 @@ class AbstractRepository implements ReadOnlyRepositoryInterface
         }
 
         return null;
-        
+
         /*
         $first = $psCollection->getFirst();
 

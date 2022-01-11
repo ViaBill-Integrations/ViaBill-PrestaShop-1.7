@@ -5,27 +5,24 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Builder\Payment;
 
 use Configuration;
+use Link;
+use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use ViaBill\Builder\Template\TagBodyTemplate;
 use ViaBill\Config\Config;
 use ViaBill\Service\Validator\Payment\CurrencyValidator;
-use Link;
-use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 
 /**
  * Class PaymentOptionsBuilder
- *
- * @package ViaBill\Builder\Payment
  */
 class PaymentOptionsBuilder
 {
-
     /**
      * Filename Constant.
      */
@@ -116,7 +113,7 @@ class PaymentOptionsBuilder
      *
      * @param Link $link
      */
-    public function setLink(\Link $link)
+    public function setLink(Link $link)
     {
         $this->link = $link;
     }
@@ -181,7 +178,7 @@ class PaymentOptionsBuilder
     public function getPaymentOptions()
     {
         if (!$this->currencyValidator->isCurrencyMatches($this->currency)) {
-            return array();
+            return [];
         }
 
         $url = $this->link->getModuleLink($this->module->name, 'checkout');
@@ -191,7 +188,7 @@ class PaymentOptionsBuilder
         $paymentOption->setCallToActionText($this->module->l('Pay with ViaBill', self::FILENAME));
 
         if (Configuration::get(Config::VIABILL_LOGO_DISPLAY_IN_CHECKOUT)) {
-            $paymentOption->setLogo($this->module->getPathUri().'views/img/viabill.png');
+            $paymentOption->setLogo($this->module->getPathUri() . 'views/img/viabill.png');
         }
 
         $paymentOption->setModuleName($this->module->name);
@@ -200,7 +197,7 @@ class PaymentOptionsBuilder
             $this->constructTag($paymentOption);
         }
 
-        return array($paymentOption);
+        return [$paymentOption];
     }
 
     /**

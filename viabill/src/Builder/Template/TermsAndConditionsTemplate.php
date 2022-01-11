@@ -5,6 +5,7 @@
  * @author    Written for or by ViaBill
  * @copyright Copyright (c) Viabill
  * @license   Addons PrestaShop license limitation
+ *
  * @see       /LICENSE
  *
  * International Registered Trademark & Property of Viabill */
@@ -15,8 +16,6 @@ use ViaBill\Config\Config;
 
 /**
  * Class TermsAndConditionsTemplate
- *
- * @package ViaBill\Builder\Template
  */
 class TermsAndConditionsTemplate implements TemplateInterface
 {
@@ -37,7 +36,7 @@ class TermsAndConditionsTemplate implements TemplateInterface
     /**
      * Terms And Conditions Link Country Variable Declaration.
      *
-     * @var $termsLinkCountry
+     * @var
      */
     private $termsLinkCountry;
 
@@ -78,10 +77,10 @@ class TermsAndConditionsTemplate implements TemplateInterface
      */
     public function getSmartyParams()
     {
-        return array(
+        return [
             'termsLink' => Config::TERMS_AND_CONDITIONS_LINK,
             'termsLinkCountry' => $this->termsLinkCountry,
-        );
+        ];
     }
 
     /**
@@ -94,6 +93,7 @@ class TermsAndConditionsTemplate implements TemplateInterface
     public function getHtml()
     {
         $this->smarty->assign($this->getSmartyParams());
-        return $this->smarty->fetch($this->module->getLocalPath().'views/templates/admin/terms-and-conditions.tpl');
+
+        return $this->smarty->fetch($this->module->getLocalPath() . 'views/templates/admin/terms-and-conditions.tpl');
     }
 }

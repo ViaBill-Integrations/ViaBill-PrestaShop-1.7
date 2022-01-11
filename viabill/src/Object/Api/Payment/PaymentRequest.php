@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Object\Api\Payment;
@@ -15,7 +15,6 @@ use ViaBill\Object\Api\SerializedObjectInterface;
 
 /**
  * Class PaymentRequest
- * @package ViaBill\Object\Api\Payment
  */
 class PaymentRequest implements SerializedObjectInterface
 {
@@ -101,7 +100,7 @@ class PaymentRequest implements SerializedObjectInterface
      *
      * @var array
      */
-    private $customer_info;
+    private $customParams;
 
     /**
      * PaymentRequest constructor.
@@ -114,7 +113,7 @@ class PaymentRequest implements SerializedObjectInterface
      * @param string $success_url
      * @param string $cancel_url
      * @param string $callback_url
-     * @param bool $test     
+     * @param bool $test
      * @param string $md5Check
      * @param array $ustomer_info
      */
@@ -127,9 +126,9 @@ class PaymentRequest implements SerializedObjectInterface
         $success_url,
         $cancel_url,
         $callback_url,
-        $test,        
+        $test,
         $md5Check,
-        $customer_info
+        $customParams
     ) {
         $this->apiKey = $apiKey;
         $this->transaction = $transaction;
@@ -138,10 +137,43 @@ class PaymentRequest implements SerializedObjectInterface
         $this->currency = $currency;
         $this->success_url = $success_url;
         $this->cancel_url = $cancel_url;
-        $this->test = $test;        
+        $this->test = $test;
         $this->md5Check = $md5Check;
         $this->callback_url = $callback_url;
-        $this->customer_info = $customer_info;
+        $this->customParams = $this->cleanCustomParams($customParams);
+    }
+
+    /**
+     * Clearn custom params to be compatible with viabill server
+     *
+     * @param array $customParams
+     *
+     * @return array
+     */
+    private function cleanCustomParams($customParams)
+    {
+        if (empty($customParams)) {
+            return null;
+        }
+
+        $country = \Tools::strtoupper($customParams['country']);
+        switch ($country) {
+            case 'UNITED STATES':
+                $customParams['country'] = 'US';
+                break;
+            case 'DENMARK':
+                $customParams['country'] = 'DK';
+                break;
+            case 'SPAIN':
+                $customParams['country'] = 'ES';
+                break;
+        }
+
+        foreach ($customParams['country'] as &$value) {
+            $value = str_replace("\n", " ", $value);
+        }
+
+        return $customParams;
     }
 
     /**
@@ -259,9 +291,9 @@ class PaymentRequest implements SerializedObjectInterface
      *
      * @return string
      */
-    public function getCustomerInfo()
+    public function getCustomParams()
     {
-        return $this->customer_info;
+        return json_encode($this->customParams);
     }
 
     /**
@@ -271,7 +303,7 @@ class PaymentRequest implements SerializedObjectInterface
      */
     public function getSerializedData()
     {
-        return array(
+        return [
             'protocol' => $this->protocol,
             'apikey' => $this->apiKey,
             'transaction' => $this->transaction,
@@ -283,7 +315,7 @@ class PaymentRequest implements SerializedObjectInterface
             'callback_url' => $this->callback_url,
             'test' => (bool) $this->test,
             'md5check' => $this->md5Check,
-            'customer_info' => json_encode($this->customer_info)
-        );
+            'customParams' => $this->customParams
+        ];
     }
 }

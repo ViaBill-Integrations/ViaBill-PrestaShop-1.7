@@ -5,22 +5,20 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service;
 
+use Order;
+use Tools;
 use ViaBill\Adapter\Context;
 use ViaBill\Builder\Message\OrderMessageBuilder;
 use ViaBill\Config\Config;
-use Order;
-use Tools;
 
 /**
  * Class MessageService
- *
- * @package ViaBill\Service
  */
 class MessageService
 {

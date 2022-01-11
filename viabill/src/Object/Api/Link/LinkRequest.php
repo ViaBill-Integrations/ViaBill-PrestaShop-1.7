@@ -5,6 +5,7 @@
  * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
+*
  * @see       /LICENSE
  *
  * International Registered Trademark & Property of Viabill */
@@ -13,8 +14,6 @@ namespace ViaBill\Object\Api\Link;
 
 /**
  * Class LinkRequest
- *
- * @package ViaBill\Object\Api\Link
  */
 class LinkRequest
 {

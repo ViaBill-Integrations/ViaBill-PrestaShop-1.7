@@ -5,28 +5,25 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Builder\Template;
 
 use Currency;
+use Language;
+use Order;
 use ViaBill\Adapter\Configuration;
 use ViaBill\Adapter\Tools;
 use ViaBill\Config\Config;
 use ViaBill\Service\Provider\OrderStatusProvider;
-use Language;
-use Order;
 
 /**
  * Class PaymentManagementTemplate
- *
- * @package ViaBill\Builder\Payment
  */
 class PaymentManagementTemplate implements TemplateInterface
 {
-
     /**
      * Filename Constant.
      */
@@ -159,33 +156,33 @@ class PaymentManagementTemplate implements TemplateInterface
         $remainingToRefund = $this->statusProvider->getRemainingToRefund($this->order);
         $currency = new \Currency($this->order->id_currency, $this->order->id_lang);
 
-        return array(
-            'paymentManagement' => array(
+        return [
+            'paymentManagement' => [
                 'formAction' => $this->formAction,
                 'orderId' => $this->order->id,
                 'currencyError' => $this->checkCurrency(),
                 'isCancelled' => $isCancelled,
                 'isFullRefund' => $this->isFullRefund(),
                 'currencySign' => $currency->getSign(),
-                'cancelFormGroup' => array(
+                'cancelFormGroup' => [
                     'isVisible' => $this->isCancelVisible(),
-                    'cancelConfirmation' => $this->configuration->get(Config::SINGLE_ACTION_CANCEL_CONF_MESSAGE)
-                ),
-                'captureFormGroup' => array(
+                    'cancelConfirmation' => $this->configuration->get(Config::SINGLE_ACTION_CANCEL_CONF_MESSAGE),
+                ],
+                'captureFormGroup' => [
                     'isVisible' => $this->isCaptureVisible(),
                     'captureConfirmation' => $this->configuration->get(Config::SINGLE_ACTION_CAPTURE_CONF_MESSAGE),
-                    'remainingToCapture' => $this->getRemainingToCapture($this->order->total_paid_tax_incl)
-                ),
-                'refundFormGroup' => array(
+                    'remainingToCapture' => $this->getRemainingToCapture($this->order->total_paid_tax_incl),
+                ],
+                'refundFormGroup' => [
                     'isVisible' => $this->isRefundVisible(),
                     'remainingToRefund' => $remainingToRefund,
-                    'refundConfirmation' => $this->configuration->get(Config::SINGLE_ACTION_REFUND_CONF_MESSAGE)
-                ),
-                'renewFormGroup' => array(
-                    'isVisible' => $this->isRenewVisible()
-                )
-            )
-        );
+                    'refundConfirmation' => $this->configuration->get(Config::SINGLE_ACTION_REFUND_CONF_MESSAGE),
+                ],
+                'renewFormGroup' => [
+                    'isVisible' => $this->isRenewVisible(),
+                ],
+            ],
+        ];
     }
 
     /**
@@ -198,8 +195,9 @@ class PaymentManagementTemplate implements TemplateInterface
     public function getHtml()
     {
         $this->smarty->assign($this->getSmartyParams());
+
         return $this->smarty->fetch(
-            $this->module->getLocalPath().'views/templates/admin/payment-management.tpl'
+            $this->module->getLocalPath() . 'views/templates/admin/payment-management.tpl'
         );
     }
 
@@ -309,6 +307,7 @@ class PaymentManagementTemplate implements TemplateInterface
                     $currency->name
                 );
         }
+
         return $message;
     }
 }

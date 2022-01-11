@@ -5,12 +5,13 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Handler;
 
+use Order;
 use ViaBill\Adapter\Configuration;
 use ViaBill\Adapter\Tools;
 use ViaBill\Adapter\Validate;
@@ -20,14 +21,11 @@ use ViaBill\Object\Api\Refund\RefundRequest;
 use ViaBill\Object\Handler\HandlerResponse;
 use ViaBill\Service\Api\Refund\RefundService;
 use ViaBill\Service\UserService;
-use ViaBill\Util\SignaturesGenerator;
 use ViaBill\Util\DebugLog;
-use Order;
+use ViaBill\Util\SignaturesGenerator;
 
 /**
  * Class RefundPaymentHandler
- *
- * @package ViaBill\Service\Handler
  */
 class RefundPaymentHandler
 {
@@ -135,18 +133,18 @@ class RefundPaymentHandler
     public function handle(Order $order, $amount)
     {
         // debug info
-        $debug_str = (empty($order))?'[empty]':var_export($order, true);
-        DebugLog::msg("Refund Payment Handle / Amount: $amount Order: $debug_str", "notice");
+        $debug_str = (empty($order)) ? '[empty]' : var_export($order, true);
+        DebugLog::msg("Refund Payment Handle / Amount: $amount Order: $debug_str", 'notice');
 
         $errors = $this->validateRefundPayment($order, $amount);
 
         if (!empty($errors)) {
             $debug_str = var_export($errors, true);
-            DebugLog::msg("Refund Payment Handle / Validation Errors: $debug_str", "error");
+            DebugLog::msg("Refund Payment Handle / Validation Errors: $debug_str", 'error');
 
             return new HandlerResponse($order, 500, $errors);
         }
-        
+
         $user = $this->userService->getUser();
         $reference = $order->reference;
         $apiKey = $user->getKey();
@@ -157,13 +155,13 @@ class RefundPaymentHandler
         $signature = $this->signaturesGenerator->generateRefundSignature($user, $reference, $amount, $currencyIso);
 
         $debug_str = '';
-        $debug_str .= (!empty($reference))?"[Order Ref: ".$reference."]":"[No order reference]";
-        $debug_str .= (!empty($apiKey))?"[apiKey: ".$apiKey."]":"[No apiKey]";
-        $debug_str .= (!empty($signature))?"[Signature: ".$signature."]":"[No signature]";
-        $debug_str .= (!empty($amount))?"[Amount: ".$amount."]":"[No amount]";
-        $debug_str .= (!empty($currencyIso))?"[Currency ISO: ".$currencyIso."]":"[No currency ISO]";
-        DebugLog::msg("Refund Payment Handle / Request params: $debug_str", "notice");
-        
+        $debug_str .= (!empty($reference)) ? '[Order Ref: ' . $reference . ']' : '[No order reference]';
+        $debug_str .= (!empty($apiKey)) ? '[apiKey: ' . $apiKey . ']' : '[No apiKey]';
+        $debug_str .= (!empty($signature)) ? '[Signature: ' . $signature . ']' : '[No signature]';
+        $debug_str .= (!empty($amount)) ? '[Amount: ' . $amount . ']' : '[No amount]';
+        $debug_str .= (!empty($currencyIso)) ? '[Currency ISO: ' . $currencyIso . ']' : '[No currency ISO]';
+        DebugLog::msg("Refund Payment Handle / Request params: $debug_str", 'notice');
+
         $refundRequest = new RefundRequest(
             $reference,
             $apiKey,
@@ -183,10 +181,10 @@ class RefundPaymentHandler
 
         if (!empty($responseErrors)) {
             $debug_str = var_export($responseErrors, true);
-            DebugLog::msg("Refund Payment Handle / Response Errors: $debug_str", "error");
+            DebugLog::msg("Refund Payment Handle / Response Errors: $debug_str", 'error');
         }
 
-        $warnings = array();
+        $warnings = [];
         if (empty($responseErrors)) {
             $isMarked = $this->markAsRefunded($order, $amount);
 
@@ -207,16 +205,16 @@ class RefundPaymentHandler
 
         $debug_str = '';
         if (!empty($successMessage)) {
-            $debug_str .= "[Message: ".var_export($successMessage, true)."]";
+            $debug_str .= '[Message: ' . var_export($successMessage, true) . ']';
         }
         if (!empty($errors)) {
-            $debug_str .= "[Errors: ".var_export($errors, true)."]";
+            $debug_str .= '[Errors: ' . var_export($errors, true) . ']';
         }
         if (!empty($warnings)) {
-            $debug_str .= "[Warnings: ".var_export($warnings, true)."]";
+            $debug_str .= '[Warnings: ' . var_export($warnings, true) . ']';
         }
-        $debug_str .= (method_exists($refundResponse, 'getStatusCode'))?"[Status code: ".$refundResponse->getStatusCode()."]":"[No status code]";
-        DebugLog::msg("Refund Payment Handle / Response Handler Params: $debug_str", "notice");
+        $debug_str .= (method_exists($refundResponse, 'getStatusCode')) ? '[Status code: ' . $refundResponse->getStatusCode() . ']' : '[No status code]';
+        DebugLog::msg("Refund Payment Handle / Response Handler Params: $debug_str", 'notice');
 
         return new HandlerResponse(
             $order,
@@ -247,12 +245,12 @@ class RefundPaymentHandler
                     self::FILENAME
                 );
 
-            return array(
+            return [
                 sprintf(
                     $message,
                     $amount
-                )
-            );
+                ),
+            ];
         }
 
         $idCapture = \ViaBillOrderCapture::getPrimaryKey($order->id);
@@ -264,9 +262,9 @@ class RefundPaymentHandler
         $totalCaptured = $capture->getTotalCaptured();
 
         if (!$totalCaptured) {
-            return array(
-                $this->module->l('Order has not been captured. Refund is not possible.', self::FILENAME)
-            );
+            return [
+                $this->module->l('Order has not been captured. Refund is not possible.', self::FILENAME),
+            ];
         }
 
         $totalRefunded = $refund->getTotalRefunded();
@@ -281,10 +279,10 @@ class RefundPaymentHandler
                 $this->tools->displayPrice($refundRemaining, $currency)
             );
 
-            return array($errorMessage);
+            return [$errorMessage];
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -319,10 +317,10 @@ class RefundPaymentHandler
         } catch (\Exception $exception) {
             $logger = $this->loggerFactory->create();
             $logger->warning(
-                'order with reference '.$order->reference.' thrown exception '.$exception->getMessage(),
-                array(
-                    'trace' => $exception->getTraceAsString()
-                )
+                'order with reference ' . $order->reference . ' thrown exception ' . $exception->getMessage(),
+                [
+                    'trace' => $exception->getTraceAsString(),
+                ]
             );
             $returnValue = false;
         }

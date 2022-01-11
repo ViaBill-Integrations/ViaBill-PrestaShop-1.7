@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 /**
@@ -33,28 +33,29 @@ class ViaBillOrder extends ObjectModel
      *
      * @var array
      */
-    public static $definition = array(
-        'table'   => 'viabill_order',
+    public static $definition = [
+        'table' => 'viabill_order',
         'primary' => 'id_viabill_order',
-        'fields' => array(
-            'id_order' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'),
-            'id_currency' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt')
-        )
-    );
+        'fields' => [
+            'id_order' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
+            'id_currency' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
+        ],
+    ];
 
     /**
      * Selects Primary Key From viabill_order DB Table By Given Order ID.
      *
      * @param int $idOrder
      *
-     * @return false|null|string
+     * @return false|string|null
      */
     public static function getPrimaryKey($idOrder)
     {
         $query = new DbQuery();
         $query->select(pSQL(self::$definition['primary']));
         $query->from(pSQL(self::$definition['table']));
-        $query->where('id_order='.(int) $idOrder);
+        $query->where('id_order=' . (int) $idOrder);
+
         return Db::getInstance()->getValue($query);
     }
 
@@ -69,10 +70,11 @@ class ViaBillOrder extends ObjectModel
         $query->select('`id_order`');
         $query->from(pSQL(self::$definition['table']));
         $resource = Db::getInstance()->query($query);
-        $ids = array();
+        $ids = [];
         while ($row = Db::getInstance()->nextRow($resource)) {
             $ids[] = $row['id_order'];
         }
+
         return $ids;
     }
 }

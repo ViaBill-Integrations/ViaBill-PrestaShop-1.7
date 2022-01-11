@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Validator\CallBack;
@@ -20,8 +20,6 @@ use ViaBill\Util\SignaturesGenerator;
 
 /**
  * Class OrderCallBackValidator
- *
- * @package ViaBill\Service\Validator\CallBack
  */
 class OrderCallBackValidator
 {
@@ -95,7 +93,7 @@ class OrderCallBackValidator
      */
     public function validate(CallBackResponse $response)
     {
-        $errors = array();
+        $errors = [];
         if (!$this->isSignatureMatches()) {
             $errors[] = 'Signature did not matched';
         }
@@ -123,10 +121,10 @@ class OrderCallBackValidator
 
             $logger->error(
                 'An error occurred during callback process',
-                array(
+                [
                     'request' => $response,
-                    'errors' => $errors
-                )
+                    'errors' => $errors,
+                ]
             );
 
             return false;

@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Adapter;
@@ -15,8 +15,6 @@ use Context;
 
 /**
  * Class Media
- *
- * @package ViaBill\Adapter
  */
 class Media
 {
@@ -44,11 +42,11 @@ class Media
      * @param string $url
      * @param array $params
      */
-    public function addCss(Context $context, $url, $params = array())
+    public function addCss(Context $context, $url, $params = [])
     {
         $context->controller->registerStylesheet(
-            'modules/'.$this->module->name.'/'.$url,
-            'modules/'.$this->module->name.'/'.$url,
+            'modules/' . $this->module->name . '/' . $url,
+            'modules/' . $this->module->name . '/' . $url,
             $params
         );
     }
@@ -60,11 +58,11 @@ class Media
      * @param string $url
      * @param array $params
      */
-    public function addJs(Context $context, $url, $params = array())
+    public function addJs(Context $context, $url, $params = [])
     {
         $context->controller->registerJavascript(
-            'modules/'.$this->module->name.'/'.$url,
-            'modules/'.$this->module->name.'/'.$url,
+            'modules/' . $this->module->name . '/' . $url,
+            'modules/' . $this->module->name . '/' . $url,
             $params
         );
     }
@@ -88,7 +86,7 @@ class Media
     public function addJsAdmin(Context $context, $fileUrl)
     {
         $context->controller->addJS(
-            $this->module->getPathUri().'views/js/admin/'.$fileUrl
+            $this->module->getPathUri() . 'views/js/admin/' . $fileUrl
         );
     }
 
@@ -101,7 +99,7 @@ class Media
     public function addCssAdmin(Context $context, $fileUrl)
     {
         $context->controller->addCSS(
-            $this->module->getPathUri().'views/css/admin/'.$fileUrl
+            $this->module->getPathUri() . 'views/css/admin/' . $fileUrl
         );
     }
 }

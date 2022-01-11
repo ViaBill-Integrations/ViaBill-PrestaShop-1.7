@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 /**
@@ -47,16 +47,16 @@ class ViaBillOrderCapture extends ObjectModel
      *
      * @var array
      */
-    public static $definition = array(
-        'table'   => 'viabill_order_capture',
+    public static $definition = [
+        'table' => 'viabill_order_capture',
         'primary' => 'id_viabill_order_capture',
-        'fields' => array(
-            'id_order' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'),
-            'amount' => array('type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat'),
-            'date_add' => array('type' => self::TYPE_DATE),
-            'date_upd' => array('type' => self::TYPE_DATE)
-        )
-    );
+        'fields' => [
+            'id_order' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
+            'amount' => ['type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat'],
+            'date_add' => ['type' => self::TYPE_DATE],
+            'date_upd' => ['type' => self::TYPE_DATE],
+        ],
+    ];
 
     /**
      * Selects Primary Key From viabill_order_capture DB Table By Given Order ID.
@@ -70,7 +70,7 @@ class ViaBillOrderCapture extends ObjectModel
         $query = new DbQuery();
         $query->select(pSQL(self::$definition['primary']));
         $query->from(pSQL(self::$definition['table']));
-        $query->where('`id_order`='.(int) $idOrder);
+        $query->where('`id_order`=' . (int) $idOrder);
 
         return (int) Db::getInstance()->getValue($query);
     }
@@ -85,7 +85,8 @@ class ViaBillOrderCapture extends ObjectModel
         $query = new DbQuery();
         $query->select('COUNT(`id_order`)');
         $query->from(pSQL(self::$definition['table']));
-        $query->where('id_order='.(int) $this->id_order);
+        $query->where('id_order=' . (int) $this->id_order);
+
         return (int) Db::getInstance()->getValue($query);
     }
 
@@ -99,7 +100,8 @@ class ViaBillOrderCapture extends ObjectModel
         $query = new DbQuery();
         $query->select('SUM(`amount`)');
         $query->from(pSQL(self::$definition['table']));
-        $query->where('id_order='.(int) $this->id_order);
+        $query->where('id_order=' . (int) $this->id_order);
+
         return (float) Db::getInstance()->getValue($query);
     }
 }

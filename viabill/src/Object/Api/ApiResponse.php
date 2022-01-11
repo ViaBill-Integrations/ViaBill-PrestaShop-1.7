@@ -5,16 +5,14 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Object\Api;
 
 /**
  * Class ApiResponse
- *
- * @package ViaBill\Object\Api
  */
 class ApiResponse
 {
@@ -54,7 +52,7 @@ class ApiResponse
      * @param ApiResponseError[] $errors
      * @param string $effectiveUrl
      */
-    public function __construct($statusCode, $body, $errors = array(), $effectiveUrl = '')
+    public function __construct($statusCode, $body, $errors = [], $effectiveUrl = '')
     {
         $this->statusCode = $statusCode;
         $this->body = $body;

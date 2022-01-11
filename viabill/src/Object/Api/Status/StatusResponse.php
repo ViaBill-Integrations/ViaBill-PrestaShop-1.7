@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Object\Api\Status;
@@ -16,7 +16,6 @@ use ViaBill\Object\Api\ObjectResponseInterface;
 
 /**
  * Class StatusResponse
- * @package ViaBill\Object\Api\Status
  */
 class StatusResponse implements ObjectResponseInterface
 {
@@ -40,7 +39,7 @@ class StatusResponse implements ObjectResponseInterface
      * @param string $status
      * @param array $errors
      */
-    public function __construct($status, $errors = array())
+    public function __construct($status, $errors = [])
     {
         $this->status = $status;
         $this->errors = $errors;
@@ -84,10 +83,10 @@ class StatusResponse implements ObjectResponseInterface
     public function getErrorNames()
     {
         if (!$this->hasErrors()) {
-            return array();
+            return [];
         }
 
-        $errors = array();
+        $errors = [];
         foreach ($this->errors as $error) {
             $errors[] = $error->getError();
         }

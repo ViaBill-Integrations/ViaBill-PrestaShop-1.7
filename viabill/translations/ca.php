@@ -1,7 +1,7 @@
 <?php
 
 global $_MODULE;
-$_MODULE = array();
+$_MODULE = [];
 $_MODULE['<{viabill}prestashop>viabill_b294d0df04c6d0d0d30c5e3b48c0fa09'] = 'ViaBill';
 $_MODULE['<{viabill}prestashop>viabill_7c97bc3631fe4447e56f23749b224b76'] = 'El estado no se puede cambiar, ya que ViaBill no ha aprobado el pago todavía. Vuelva a intentarlo más tarde.';
 $_MODULE['<{viabill}prestashop>viabill_a003f7e0f8c01f2ab7bbfba13d9fcb43'] = 'Capturar pagos de ViaBill';

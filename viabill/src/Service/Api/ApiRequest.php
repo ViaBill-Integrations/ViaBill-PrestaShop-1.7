@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Api;
@@ -20,8 +20,6 @@ use ViaBill\Object\Api\ApiResponseError;
 
 /**
  * Class ApiRequest
- *
- * @package ViaBill\Service\Api
  */
 class ApiRequest
 {
@@ -65,9 +63,10 @@ class ApiRequest
      *
      * @param string $url
      * @param array $params
+     *
      * @return ApiResponse|null
      */
-    public function post($url, $params = array())
+    public function post($url, $params = [])
     {
         $response = null;
         $body = '';
@@ -112,7 +111,7 @@ class ApiRequest
      *
      * @return ApiResponse
      */
-    public function get($url, $options = array())
+    public function get($url, $options = [])
     {
         $response = null;
         $body = '';
@@ -159,10 +158,10 @@ class ApiRequest
     {
         $normalizedBody = json_decode($body, true);
         if (empty($normalizedBody['errors']) || !isset($normalizedBody['errors'])) {
-            return array(new ApiResponseError('', $exceptionMessage));
+            return [new ApiResponseError('', $exceptionMessage)];
         }
         $errors = $normalizedBody['errors'];
-        $result = array();
+        $result = [];
 
         foreach ($errors as $error) {
             $result[] = new ApiResponseError(

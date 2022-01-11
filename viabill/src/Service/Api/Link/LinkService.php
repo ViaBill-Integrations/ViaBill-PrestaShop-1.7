@@ -5,6 +5,7 @@
  * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
+*
  * @see       /LICENSE
  *
  * International Registered Trademark & Property of Viabill */
@@ -20,8 +21,6 @@ use ViaBill\Util\SignaturesGenerator;
 /**
  * Class RegisterService
  * Gets Auto Login Link From ViaBill API.
- *
- * @package ViaBill\Service\Api\Authentication
  */
 class LinkService
 {

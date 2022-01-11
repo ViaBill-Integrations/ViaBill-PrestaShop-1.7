@@ -5,6 +5,7 @@
  * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
+*
  * @see       /LICENSE
  *
  * International Registered Trademark & Property of Viabill */
@@ -16,8 +17,6 @@ use ViaBill\Object\Api\ObjectResponseInterface;
 
 /**
  * Class LoginResponse
- *
- * @package ViaBill\Object\Api\Authentication
  */
 class LinkResponse implements ObjectResponseInterface
 {
@@ -27,7 +26,6 @@ class LinkResponse implements ObjectResponseInterface
      * @var string
      */
     private $link;
-
 
     /**
      * Login Response Errors Variable Declaration.
@@ -42,7 +40,7 @@ class LinkResponse implements ObjectResponseInterface
      * @param string $link
      * @param array $errors
      */
-    public function __construct($link, array $errors = array())
+    public function __construct($link, array $errors = [])
     {
         $this->link = $link;
         $this->errors = $errors;

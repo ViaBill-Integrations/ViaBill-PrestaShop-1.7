@@ -5,16 +5,17 @@
  * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
+*
  * @see       /LICENSE
  *
  * International Registered Trademark & Property of Viabill */
 
 namespace ViaBill\Grid\Row;
 
-use ViaBill\Service\Provider\OrderStatusProvider;
 use Module;
 use Order;
 use PrestaShop\PrestaShop\Core\Grid\Action\Row\AccessibilityChecker\AccessibilityCheckerInterface;
+use ViaBill\Service\Provider\OrderStatusProvider;
 
 final class CancelAccessibilityChecker implements AccessibilityCheckerInterface
 {

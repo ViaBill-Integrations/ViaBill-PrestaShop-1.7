@@ -5,12 +5,11 @@
  * @author    Written for or by ViaBill
  * @copyright Copyright (c) Viabill
  * @license   Addons PrestaShop license limitation
+ *
  * @see       /LICENSE
  *
  * International Registered Trademark & Property of Viabill */
 
-use ViaBill\Config\Config;
-use ViaBill\Adapter\Media;
 use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
 use PrestaShop\PrestaShop\Core\Grid\Action\Bulk\Type\SubmitBulkAction;
 use PrestaShop\PrestaShop\Core\Grid\Action\Row\RowActionCollection;
@@ -20,6 +19,8 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use ViaBill\Adapter\Media;
+use ViaBill\Config\Config;
 use ViaBill\Util\DebugLog;
 
 /**
@@ -51,8 +52,8 @@ class ViaBill extends PaymentModule
         $this->description = 'ViaBill Official - Try, before you buy!';
         $this->tab = 'payments_gateways';
         $this->displayName = $this->l('ViaBill');
-        $this->version = '1.1.23';
-        $this->ps_versions_compliancy = array('min' => '1.7.3.0', 'max' => _PS_VERSION_);
+        $this->version = '1.1.25';
+        $this->ps_versions_compliancy = ['min' => '1.7.3.0', 'max' => _PS_VERSION_];
         $this->module_key = '026cfbb4e50aac4d9074eb7c9ddc2584';
 
         parent::__construct();
@@ -186,6 +187,7 @@ class ViaBill extends PaymentModule
 
         $isDisplayed = $isLogged && $isCurrencyMatches && $isLocaleMatches;
         Cache::store($cacheKey, $isDisplayed);
+
         return $isDisplayed;
     }
 
@@ -266,7 +268,7 @@ class ViaBill extends PaymentModule
     public function hookModuleRoutes()
     {
         $tabs = $this->getTabs();
-        $controllers = array();
+        $controllers = [];
 
         foreach ($tabs as $tab) {
             $controllers[] = $tab['class_name'];
@@ -283,7 +285,9 @@ class ViaBill extends PaymentModule
 
     /**
      * @param array $params
+     *
      * @return false|string|void
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -294,7 +298,9 @@ class ViaBill extends PaymentModule
 
     /**
      * @param array $params
+     *
      * @return false|string|void
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -305,10 +311,12 @@ class ViaBill extends PaymentModule
 
     /**
      * @param array $params
+     *
      * @return string|void
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * Adds tab in admin order page
+     *                             Adds tab in admin order page
      */
     private function displayAdminOrderContent(array $params)
     {
@@ -344,11 +352,11 @@ class ViaBill extends PaymentModule
             $this->context->link->getAdminLink(
                 $tab->getControllerActionsName(),
                 true,
-                array(),
-                array(
+                [],
+                [
                     'id_order' => $order->id,
-                    'action' => 'handleViaBillOrder'
-                )
+                    'action' => 'handleViaBillOrder',
+                ]
             )
         );
 
@@ -391,7 +399,7 @@ class ViaBill extends PaymentModule
         $config = $this->getModuleContainer()->get('config');
 
         if (!$config->isLoggedIn()) {
-            return array();
+            return [];
         }
 
         /**
@@ -457,7 +465,7 @@ class ViaBill extends PaymentModule
 
         if (!$this->context->controller instanceof AdminDashboardController) {
             return;
-        }        
+        }
 
         $idOrder = Tools::getValue('id_order');
         if ($idOrder) {
@@ -466,11 +474,11 @@ class ViaBill extends PaymentModule
 
         // Add some randomness, you don't want to be executed all the times
         $freq_num = 15;
-		mt_srand();
-		$rand_id = mt_rand(1, $freq_num);
-		if ($rand_id != 1) {			
-			return;
-		}
+        mt_srand();
+        $rand_id = mt_rand(1, $freq_num);
+        if ($rand_id != 1) {
+            return;
+        }
 
         /** @var \ViaBill\Service\Api\Notification\NotificationService $notificationService */
         $notificationService = $this->getModuleContainer()->get('service.notification');
@@ -509,6 +517,7 @@ class ViaBill extends PaymentModule
         $tagPriceTemplate = $this->getModuleContainer()->get('builder.template.tagPriceHolder');
         $tagPriceTemplate->setSmarty($this->context->smarty);
         $tagPriceTemplate->setPrice($product['price_amount']);
+
         return $tagPriceTemplate->getHtml();
     }
 
@@ -537,6 +546,7 @@ class ViaBill extends PaymentModule
         $tagPriceTemplate = $this->getModuleContainer()->get('builder.template.tagPriceHolder');
         $tagPriceTemplate->setSmarty($this->context->smarty);
         $tagPriceTemplate->setPrice($cart->getOrderTotal());
+
         return $tagPriceTemplate->getHtml();
     }
 
@@ -559,7 +569,7 @@ class ViaBill extends PaymentModule
         /** @var \ViaBill\Service\Validator\Payment\OrderValidator $orderPaymentValidator */
         $orderPaymentValidator = $this->getModuleContainer()->get('service.validator.payment.order');
 
-        $order = new Order((int)$params['id_order']);
+        $order = new Order((int) $params['id_order']);
 
         $validationResult = $orderPaymentValidator->validateIsOrderWithModulePayment($order);
 
@@ -606,7 +616,7 @@ class ViaBill extends PaymentModule
 
         $orderHistory = $params['order_history'];
 
-        $order = new Order((int)$orderHistory->id_order);
+        $order = new Order((int) $orderHistory->id_order);
 
         $validationResult = $orderPaymentValidator->validateIsOrderWithModulePayment($order);
 
@@ -615,11 +625,11 @@ class ViaBill extends PaymentModule
         }
 
         $debug_str = var_export($order, true);
-        DebugLog::msg("hookActionOrderHistoryAddAfter / validation accepted for order: ".$debug_str);
+        DebugLog::msg('hookActionOrderHistoryAddAfter / validation accepted for order: ' . $debug_str);
 
-        $newOrderStatusId = (int)$orderHistory->id_order_state;
-        $viaBillPaymentCompletedOrderStatus = (int)Configuration::get(Config::PAYMENT_COMPLETED);
-        $enableAutoPaymentCapture = (bool)Configuration::get(Config::ENABLE_AUTO_PAYMENT_CAPTURE);
+        $newOrderStatusId = (int) $orderHistory->id_order_state;
+        $viaBillPaymentCompletedOrderStatus = (int) Configuration::get(Config::PAYMENT_COMPLETED);
+        $enableAutoPaymentCapture = (bool) Configuration::get(Config::ENABLE_AUTO_PAYMENT_CAPTURE);
         $captureMultiselectOrderStatuses = $orderStatusService->getDecodedCaptureMultiselectOrderStatuses();
 
         if (($viaBillPaymentCompletedOrderStatus && $newOrderStatusId === $viaBillPaymentCompletedOrderStatus) ||
@@ -703,7 +713,7 @@ class ViaBill extends PaymentModule
                     'route_param_field' => 'id_order',
                     'confirm_message' => $this->l('Would you like to capture payment?'),
                     'accessibility_checker' => $this->getModuleContainer()
-                        ->get('grid.row.captureAccessibilityChecker')
+                        ->get('grid.row.captureAccessibilityChecker'),
                 ])
         )
             ->add(
@@ -716,7 +726,7 @@ class ViaBill extends PaymentModule
                         'route_param_field' => 'id_order',
                         'confirm_message' => $this->l('Would you like to cancel payment?'),
                         'accessibility_checker' => $this->getModuleContainer()
-                            ->get('grid.row.cancelAccessibilityChecker')
+                            ->get('grid.row.cancelAccessibilityChecker'),
                     ])
             )
             ->add(
@@ -729,7 +739,7 @@ class ViaBill extends PaymentModule
                         'route_param_field' => 'id_order',
                         'confirm_message' => $this->l('Would you like to refund payment?'),
                         'accessibility_checker' => $this->getModuleContainer()
-                            ->get('grid.row.refundAccessibilityChecker')
+                            ->get('grid.row.refundAccessibilityChecker'),
                     ])
             );
     }
@@ -755,6 +765,7 @@ class ViaBill extends PaymentModule
                 $message = $this->l('Are you sure you want to refund these transactions?');
                 break;
         }
+
         return $message;
     }
 
@@ -779,6 +790,7 @@ class ViaBill extends PaymentModule
                 $message = $this->l('Refund payments');
                 break;
         }
+
         return $message;
     }
 
@@ -803,6 +815,7 @@ class ViaBill extends PaymentModule
                 $message = $this->l('Cancel payment');
                 break;
         }
+
         return $message;
     }
 
@@ -847,6 +860,7 @@ class ViaBill extends PaymentModule
                     );
                 break;
         }
+
         return $message;
     }
 
@@ -862,7 +876,9 @@ class ViaBill extends PaymentModule
 
     /**
      * @param Order $order
+     *
      * @return bool
+     *
      * @throws Exception
      */
     public function isViabillOrder(Order $order)
@@ -896,15 +912,16 @@ class ViaBill extends PaymentModule
     {
         /** @var \ViaBill\Service\Provider\OrderStatusProvider $orderStatus */
         $orderStatus = $this->getModuleContainer()->get('service.provider.orderStatus');
-                
-        DebugLog::msg("capturePayment / called");
-        $debug_str = 'Memory Usage:'.memory_get_usage()." Peak Usage: ".memory_get_peak_usage();
+
+        DebugLog::msg('capturePayment / called');
+        $debug_str = 'Memory Usage:' . memory_get_usage() . ' Peak Usage: ' . memory_get_peak_usage();
         DebugLog::msg($debug_str);
 
         if (!$orderStatus->canBeCaptured($order)) {
-            DebugLog::msg("capturePayment / Order cannot be captured:");
+            DebugLog::msg('capturePayment / Order cannot be captured:');
             $debug_str = var_export($order, true);
             DebugLog::msg($debug_str);
+
             return false;
         }
 
@@ -928,10 +945,10 @@ class ViaBill extends PaymentModule
 
         $errors = $handleResponse->getErrors();
         $warnings = $handleResponse->getWarnings();
-        $confirmations = array();
+        $confirmations = [];
 
         if (empty($errors) && $handleResponse->getSuccessMessage()) {
-            DebugLog::msg("capturePayment / success: ".$handleResponse->getSuccessMessage());
+            DebugLog::msg('capturePayment / success: ' . $handleResponse->getSuccessMessage());
             $confirmations[] = $handleResponse->getSuccessMessage();
         }
 
@@ -966,7 +983,7 @@ class ViaBill extends PaymentModule
             $containerBuilder->compile();
             $dumper = new PhpDumper($containerBuilder);
             $containerConfigCache->write(
-                $dumper->dump(array('class' => $containerClass)),
+                $dumper->dump(['class' => $containerClass]),
                 $containerBuilder->getResources()
             );
         }
@@ -1002,10 +1019,10 @@ class ViaBill extends PaymentModule
 
         $this->context->smarty->assign($tagBodyTemplate->getSmartyParams());
 
-        $mediaAdapter->addJsDef(array(
+        $mediaAdapter->addJsDef([
             'priceTagScriptHolder' => $tagBodyTemplate->getHtml(),
-            'dynamicPriceTagTrigger' => Config::DYNAMIC_PRICE_PRODUCT_TRIGGER
-        ));
+            'dynamicPriceTagTrigger' => Config::DYNAMIC_PRICE_PRODUCT_TRIGGER,
+        ]);
 
         $mediaAdapter->addJs($this->context, 'views/js/front/product_update_handler.js');
         $mediaAdapter->addCss($this->context, 'views/css/front/price-tag.css');
@@ -1035,10 +1052,10 @@ class ViaBill extends PaymentModule
         $tagBodyTemplate->useExtraGap(true);
 
         $this->context->smarty->assign($tagBodyTemplate->getSmartyParams());
-        $mediaAdapter->addJsDef(array(
+        $mediaAdapter->addJsDef([
             'priceTagCartBodyHolder' => $tagBodyTemplate->getHtml(),
-            'dynamicPriceTagTrigger' => Config::DYNAMIC_PRICE_CART_TRIGGER
-        ));
+            'dynamicPriceTagTrigger' => Config::DYNAMIC_PRICE_CART_TRIGGER,
+        ]);
         $mediaAdapter->addJs($this->context, 'views/js/front/cart_update_handler.js');
         $mediaAdapter->addCss($this->context, 'views/css/front/price-tag.css');
     }
@@ -1046,13 +1063,14 @@ class ViaBill extends PaymentModule
     /**
      * Examine if you need to block the submission of an email when order status changes
      *
-     * @param Array $params
+     * @param array $params
      *
      * @throws Exception
      */
-    public function hookActionEmailSendBefore(&$params) {
+    public function hookActionEmailSendBefore(&$params)
+    {
         $db = Db::getInstance();
-               
+
         $sendEmail = true;
         $order_id = null;
         $order_state = null;
@@ -1061,97 +1079,96 @@ class ViaBill extends PaymentModule
         $template = null;
         if (isset($params['template'])) {
             $template = $params['template'];
-            if ($template == 'order_conf') {   
-				# try to load the order object
-				if (isset($params['templateVars'])) {
-					$templateVars = $params['templateVars'];
-					if (isset($templateVars['{id_order}'])) {
-						$order_id = (int) $templateVars['{id_order}'];
-					} else if (isset($templateVars['{order_name}'])) {
-						$sql = 'SELECT `id_order` FROM `'._DB_PREFIX_.'orders` WHERE `reference` = "'.$templateVars['{order_name}'].'"';
-						$order_id = Db::getInstance()->getValue($sql);												
-					}															
-				}
-				if (empty($order_id)) {
-					if (isset($params['cart'])) {
-						if (is_object($params['cart'])) {
-							$cart = $params['cart'];
-							$cart_id = (int) $cart->id;
-							if (!empty($cart_id)) {
-								$order_id = Order::getOrderByCartId($cart_id);
-							}
-						}
-					}
-				}
-				
+            if ($template == 'order_conf') {
+                // try to load the order object
+                if (isset($params['templateVars'])) {
+                    $templateVars = $params['templateVars'];
+                    if (isset($templateVars['{id_order}'])) {
+                        $order_id = (int) $templateVars['{id_order}'];
+                    } elseif (isset($templateVars['{order_name}'])) {
+                        $sql = 'SELECT `id_order` FROM `' . _DB_PREFIX_ . 'orders` WHERE `reference` = "' . $templateVars['{order_name}'] . '"';
+                        $order_id = Db::getInstance()->getValue($sql);
+                    }
+                }
+                if (empty($order_id)) {
+                    if (isset($params['cart'])) {
+                        if (is_object($params['cart'])) {
+                            $cart = $params['cart'];
+                            $cart_id = (int) $cart->id;
+                            if (!empty($cart_id)) {
+                                $order_id = Order::getOrderByCartId($cart_id);
+                            }
+                        }
+                    }
+                }
+
                 if (!empty($order_id)) {
-					$order = new Order((int)($order_id));
-					$order_state = $order->current_state;
-					$order_module = strtolower($order->module);
+                    $order = new Order((int) ($order_id));
+                    $order_state = $order->current_state;
+                    $order_module = Tools::strtolower($order->module);
 
-					$lang_id = (isset($params['idLang']))?(int)$params['idLang']:0; 
-					$subject = (isset($params['subject']))?$params['subject']:'';
-					
-					$paymentPendingState = Configuration::get(Config::PAYMENT_PENDING);                        
-					$paymentAcceptedState = Configuration::get(Config::PAYMENT_ACCEPTED);
+                    $lang_id = (isset($params['idLang'])) ? (int) $params['idLang'] : 0;
+                    $subject = (isset($params['subject'])) ? $params['subject'] : '';
 
-					if ($order_module == 'viabill') {
-						$sendEmail = false;                            
-					  
-						if ($order_state == $paymentPendingState) {                                
-							$template_vars = serialize($templateVars);
-							$date_created = date('Y-m-d H:i:s');
-							
-							$db->insert('viabill_order_conf_mail', array(
-								'order_id' => (int) $order_id,
-								'lang_id' => (int) $lang_id,
-								'subject' => pSQL($subject),
-								'template_vars'=> pSQL($template_vars, true),
-								'date_created'=> pSQL($date_created),
-							));                                
-						} else if ($order_state == $paymentAcceptedState) {                                                                
-							$query = 'SELECT * FROM `'._DB_PREFIX_.
-								'viabill_order_conf_mail` WHERE order_id = '.$order_id;
+                    $paymentPendingState = Configuration::get(Config::PAYMENT_PENDING);
+                    $paymentAcceptedState = Configuration::get(Config::PAYMENT_ACCEPTED);
 
-							$row = $db->getRow($query);
-							if (!empty($row)) {
-								$sendEmail = true;
-																 
-								$params['subject'] = $row['subject'];
+                    if ($order_module == 'viabill') {
+                        $sendEmail = false;
 
-								$u_params = unserialize($row['template_vars']);
-								foreach ($u_params as $key => $value) {
-									if (!isset($templateVars[$key])) {
-										$params['templateVars'][$key] = $value;
-									}                                            
-								}
-								$params['templateVars']['{payment}'] = $this->l('Payment accepted by ViaBill');
+                        if ($order_state == $paymentPendingState) {
+                            $template_vars = serialize($templateVars);
+                            $date_created = date('Y-m-d H:i:s');
 
-								$db->delete('viabill_order_conf_mail', 'order_id = '.(int) $order_id);
-							}                                                              
-						}                            
-					}                                                                                            
-                }                
+                            $db->insert('viabill_order_conf_mail', [
+                                'order_id' => (int) $order_id,
+                                'lang_id' => (int) $lang_id,
+                                'subject' => pSQL($subject),
+                                'template_vars' => pSQL($template_vars, true),
+                                'date_created' => pSQL($date_created),
+                            ]);
+                        } elseif ($order_state == $paymentAcceptedState) {
+                            $query = 'SELECT * FROM `' . _DB_PREFIX_ .
+                                'viabill_order_conf_mail` WHERE order_id = ' . $order_id;
+
+                            $row = $db->getRow($query);
+                            if (!empty($row)) {
+                                $sendEmail = true;
+
+                                $params['subject'] = $row['subject'];
+
+                                $u_params = unserialize($row['template_vars']);
+                                foreach ($u_params as $key => $value) {
+                                    if (!isset($templateVars[$key])) {
+                                        $params['templateVars'][$key] = $value;
+                                    }
+                                }
+                                $params['templateVars']['{payment}'] = $this->l('Payment accepted by ViaBill');
+
+                                $db->delete('viabill_order_conf_mail', 'order_id = ' . (int) $order_id);
+                            }
+                        }
+                    }
+                }
             }
         }
 
         // sanity check, remove confirmation email messages for all orders that did not
         // receive a callback call
         $cutoff_date = date('Y-m-d H:i:s', strtotime('-2 days'));
-        $db->delete('viabill_order_conf_mail', 'date_created < '.pSQL($cutoff_date));
+        $db->delete('viabill_order_conf_mail', 'date_created < "' . pSQL($cutoff_date) . '"');
 
         if ($sendEmail) {
             $debug_str = "** Action Hook Order #{$order_id} [SENT] state: $order_state module: $order_module";
-            DebugLog::msg($debug_str);        
+            DebugLog::msg($debug_str);
         } else {
             $debug_str = "** Action Hook Order #{$order_id} [IGNORED] state: $order_state module: $order_module";
-            DebugLog::msg($debug_str);        
+            DebugLog::msg($debug_str);
         }
-		
-		$debug_str = print_r($params, true);
-		DebugLog::msg($debug_str);
-                        
+
+        $debug_str = print_r($params, true);
+        DebugLog::msg($debug_str);
+
         return $sendEmail;
     }
-
 }

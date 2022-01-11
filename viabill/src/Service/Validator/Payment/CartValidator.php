@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Validator\Payment;
@@ -16,8 +16,6 @@ use ViaBill\Object\Validator\ValidationResponse;
 
 /**
  * Class CartValidator
- *
- * @package ViaBill\Service\Validator\Payment
  */
 class CartValidator
 {

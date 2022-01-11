@@ -5,23 +5,22 @@
  * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
+*
  * @see       /LICENSE
  *
  * International Registered Trademark & Property of Viabill */
 
 namespace ViaBill\Service\Order;
 
+use OrderState;
+use ViaBill;
 use ViaBill\Adapter\Configuration;
 use ViaBill\Config\Config;
 use ViaBill\Factory\LoggerFactory;
 use ViaBill\Object\Api\CallBack\CallBackResponse;
-use OrderState;
-use ViaBill;
 
 /**
  * Class OrderStatusService
- *
- * @package ViaBill\Service\Order
  */
 class OrderStatusService
 {
@@ -67,7 +66,7 @@ class OrderStatusService
      */
     public function changeOrderStatusByCallBack(CallBackResponse $response)
     {
-        $order = new \Order((int)$response->getOrderNumber());
+        $order = new \Order((int) $response->getOrderNumber());
 
         $logger = $this->loggerFactory->create();
 
@@ -76,17 +75,17 @@ class OrderStatusService
                 $acceptedState = $this->configuration->get(Config::PAYMENT_ACCEPTED);
 
                 $viaBillOrder = new \ViaBillOrder();
-                $viaBillOrder->id_order = (int)$response->getOrderNumber();
-                $viaBillOrder->id_currency = (int)$order->id_currency;
+                $viaBillOrder->id_order = (int) $response->getOrderNumber();
+                $viaBillOrder->id_currency = (int) $order->id_currency;
                 try {
                     $viaBillOrder->save();
                 } catch (\Exception $exception) {
                     $logger->error(
                         'successful request but order marking failed',
-                        array(
+                        [
                             'exceptionMessage' => $exception->getMessage(),
-                            'callback' => $response
-                        )
+                            'callback' => $response,
+                        ]
                     );
                 }
 
@@ -104,7 +103,7 @@ class OrderStatusService
             default:
                 $logger->error(
                     'Unexpected state detected',
-                    array('callback' => $response)
+                    ['callback' => $response]
                 );
                 $order->setCurrentState(Config::PAYMENT_ERROR);
         }
@@ -112,7 +111,7 @@ class OrderStatusService
 
     public function getOrderStatusesForMultiselect()
     {
-        $orderStatuses = (array)OrderState::getOrderStates(\Context::getContext()->language->id);
+        $orderStatuses = (array) OrderState::getOrderStates(\Context::getContext()->language->id);
         $selectedOrderStatusIds = $this->getDecodedCaptureMultiselectOrderStatuses();
 
         $multiselectOrderStatuses = [];
@@ -122,7 +121,7 @@ class OrderStatusService
                 continue;
             }
 
-            if ((int)$orderStatus['id_order_state'] === (int)$this->configuration->get(Config::PAYMENT_PENDING)) {
+            if ((int) $orderStatus['id_order_state'] === (int) $this->configuration->get(Config::PAYMENT_PENDING)) {
                 continue;
             }
 
@@ -144,7 +143,7 @@ class OrderStatusService
 
     public function getDecodedCaptureMultiselectOrderStatuses()
     {
-        return (array)json_decode($this->configuration->get(Config::CAPTURE_ORDER_STATUS_MULTISELECT));
+        return (array) json_decode($this->configuration->get(Config::CAPTURE_ORDER_STATUS_MULTISELECT));
     }
 
     public function setEncodedCaptureMultiselectOrderStatuses($multiselectOrderStatuses)

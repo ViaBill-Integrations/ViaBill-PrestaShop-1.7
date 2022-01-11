@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Api\Notification;
@@ -19,8 +19,6 @@ use ViaBill\Util\DebugLog;
 
 /**
  * Class NotificationService
- *
- * @package ViaBill\Service\Api\Notification
  */
 class NotificationService
 {
@@ -78,26 +76,26 @@ class NotificationService
             );
 
         // debug info
-        $debug_str = "Notifications API Request/ [url: ".var_export($requestUrl, true)."]";
+        $debug_str = 'Notifications API Request/ [url: ' . var_export($requestUrl, true) . ']';
         DebugLog::msg($debug_str, 'debug');
 
         $apiResponse = $this->apiRequest->get($requestUrl);
 
         // debug info
-        $debug_str = "Notifications API Request/ [response: ".var_export($apiResponse, true)."]";
+        $debug_str = 'Notifications API Request/ [response: ' . var_export($apiResponse, true) . ']';
         DebugLog::msg($debug_str, 'debug');
 
         if ($apiResponse->getStatusCode() !== 200) {
-            return array();
+            return [];
         }
 
         $decodedResult = json_decode($apiResponse->getBody(), true);
 
         if (empty($decodedResult['messages'])) {
-            return array();
+            return [];
         }
-        
-        $result = array();
+
+        $result = [];
         foreach ($decodedResult['messages'] as $message) {
             $result[] = new NotificationResponse($message);
         }
@@ -110,20 +108,21 @@ class NotificationService
      *
      * @return string
      */
-    private function getPlatformInfo() {      
+    private function getPlatformInfo()
+    {
         $info = 'prestashop';
-        
+
         $platform_version = \Configuration::get('PS_VERSION_DB');
         if (!empty($platform_version)) {
-            $info .= '&platform_ver='.$platform_version;
+            $info .= '&platform_ver=' . $platform_version;
         }
 
-        $moduleInstance = \Module::getInstanceByName('viabill');        
+        $moduleInstance = \Module::getInstanceByName('viabill');
         $module_version = $moduleInstance->version;
         if (!empty($module_version)) {
-            $info .= '&module_ver='.$module_version;
+            $info .= '&module_ver=' . $module_version;
         }
-        
-        return $info;             
+
+        return $info;
     }
 }

@@ -5,11 +5,10 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
-use ViaBill\Config\Config;
 use ViaBill\Util\DebugLog;
 
 /**
@@ -51,12 +50,12 @@ class ViaBillReturnModuleFrontController extends ModuleFrontController
         }
 
         // Debug info
-        $debug_str = '[Order id: '.$orderId.']';
-        $approved_str = ($isOrderApproved)?'[approved]':'[not approved]';
+        $debug_str = '[Order id: ' . $orderId . ']';
+        $approved_str = ($isOrderApproved) ? '[approved]' : '[not approved]';
         $debug_str .= $approved_str;
-        $order_str = (empty($order))?'empty':var_export($order, true);
+        $order_str = (empty($order)) ? 'empty' : var_export($order, true);
         $debug_str .= "[order: {$order_str}]";
-        DebugLog::msg("Return processPost / ".$debug_str);
+        DebugLog::msg('Return processPost / ' . $debug_str);
 
         Tools::redirect($linkGenerator->getOrderConfirmationLink(
             $this->context->link,
@@ -68,6 +67,6 @@ class ViaBillReturnModuleFrontController extends ModuleFrontController
     {
         parent::initContent();
 
-        $this->setTemplate("module:viabill/views/templates/front/return.tpl");
+        $this->setTemplate('module:viabill/views/templates/front/return.tpl');
     }
 }

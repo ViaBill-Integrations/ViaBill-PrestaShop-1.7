@@ -5,16 +5,14 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Object\Api\Status;
 
 /**
  * Class StatusRequest
- *
- * @package ViaBill\Object\Api\Status
  */
 class StatusRequest
 {

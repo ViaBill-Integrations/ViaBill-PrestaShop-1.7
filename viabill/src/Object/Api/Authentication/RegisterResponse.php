@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Object\Api\Authentication;
@@ -16,8 +16,6 @@ use ViaBill\Object\Api\ObjectResponseInterface;
 
 /**
  * Class RegisterResponse
- *
- * @package ViaBill\Object\Api\Authentification
  */
 class RegisterResponse implements ObjectResponseInterface
 {
@@ -57,7 +55,7 @@ class RegisterResponse implements ObjectResponseInterface
      * @param string $pricetagScript
      * @param ApiResponseError[] $errors
      */
-    public function __construct($key, $secret, $pricetagScript, array $errors = array())
+    public function __construct($key, $secret, $pricetagScript, array $errors = [])
     {
         $this->key = $key;
         $this->secret = $secret;

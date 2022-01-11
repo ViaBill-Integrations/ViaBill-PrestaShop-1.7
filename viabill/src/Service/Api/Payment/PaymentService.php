@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Api\Payment;
@@ -20,8 +20,6 @@ use ViaBill\Util\DebugLog;
 
 /**
  * Class PaymentService
- *
- * @package ViaBill\Service\Api\Payment
  */
 class PaymentService
 {
@@ -73,34 +71,34 @@ class PaymentService
     public function createPayment(PaymentRequest $paymentRequest)
     {
         // debug info
-        $debug_str = "Payment API Request/ [body: ".var_export($paymentRequest, true)."]";
+        $debug_str = 'Payment API Request/ [body: ' . var_export($paymentRequest, true) . ']';
         DebugLog::msg($debug_str, 'debug');
 
         $apiResponse = $this->apiRequest->post(
             '/api/checkout-authorize/addon/prestashop',
-            array(
-                'body' => json_encode($paymentRequest->getSerializedData(), JSON_UNESCAPED_SLASHES)
-            )
+            [
+                'body' => json_encode($paymentRequest->getSerializedData(), JSON_UNESCAPED_SLASHES),
+            ]
         );
 
         // debug info
-        $debug_str = "Payment API Request/ [response: ".var_export($apiResponse, true)."]";
+        $debug_str = 'Payment API Request/ [response: ' . var_export($apiResponse, true) . ']';
         DebugLog::msg($debug_str, 'debug');
 
-        if (!in_array($apiResponse->getStatusCode(), array(200, 204))) {
+        if (!in_array($apiResponse->getStatusCode(), [200, 204])) {
             $logger = $this->loggerFactory->create();
             $errors = $apiResponse->getErrors();
-            $errorsArray = array();
+            $errorsArray = [];
 
             foreach ($errors as $key => $error) {
                 $errorsArray[$key] = $error->getError();
-            };
+            }
 
             if (!empty($errorsArray)) {
-                $debug_str = "Payment API Request/ [errors: ".var_export($errorsArray, true)."]";
+                $debug_str = 'Payment API Request/ [errors: ' . var_export($errorsArray, true) . ']';
                 DebugLog::msg($debug_str, 'error');
             }
-            
+
             return new PaymentResponse($apiResponse->getEffectiveUrl(), $errors);
         }
 

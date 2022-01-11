@@ -5,6 +5,7 @@
  * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
+*
  * @see       /LICENSE
  *
  * International Registered Trademark & Property of Viabill */
@@ -12,16 +13,11 @@
 namespace ViaBill\Service\Cart;
 
 use Cart;
-use CartRule;
 use Context;
-use Db;
-use Order;
 
 class CartDuplicationService
 {
     /**
-     *
-     *
      * @param int $cartId
      *
      * @return int
@@ -41,7 +37,7 @@ class CartDuplicationService
             $context->cart = $duplicatedCart;
             $context->cookie->write();
 
-            return  $duplicatedCart->id;
+            return $duplicatedCart->id;
         }
 
         return 0;

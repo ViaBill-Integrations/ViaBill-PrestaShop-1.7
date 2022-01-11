@@ -5,16 +5,14 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Builder\Template;
 
 /**
  * Class ContactTemplate
- *
- * @package ViaBill\Builder\Template
  */
 class ContactTemplate implements TemplateInterface
 {
@@ -38,14 +36,13 @@ class ContactTemplate implements TemplateInterface
     public $params;
 
     /**
-     *
      * @param \ViaBill $module
      */
     public function __construct(\ViaBill $module)
     {
         $this->module = $module;
     }
-    
+
     /**
      * Sets Smarty From Given Param.
      *
@@ -75,7 +72,7 @@ class ContactTemplate implements TemplateInterface
     {
         return $this->params;
     }
-    
+
     /**
      * Gets Smarty Contact HTML Template.
      *
@@ -86,6 +83,7 @@ class ContactTemplate implements TemplateInterface
     public function getHtml()
     {
         $this->smarty->assign($this->getSmartyParams());
-        return $this->smarty->fetch($this->module->getLocalPath().'views/templates/admin/contact.tpl');
+
+        return $this->smarty->fetch($this->module->getLocalPath() . 'views/templates/admin/contact.tpl');
     }
 }

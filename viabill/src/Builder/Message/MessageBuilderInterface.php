@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Builder\Message;
@@ -15,12 +15,9 @@ use Context;
 
 /**
  * Interface MessageBuilderInterface
- *
- * @package ViaBill\Builder\Message
  */
 interface MessageBuilderInterface
 {
-
     /**
      * Sets Context.
      *

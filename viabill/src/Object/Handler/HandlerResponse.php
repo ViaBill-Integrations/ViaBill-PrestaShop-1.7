@@ -5,15 +5,14 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Object\Handler;
 
 /**
  * Class HandlerResponse
- * @package ViaBill\Object\Handler
  */
 class HandlerResponse
 {
@@ -64,9 +63,9 @@ class HandlerResponse
     public function __construct(
         \Order $order,
         $statusCode,
-        $errors = array(),
+        $errors = [],
         $successMessage = '',
-        $warnings = array()
+        $warnings = []
     ) {
         $this->statusCode = $statusCode;
         $this->errors = $errors;

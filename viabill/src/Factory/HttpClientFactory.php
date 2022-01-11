@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Factory;
@@ -16,8 +16,6 @@ use ViaBill\Config\Config;
 
 /**
  * Class HttpClientFactory
- *
- * @package ViaBill\Factory
  */
 class HttpClientFactory
 {
@@ -45,15 +43,15 @@ class HttpClientFactory
      */
     public function getClient()
     {
-        $config = array(
+        $config = [
             'base_url' => $this->config->getBaseUrl(),
-            'defaults' => array(
-                'headers' => array(
+            'defaults' => [
+                'headers' => [
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
-                )
-            )
-        );
+                ],
+            ],
+        ];
 
         return new Client($config);
     }

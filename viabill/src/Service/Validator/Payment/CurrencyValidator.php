@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Validator\Payment;
@@ -17,8 +17,6 @@ use ViaBill\Service\Api\Locale\LocaleService;
 
 /**
  * Class CurrencyValidator
- *
- * @package ViaBill\Service\Validator\Payment
  */
 class CurrencyValidator
 {

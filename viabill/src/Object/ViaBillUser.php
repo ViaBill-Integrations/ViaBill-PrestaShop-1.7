@@ -5,16 +5,14 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Object;
 
 /**
  * Class ViaBillUser
- *
- * @package ViaBill\Object
  */
 class ViaBillUser
 {
@@ -41,6 +39,7 @@ class ViaBillUser
 
     /**
      * ViaBillUser constructor.
+     *
      * @param string $key
      * @param string $secret
      * @param string $script
@@ -89,6 +88,6 @@ class ViaBillUser
      */
     public function getSignature()
     {
-        return md5($this->key.'#'.$this->secret);
+        return md5($this->key . '#' . $this->secret);
     }
 }

@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Api\Countries;
@@ -17,8 +17,6 @@ use ViaBill\Service\Api\ApiRequest;
 
 /**
  * Class CountryService
- *
- * @package ViaBill\Service\Api\Countries
  */
 class CountryService
 {
@@ -63,16 +61,16 @@ class CountryService
         $apiResponse = $this->apiRequest->get($requestUrl);
 
         if ($apiResponse->getStatusCode() !== 200) {
-            return array();
+            return [];
         }
 
         $body = json_decode($apiResponse->getBody(), true);
 
         if (empty($body)) {
-            return array();
+            return [];
         }
 
-        $result = array();
+        $result = [];
         foreach ($body as $data) {
             $countryResponse = new CountryResponse($data['code'], $data['name']);
             $result[] = $countryResponse;

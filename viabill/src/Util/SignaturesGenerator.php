@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Util;
@@ -16,8 +16,6 @@ use ViaBill\Object\ViaBillUser;
 
 /**
  * Class SignaturesGenerator
- *
- * @package ViaBill\Util
  */
 class SignaturesGenerator
 {
@@ -70,13 +68,13 @@ class SignaturesGenerator
         $cancelUrl
     ) {
         return md5(
-            $user->getKey().'#'.
-            $amount.'#'.
-            $currency.'#'.
-            $transaction.'#'.
-            $orderNumber.'#'.
-            $sucessUrl.'#'.
-            $cancelUrl.'#'.
+            $user->getKey() . '#' .
+            $amount . '#' .
+            $currency . '#' .
+            $transaction . '#' .
+            $orderNumber . '#' .
+            $sucessUrl . '#' .
+            $cancelUrl . '#' .
             $user->getSecret()
         );
     }
@@ -86,7 +84,7 @@ class SignaturesGenerator
      *
      * @param ViaBillUser $user
      * @param string $transaction
-     * @param float|Int $amount
+     * @param float|int $amount
      * @param string $currency
      *
      * @return string
@@ -94,10 +92,10 @@ class SignaturesGenerator
     public function generateCaptureSignature(ViaBillUser $user, $transaction, $amount, $currency)
     {
         return md5(
-            $transaction.'#'.
-            $user->getKey().'#'.
-            $amount.'#'.
-            $currency.'#'.
+            $transaction . '#' .
+            $user->getKey() . '#' .
+            $amount . '#' .
+            $currency . '#' .
             $user->getSecret()
         );
     }
@@ -113,8 +111,8 @@ class SignaturesGenerator
     public function generateCancelSignature(ViaBillUser $user, $transaction)
     {
         return md5(
-            $transaction.'#'.
-            $user->getKey().'#'.
+            $transaction . '#' .
+            $user->getKey() . '#' .
             $user->getSecret()
         );
     }
@@ -132,10 +130,10 @@ class SignaturesGenerator
     public function generateRefundSignature(ViaBillUser $user, $transaction, $amount, $currency)
     {
         return md5(
-            $transaction.'#'.
-            $user->getKey().'#'.
-            $amount.'#'.
-            $currency.'#'.
+            $transaction . '#' .
+            $user->getKey() . '#' .
+            $amount . '#' .
+            $currency . '#' .
             $user->getSecret()
         );
     }
@@ -173,12 +171,12 @@ class SignaturesGenerator
         $time
     ) {
         return md5(
-            $transaction.'#'.
-            $orderNumber.'#'.
-            $amount.'#'.
-            $currency.'#'.
-            $status.'#'.
-            $time.'#'.
+            $transaction . '#' .
+            $orderNumber . '#' .
+            $amount . '#' .
+            $currency . '#' .
+            $status . '#' .
+            $time . '#' .
             $user->getSecret()
         );
     }
@@ -194,8 +192,8 @@ class SignaturesGenerator
     public function generateStatusSignature(ViaBillUser $user, $transaction)
     {
         return md5(
-            $transaction.'#'.
-            $user->getKey().'#'.
+            $transaction . '#' .
+            $user->getKey() . '#' .
             $user->getSecret()
         );
     }
@@ -211,8 +209,8 @@ class SignaturesGenerator
     public function generateRenewSignature(ViaBillUser $user, $transaction)
     {
         return md5(
-            $transaction.'#'.
-            $user->getKey().'#'.
+            $transaction . '#' .
+            $user->getKey() . '#' .
             $user->getSecret()
         );
     }
@@ -221,12 +219,13 @@ class SignaturesGenerator
      * Generates Main Signature.
      *
      * @param ViaBillUser $user
+     *
      * @return string
      */
     public function generateSignature(ViaBillUser $user)
     {
         return md5(
-            $user->getKey().'#'.
+            $user->getKey() . '#' .
             $user->getSecret()
         );
     }

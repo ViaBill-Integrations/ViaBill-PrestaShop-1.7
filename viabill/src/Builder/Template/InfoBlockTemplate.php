@@ -5,16 +5,14 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Builder\Template;
 
 /**
  * Class DynamicPriceTemplate
- *
- * @package ViaBill\Builder\Template
  */
 class InfoBlockTemplate implements TemplateInterface
 {
@@ -76,9 +74,9 @@ class InfoBlockTemplate implements TemplateInterface
      */
     public function getSmartyParams()
     {
-        return array(
-            'infoBlockText' => $this->infoBlockText
-        );
+        return [
+            'infoBlockText' => $this->infoBlockText,
+        ];
     }
 
     /**
@@ -91,6 +89,7 @@ class InfoBlockTemplate implements TemplateInterface
     public function getHtml()
     {
         $this->smarty->assign($this->getSmartyParams());
+
         return $this->smarty->fetch(
             $this->module->getLocalPath() . 'views/templates/admin/info-block.tpl'
         );

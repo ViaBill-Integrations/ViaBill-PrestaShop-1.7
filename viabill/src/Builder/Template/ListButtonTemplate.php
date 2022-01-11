@@ -5,15 +5,14 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Builder\Template;
 
 /**
  * Class ListButtonTemplate
- * @package ViaBill\Builder\Template
  */
 class ListButtonTemplate implements TemplateInterface
 {
@@ -109,11 +108,11 @@ class ListButtonTemplate implements TemplateInterface
      */
     public function getSmartyParams()
     {
-        return array(
+        return [
             'templateLink' => $this->link,
             'templateName' => $this->name,
-            'confMessage' => $this->confMessage
-        );
+            'confMessage' => $this->confMessage,
+        ];
     }
 
     /**
@@ -126,6 +125,7 @@ class ListButtonTemplate implements TemplateInterface
     public function getHtml()
     {
         $this->smarty->assign($this->getSmartyParams());
-        return $this->smarty->fetch($this->module->getLocalPath().'views/templates/admin/list-button.tpl');
+
+        return $this->smarty->fetch($this->module->getLocalPath() . 'views/templates/admin/list-button.tpl');
     }
 }

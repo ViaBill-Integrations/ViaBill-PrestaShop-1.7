@@ -1,12 +1,11 @@
 <?php
 /** NOTICE OF LICENSE
 *
-*
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 use ViaBill\Util\DebugLog;
@@ -66,24 +65,24 @@ class ViaBillCallBackModuleFrontController extends ModuleFrontController
             );
 
             $debug_str = var_export($requestContent, true);
-            DebugLog::msg("Callback postProcess / content success: ".$debug_str);
+            DebugLog::msg('Callback postProcess / content success: ' . $debug_str);
         } catch (Exception $exception) {
             $logger->error(
                 'Callback parse exception',
-                array(
+                [
                     'exception' => $exception->getMessage(),
-                    'content' => $requestContent
-                )
-            );
-        
+                    'content' => $requestContent,
+                ]
+            );            
+
             $er = $exception->getMessage();
             $exc_msg = var_export($er, true);
             $debug_str = var_export($requestContent, true);
-            DebugLog::msg("Callback postProcess / [error msg: ".$exc_msg."][content: ".$debug_str."]");
+            DebugLog::msg('Callback postProcess / [error msg: ' . $exc_msg . '][content: ' . $debug_str . ']');
 
             $this->ajaxDie('ERROR');
         }
-        
+
         /**
          * @var \ViaBill\Service\Validator\CallBack\OrderCallBackValidator $orderValidator
          */

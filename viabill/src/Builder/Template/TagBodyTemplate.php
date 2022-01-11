@@ -5,20 +5,17 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Builder\Template;
 
-use Country;
 use ViaBill\Adapter\Tools;
 use ViaBill\Config\Config;
 
 /**
  * Class TagBodyTemplate
- *
- * @package ViaBill\Builder\Template
  */
 class TagBodyTemplate implements TemplateInterface
 {
@@ -208,7 +205,7 @@ class TagBodyTemplate implements TemplateInterface
      */
     public function getSmartyParams()
     {
-        return array(
+        return [
             'dataView' => $this->dataView,
             'dataPrice' => $this->dataPrice,
             'dataLanguageIso' => $this->tools->strToUpper($this->language->iso_code),
@@ -217,8 +214,8 @@ class TagBodyTemplate implements TemplateInterface
             'dynamicPriceSelector' => $this->dynamicPriceSelector,
             'dynamicPriceTrigger' => $this->dynamicPriceTrigger,
             'useColumns' => $this->useColumns,
-            'useExtraGap' => $this->useExtraGap
-        );
+            'useExtraGap' => $this->useExtraGap,
+        ];
     }
 
     /**
@@ -230,6 +227,6 @@ class TagBodyTemplate implements TemplateInterface
      */
     public function getHtml()
     {
-        return $this->smarty->fetch($this->module->getLocalPath().'views/templates/front/tag-body.tpl');
+        return $this->smarty->fetch($this->module->getLocalPath() . 'views/templates/front/tag-body.tpl');
     }
 }

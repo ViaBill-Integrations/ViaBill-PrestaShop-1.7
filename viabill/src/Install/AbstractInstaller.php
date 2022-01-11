@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Install;
@@ -16,8 +16,6 @@ use Exception;
 
 /**
  * Class AbstractInstaller
- *
- * @package ViaBill\Install
  */
 abstract class AbstractInstaller
 {

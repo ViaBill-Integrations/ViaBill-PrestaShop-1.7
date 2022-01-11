@@ -5,16 +5,14 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Object\Api\Notification;
 
 /**
  * Class NotificationResponse
- *
- * @package ViaBill\Object\Api\Notification
  */
 class NotificationResponse
 {
@@ -28,6 +26,7 @@ class NotificationResponse
     /**
      * NotificationResponse constructor
      * .
+     *
      * @param string $message
      */
     public function __construct($message)

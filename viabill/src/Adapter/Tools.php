@@ -5,16 +5,14 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Adapter;
 
 /**
  * Class Tools
- *
- * @package ViaBill\Adapter
  */
 class Tools
 {
@@ -23,7 +21,7 @@ class Tools
      *
      * @param string $string
      *
-     * @return bool|mixed|null|string|string[]
+     * @return bool|mixed|string|string[]|null
      */
     public function strToUpper($string)
     {

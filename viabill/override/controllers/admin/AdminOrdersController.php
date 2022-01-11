@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 /**
@@ -36,9 +36,9 @@ class AdminOrdersController extends AdminOrdersControllerCore
     public function postProcess()
     {
         $bulkPrefix = 'submitBulk';
-        $isCancel = Tools::isSubmit($bulkPrefix.'cancelViaBillPaymentorder');
-        $isRefund = Tools::isSubmit($bulkPrefix.'refundViaBillPaymentorder');
-        $isCapture = Tools::isSubmit($bulkPrefix.'captureViaBillPaymentorder');
+        $isCancel = Tools::isSubmit($bulkPrefix . 'cancelViaBillPaymentorder');
+        $isRefund = Tools::isSubmit($bulkPrefix . 'refundViaBillPaymentorder');
+        $isCapture = Tools::isSubmit($bulkPrefix . 'captureViaBillPaymentorder');
         if (!$isCancel && !$isRefund && !$isCapture) {
             return parent::postProcess();
         }
@@ -97,7 +97,7 @@ class AdminOrdersController extends AdminOrdersControllerCore
         $osError = (int) Configuration::get(ViaBill\Config\Config::PAYMENT_ERROR);
         $osRefund = (int) Configuration::get(ViaBill\Config\Config::PAYMENT_REFUNDED);
         $osCancelled = (int) Configuration::get(ViaBill\Config\Config::PAYMENT_CANCELED);
-        $immutableStates = array($osError, $osRefund, $osCancelled);
+        $immutableStates = [$osError, $osRefund, $osCancelled];
         $occurrences = 0;
         if (!empty($this->_list)) {
             foreach ($this->_list as $listItem) {
@@ -106,7 +106,7 @@ class AdminOrdersController extends AdminOrdersControllerCore
                     !in_array((int) $order->current_state, $immutableStates, true) &&
                     in_array($listItem['id_order'], $orderIds, true)
                 ) {
-                    $occurrences++;
+                    ++$occurrences;
                     if ($occurrences > 1) {
                         $this->appendBulkActions($module, $isCancelMessage, $isCaptureMessage, $isRefundMessage);
                         break;
@@ -154,11 +154,11 @@ class AdminOrdersController extends AdminOrdersControllerCore
         $actionsLink = $this->context->link->getAdminLink(
             $tab->getControllerActionsName(),
             true,
-            array(),
-            array(
+            [],
+            [
                 'capture_amount' => $amount,
-                'id_order' => $order->id
-            )
+                'id_order' => $order->id,
+            ]
         );
 
         $actionsLink .= '&capturePayment';
@@ -169,6 +169,7 @@ class AdminOrdersController extends AdminOrdersControllerCore
         $isCapture = Configuration::get(ViaBill\Config\Config::SINGLE_ACTION_CAPTURE_CONF_MESSAGE);
         $message = $isCapture ? $module->getConfirmationTranslation('capture', $order) : '';
         $listButton->setConfMessage($message);
+
         return $listButton->getHtml();
     }
 
@@ -179,6 +180,7 @@ class AdminOrdersController extends AdminOrdersControllerCore
      * @param int $idOrder
      *
      * @return string|void
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
@@ -209,11 +211,11 @@ class AdminOrdersController extends AdminOrdersControllerCore
         $actionsLink = $this->context->link->getAdminLink(
             $tab->getControllerActionsName(),
             true,
-            array(),
-            array(
+            [],
+            [
                 'refund_amount' => $amount,
-                'id_order' => $order->id
-            )
+                'id_order' => $order->id,
+            ]
         );
 
         $actionsLink .= '&refundPayment';
@@ -224,6 +226,7 @@ class AdminOrdersController extends AdminOrdersControllerCore
         $isRefundConfirmation = Configuration::get(ViaBill\Config\Config::SINGLE_ACTION_REFUND_CONF_MESSAGE);
         $message = $isRefundConfirmation ? $module->getConfirmationTranslation('refund', $order, $amount) : '';
         $listButton->setConfMessage($message);
+
         return $listButton->getHtml();
     }
 
@@ -264,10 +267,10 @@ class AdminOrdersController extends AdminOrdersControllerCore
         $actionsLink = $this->context->link->getAdminLink(
             $tab->getControllerActionsName(),
             true,
-            array(),
-            array(
-                'id_order' => $order->id
-            )
+            [],
+            [
+                'id_order' => $order->id,
+            ]
         );
 
         $actionsLink .= '&cancelPayment';
@@ -325,15 +328,15 @@ class AdminOrdersController extends AdminOrdersControllerCore
         if (!$this->isOverrideActive()) {
             return;
         }
-        $this->bulk_actions['captureViaBillPayment'] = array(
-            'text' => $this->l('Capture payments')
-        );
-        $this->bulk_actions['cancelViaBillPayment'] = array(
-            'text' => $this->l('Cancel payments')
-        );
-        $this->bulk_actions['refundViaBillPayment'] = array(
-            'text' => $this->l('Refund payments')
-        );
+        $this->bulk_actions['captureViaBillPayment'] = [
+            'text' => $this->l('Capture payments'),
+        ];
+        $this->bulk_actions['cancelViaBillPayment'] = [
+            'text' => $this->l('Cancel payments'),
+        ];
+        $this->bulk_actions['refundViaBillPayment'] = [
+            'text' => $this->l('Refund payments'),
+        ];
         if ($isCancelMessage) {
             $this->bulk_actions['cancelViaBillPayment']['confirm'] =
                 $module->getConfirmationMessageTranslation('cancel');
@@ -372,6 +375,7 @@ class AdminOrdersController extends AdminOrdersControllerCore
         if (!$config->isLoggedIn()) {
             return false;
         }
+
         return true;
     }
 

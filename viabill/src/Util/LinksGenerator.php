@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Util;
@@ -16,8 +16,6 @@ use Order;
 
 /**
  * Class LinksGenerator
- *
- * @package ViaBill\Util
  */
 class LinksGenerator
 {
@@ -47,18 +45,18 @@ class LinksGenerator
      *
      * @return string
      */
-    public function getOrderConfirmationLink(Link $link, Order $order, array $params = array())
+    public function getOrderConfirmationLink(Link $link, Order $order, array $params = [])
     {
         return $link->getPageLink(
             'order-confirmation',
             null,
             null,
             array_merge(
-                array(
+                [
                     'id_cart' => $order->id_cart,
                     'id_module' => $this->module->id,
-                    'key' => $order->secure_key
-                ),
+                    'key' => $order->secure_key,
+                ],
                 $params
             )
         );
@@ -74,11 +72,12 @@ class LinksGenerator
      */
     public function getCancelLink(Link $link, Order $order)
     {
-        $params = array(
+        $params = [
             'id_cart' => $order->id_cart,
             'id_module' => $this->module->id,
-            'key' => $order->secure_key
-        );
+            'key' => $order->secure_key,
+        ];
+
         return $link->getModuleLink($this->module->name, 'cancel', $params);
     }
 }

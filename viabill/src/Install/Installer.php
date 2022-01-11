@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Install;
@@ -17,12 +17,9 @@ use ViaBill\Config\Config;
 
 /**
  * Class Installer
- *
- * @package ViaBill\Install
  */
 class Installer extends AbstractInstaller
 {
-
     /**
      * Filename Constant.
      */
@@ -41,7 +38,6 @@ class Installer extends AbstractInstaller
      * @var array
      */
     private $moduleConfiguration;
-
 
     /**
      * Tools Variable Declaration.
@@ -162,8 +158,8 @@ class Installer extends AbstractInstaller
         $orderStatuses = Config::getOrderStatuses();
         $languages = \Language::getLanguages();
 
-        $imagePath = $this->module->getLocalPath().'views/img/';
-        $images = array();
+        $imagePath = $this->module->getLocalPath() . 'views/img/';
+        $images = [];
         foreach ($orderStatuses as $stateConfig) {
             $orderState = new \OrderState();
             $orderState->module_name = $this->module->name;
@@ -174,13 +170,13 @@ class Installer extends AbstractInstaller
             switch ($stateConfig) {
                 case Config::PAYMENT_PENDING:
                     $orderState->color = '#4169E1';
-                    $orderState->send_email = false;                    
+                    $orderState->send_email = false;
                     $this->fillMultiLangName(
                         $orderState,
                         $languages,
                         $this->module->l('Payment pending by ViaBill', self::FILENAME)
                     );
-                    $imagePathFull = $imagePath.'accept.gif';
+                    $imagePathFull = $imagePath . 'accept.gif';
                     $configName = Config::PAYMENT_PENDING;
                     break;
                 case Config::PAYMENT_ACCEPTED:
@@ -197,8 +193,8 @@ class Installer extends AbstractInstaller
                         $orderState,
                         $languages,
                         'order_conf'
-                    );             
-                    $imagePathFull = $imagePath.'accept.gif';
+                    );
+                    $imagePathFull = $imagePath . 'accept.gif';
                     $configName = Config::PAYMENT_ACCEPTED;
                     break;
                 case Config::PAYMENT_COMPLETED:
@@ -211,7 +207,7 @@ class Installer extends AbstractInstaller
                         $languages,
                         $this->module->l('Payment completed by ViaBill', self::FILENAME)
                     );
-                    $imagePathFull = $imagePath.'complete.gif';
+                    $imagePathFull = $imagePath . 'complete.gif';
                     $configName = Config::PAYMENT_COMPLETED;
                     break;
                 case Config::PAYMENT_REFUNDED:
@@ -221,7 +217,7 @@ class Installer extends AbstractInstaller
                         $languages,
                         $this->module->l('Payment refunded by ViaBill', self::FILENAME)
                     );
-                    $imagePathFull = $imagePath.'refund.gif';
+                    $imagePathFull = $imagePath . 'refund.gif';
                     $configName = Config::PAYMENT_REFUNDED;
                     break;
                 case Config::PAYMENT_CANCELED:
@@ -232,26 +228,28 @@ class Installer extends AbstractInstaller
                         $languages,
                         $this->module->l('Payment canceled by ViaBill', self::FILENAME)
                     );
-                    $imagePathFull = $imagePath.'cancel.gif';
+                    $imagePathFull = $imagePath . 'cancel.gif';
                     $configName = Config::PAYMENT_CANCELED;
                     break;
             }
 
             if (!$orderState->save()) {
                 \Db::getInstance()->execute('ROLLBACK;');
+
                 return false;
             }
 
-            $images[] = array(
-                'name' => 'order_state_mini_'.$orderState->id,
+            $images[] = [
+                'name' => 'order_state_mini_' . $orderState->id,
                 'id_state' => $orderState->id,
-                'path' => $imagePathFull
-            );
+                'path' => $imagePathFull,
+            ];
             \Configuration::updateValue($configName, $orderState->id);
         }
 
         \Db::getInstance()->execute('COMMIT;');
         $this->uploadOrderStateImages($images);
+
         return true;
     }
 
@@ -279,7 +277,7 @@ class Installer extends AbstractInstaller
     private function fillMultiLangTemplate(\OrderState $orderState, array $languages, $name)
     {
         foreach ($languages as $language) {
-            $orderState->template[$language['id_lang']] = $name;            
+            $orderState->template[$language['id_lang']] = $name;
         }
     }
 
@@ -292,7 +290,7 @@ class Installer extends AbstractInstaller
      */
     private function installDb()
     {
-        $installSqlFiles = glob($this->module->getLocalPath().'sql/install/*.sql');
+        $installSqlFiles = glob($this->module->getLocalPath() . 'sql/install/*.sql');
 
         if (empty($installSqlFiles)) {
             return true;
@@ -309,6 +307,7 @@ class Installer extends AbstractInstaller
                 throw new Exception($exception->getMessage());
             }
         }
+
         return true;
     }
 
@@ -323,13 +322,13 @@ class Installer extends AbstractInstaller
         $imageSize = 16;
 
         foreach ($images as $image) {
-            $destination = _PS_ORDER_STATE_IMG_DIR_.$image['id_state'].'.gif';
+            $destination = _PS_ORDER_STATE_IMG_DIR_ . $image['id_state'] . '.gif';
             \Tools::copy($image['path'], $destination);
         }
 
         foreach ($shopIds as $idShop) {
             foreach ($images as $image) {
-                $fullName = $image['name'].'_'.$idShop.'.gif';
+                $fullName = $image['name'] . '_' . $idShop . '.gif';
                 \ImageManager::thumbnail(
                     $image['path'],
                     $fullName,

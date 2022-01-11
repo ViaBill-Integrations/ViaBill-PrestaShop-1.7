@@ -5,17 +5,18 @@
  * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
+*
  * @see       /LICENSE
  *
  * International Registered Trademark & Property of Viabill */
 
 namespace ViaBill\Service\Order;
 
+use Order;
 use ViaBill\Service\Handler\PaymentManagementHandler;
 use ViaBill\Service\MessageService;
 use ViaBill\Service\Provider\OrderStatusProvider;
 use ViaBill\Util\NumberUtility;
-use Order;
 
 class OrderListActionsService
 {
@@ -51,7 +52,9 @@ class OrderListActionsService
      * @param bool $isCapture
      * @param bool $isRefund
      * @param bool $isRenew
+     *
      * @return false
+     *
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
@@ -89,7 +92,7 @@ class OrderListActionsService
 
         $errors = $handleResponse->getErrors();
         $warnings = $handleResponse->getWarnings();
-        $confirmations = array();
+        $confirmations = [];
 
         if (empty($errors) && $handleResponse->getSuccessMessage()) {
             $confirmations[] = $handleResponse->getSuccessMessage();
@@ -105,6 +108,7 @@ class OrderListActionsService
      * @param bool $isCancel
      * @param bool $isRefund
      * @param bool $isCapture
+     *
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
@@ -126,7 +130,9 @@ class OrderListActionsService
 
     /**
      * @param $order
+     *
      * @return float
+     *
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
@@ -143,12 +149,14 @@ class OrderListActionsService
 
     /**
      * @param $order
+     *
      * @return float
+     *
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
     private function getRefundAmount(Order $order)
     {
-        return  (float) NumberUtility::replaceCommaToDot($this->orderStatusProvider->getRemainingToRefund($order));
+        return (float) NumberUtility::replaceCommaToDot($this->orderStatusProvider->getRemainingToRefund($order));
     }
 }

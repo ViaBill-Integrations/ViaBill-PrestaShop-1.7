@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Object\Api\Authentication;
@@ -16,8 +16,6 @@ use ViaBill\Object\Api\SerializedObjectInterface;
 
 /**
  * Class RegisterRequest
- *
- * @package ViaBill\Object\Api\Authentification
  */
 class RegisterRequest implements SerializedObjectInterface
 {
@@ -112,12 +110,12 @@ class RegisterRequest implements SerializedObjectInterface
      */
     public function getSerializedData()
     {
-        return array(
+        return [
             'email' => $this->email,
             'url' => $this->url,
             'country' => $this->country,
             'affiliate' => Config::REGISTER_REQUEST_AFFILIATE,
-            'additionalInfo' => $this->additionalInfo
-        );
+            'additionalInfo' => $this->additionalInfo,
+        ];
     }
 }

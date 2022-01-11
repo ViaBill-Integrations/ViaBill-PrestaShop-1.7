@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Order;
@@ -19,8 +19,6 @@ use ViaBill\Config\Config;
 
 /**
  * Class CreateOrderService
- *
- * @package ViaBill\Service\Order
  */
 class CreateOrderService
 {
@@ -83,13 +81,14 @@ class CreateOrderService
             $totalAmount,
             $this->module->name,
             null,
-            array(),
+            [],
             $currency->id,
             false,
             $customer->secure_key
         );
 
         $idOrder = $this->orderAdapter->getIdByCartId($cart->id);
+
         return new \Order($idOrder);
     }
 }

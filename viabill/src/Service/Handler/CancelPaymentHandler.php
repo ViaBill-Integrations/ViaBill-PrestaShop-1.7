@@ -5,12 +5,13 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Handler;
 
+use Order;
 use ViaBill\Adapter\Configuration;
 use ViaBill\Adapter\Tools;
 use ViaBill\Config\Config;
@@ -19,14 +20,11 @@ use ViaBill\Object\Handler\HandlerResponse;
 use ViaBill\Service\Api\Cancel\CancelService;
 use ViaBill\Service\Provider\OrderStatusProvider;
 use ViaBill\Service\UserService;
-use ViaBill\Util\SignaturesGenerator;
 use ViaBill\Util\DebugLog;
-use Order;
+use ViaBill\Util\SignaturesGenerator;
 
 /**
  * Class CancelPaymentHandler
- *
- * @package ViaBill\Service\Handler
  */
 class CancelPaymentHandler
 {
@@ -123,12 +121,12 @@ class CancelPaymentHandler
     public function handle(Order $order)
     {
         $cancelState = $this->configuration->get(Config::PAYMENT_CANCELED);
-        $errors = array();
+        $errors = [];
         $isCancelled = false;
 
         // debug info
-        $debug_str = (empty($order))?'[empty]':var_export($order, true);
-        DebugLog::msg("Cancel Payment Handle / Order: $debug_str", "notice");
+        $debug_str = (empty($order)) ? '[empty]' : var_export($order, true);
+        DebugLog::msg("Cancel Payment Handle / Order: $debug_str", 'notice');
 
         try {
             $isCancelled = $this->stateProvider->isCancelled($order);
@@ -151,25 +149,25 @@ class CancelPaymentHandler
 
         if (!empty($errors)) {
             $debug_str = var_export($errors, true);
-            DebugLog::msg("Cancel Payment Handle / Errors: $debug_str", "error");
+            DebugLog::msg("Cancel Payment Handle / Errors: $debug_str", 'error');
         }
-        
+
         $user = $this->userService->getUser();
 
         $signature = $this->signaturesGenerator->generateCancelSignature($user, $order->reference);
-                
+
         try {
             $debug_str = '';
-            $debug_str .= (property_exists($order, 'reference'))?"[Order Ref: ".$order->reference."]":"[No order reference]";
-            $debug_str .= (method_exists($user, 'getKey'))?"[Key: ".$user->getKey()."]":"[No user key]";
-            $debug_str .= (!empty($signature))?"[Signature: ".$signature."]":"[No signature]";
-            DebugLog::msg("Cancel Payment Handle / Request: $debug_str", "notice");
+            $debug_str .= (property_exists($order, 'reference')) ? '[Order Ref: ' . $order->reference . ']' : '[No order reference]';
+            $debug_str .= (method_exists($user, 'getKey')) ? '[Key: ' . $user->getKey() . ']' : '[No user key]';
+            $debug_str .= (!empty($signature)) ? '[Signature: ' . $signature . ']' : '[No signature]';
+            DebugLog::msg("Cancel Payment Handle / Request: $debug_str", 'notice');
         } catch (\Exception $exception) {
             $er = $exception->getMessage();
             $debug_str = var_export($er, true);
-            DebugLog::msg("Cancel Payment Handle / Request errors: $debug_str", "error");
+            DebugLog::msg("Cancel Payment Handle / Request errors: $debug_str", 'error');
         }
-                
+
         $cancelRequest = new CancelRequest(
             $order->reference,
             $user->getKey(),
@@ -185,12 +183,12 @@ class CancelPaymentHandler
             }
 
             $debug_str = var_export($responseErrors, true);
-            DebugLog::msg("Cancel Payment Handle / Respose Errors: $debug_str", "error");
+            DebugLog::msg("Cancel Payment Handle / Respose Errors: $debug_str", 'error');
         } else {
             $debug_str = $response->getStatusCode();
-            DebugLog::msg("Cancel Payment Handle / Respose Code: $debug_str", "notice");
+            DebugLog::msg("Cancel Payment Handle / Respose Code: $debug_str", 'notice');
         }
-        
+
         if (empty($errors)) {
             $order->setCurrentState($cancelState);
         }

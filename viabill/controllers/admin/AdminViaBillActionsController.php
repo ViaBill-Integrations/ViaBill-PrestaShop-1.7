@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 use ViaBill\Util\NumberUtility;
@@ -83,7 +83,7 @@ class AdminViaBillActionsController extends ModuleAdminController
 
         $errors = $handleResponse->getErrors();
         $warnings = $handleResponse->getWarnings();
-        $confirmations = array();
+        $confirmations = [];
 
         if (empty($errors) && $handleResponse->getSuccessMessage()) {
             $confirmations[] = $handleResponse->getSuccessMessage();

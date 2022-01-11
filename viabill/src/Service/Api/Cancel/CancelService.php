@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Api\Cancel;
@@ -19,8 +19,6 @@ use ViaBill\Util\DebugLog;
 
 /**
  * Class CancelService
- *
- * @package ViaBill\Service\Api\Cancel
  */
 class CancelService extends OrderStatusApiService
 {
@@ -74,21 +72,21 @@ class CancelService extends OrderStatusApiService
         $serializer = $this->serializerFactory->getSerializer();
 
         // debug info
-        $debug_str = "Cancel Payment API Request/ [body: ".var_export($cancelRequest, true)."]";
+        $debug_str = 'Cancel Payment API Request/ [body: ' . var_export($cancelRequest, true) . ']';
         DebugLog::msg($debug_str, 'debug');
 
         $apiResponse = $this->apiRequest->post(
             '/api/transaction/cancel',
-            array(
-                'body' => $serializer->serialize($cancelRequest, 'json')
-            )
+            [
+                'body' => $serializer->serialize($cancelRequest, 'json'),
+            ]
         );
 
         // debug info
-        $debug_str = "Cancel Payment API Request/ [response: ".var_export($apiResponse, true)."]";
+        $debug_str = 'Cancel Payment API Request/ [response: ' . var_export($apiResponse, true) . ']';
         DebugLog::msg($debug_str, 'debug');
 
-        if (in_array($apiResponse->getStatusCode(), array(400, 500))) {
+        if (in_array($apiResponse->getStatusCode(), [400, 500])) {
             return $this->getWithFormattedError($this->module, $apiResponse, $cancelRequest->getId());
         }
 

@@ -5,22 +5,20 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Validator\Payment;
 
 use Customer;
+use Order;
 use ViaBill\Adapter\Configuration;
 use ViaBill\Config\Config;
 use ViaBill\Object\Validator\ValidationResponse;
-use Order;
 
 /**
  * Class OrderValidator
- *
- * @package ViaBill\Service\Validator\Payment
  */
 class OrderValidator
 {

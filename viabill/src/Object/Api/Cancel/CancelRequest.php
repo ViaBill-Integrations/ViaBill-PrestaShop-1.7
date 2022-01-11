@@ -5,16 +5,14 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Object\Api\Cancel;
 
 /**
  * Class CancelRequest
- *
- * @package ViaBill\Object\Api\Cancel
  */
 class CancelRequest
 {

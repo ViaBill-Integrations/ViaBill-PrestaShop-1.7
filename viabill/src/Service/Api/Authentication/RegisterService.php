@@ -5,14 +5,13 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Api\Authentication;
 
 use ViaBill\Adapter\Tools;
-use ViaBill\Factory\SerializerFactory;
 use ViaBill\Object\Api\Authentication\RegisterRequest;
 use ViaBill\Object\Api\Authentication\RegisterResponse;
 use ViaBill\Service\Api\ApiRequest;
@@ -20,8 +19,6 @@ use ViaBill\Util\DebugLog;
 
 /**
  * Class RegisterService
- *
- * @package ViaBill\Service\Api\Authentication
  */
 class RegisterService
 {
@@ -61,19 +58,19 @@ class RegisterService
     public function register(RegisterRequest $registerRequest)
     {
         // debug info
-        $debug_str = "Register API Request/ [body: ".var_export($registerRequest, true)."]";
+        $debug_str = 'Register API Request/ [body: ' . var_export($registerRequest, true) . ']';
         DebugLog::msg($debug_str, 'debug');
 
         $response = $this->apiRequest->post(
             '/api/addon/prestashop/register',
-            array(
-                'body' => json_encode($registerRequest->getSerializedData(), JSON_UNESCAPED_SLASHES)
-            )
+            [
+                'body' => json_encode($registerRequest->getSerializedData(), JSON_UNESCAPED_SLASHES),
+            ]
         );
 
         if ($response->getStatusCode() !== 200) {
             $er = $response->getErrors();
-            $debug_str = "Register API Response/[Status code: ".$response->getStatusCode()."][Errors: ".var_export($er, true)."]";
+            $debug_str = 'Register API Response/[Status code: ' . $response->getStatusCode() . '][Errors: ' . var_export($er, true) . ']';
             DebugLog::msg($debug_str, 'error');
 
             return new RegisterResponse(
@@ -86,7 +83,7 @@ class RegisterService
 
         $decodedBody = json_decode($response->getBody(), true);
 
-        $debug_str = "Register API Response/ [Status code: ".$response->getStatusCode()."][Body: ".var_export($decodedBody, true)."]";
+        $debug_str = 'Register API Response/ [Status code: ' . $response->getStatusCode() . '][Body: ' . var_export($decodedBody, true) . ']';
         DebugLog::msg($debug_str, 'debug');
 
         return new RegisterResponse(

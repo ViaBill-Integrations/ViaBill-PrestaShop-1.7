@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 use ViaBill\Util\DebugLog;
@@ -63,9 +63,9 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
         $order = $this->getOrder();
 
         // Debug info
-        $order_str = (empty($order))?'empty':var_export($order, true);
+        $order_str = (empty($order)) ? 'empty' : var_export($order, true);
         $debug_str = "[order: {$order_str}]";
-        DebugLog::msg("Checkout postProcess / ".$debug_str);
+        DebugLog::msg('Checkout postProcess / ' . $debug_str);
 
         /**
          * @var \ViaBill\Util\LinksGenerator $linkGenerator
@@ -80,9 +80,9 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
         $paymentRequest = $this->createPaymentRequest($order, $linkGenerator);
 
         // Debug info
-        $request_str = (empty($paymentRequest))?'empty':var_export($paymentRequest, true);
+        $request_str = (empty($paymentRequest)) ? 'empty' : var_export($paymentRequest, true);
         $debug_str = "[payment request: {$request_str}]";
-        DebugLog::msg("Checkout postProcess / ".$debug_str);
+        DebugLog::msg('Checkout postProcess / ' . $debug_str);
 
         $errorMessage =
             $this->module->l('An unexpected error occurred while processing the payment.', self::FILENAME);
@@ -95,11 +95,11 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
 
                 // Debug info
                 $debug_str = var_export($errors, true);
-                DebugLog::msg("Checkout postProcess / errors: ".$debug_str);
+                DebugLog::msg('Checkout postProcess / errors: ' . $debug_str);
             } else {
                 // Debug info
                 $debug_str = $paymentResponse->getEffectiveUrl();
-                DebugLog::msg("Checkout postProcess / success: ".$debug_str);
+                DebugLog::msg('Checkout postProcess / success: ' . $debug_str);
 
                 Tools::redirect($paymentResponse->getEffectiveUrl());
             }
@@ -112,13 +112,13 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
 
             // Debug info
             $debug_str = $exception->getMessage();
-            DebugLog::msg("Checkout postProcess / exception ".$debug_str);
+            DebugLog::msg('Checkout postProcess / exception ' . $debug_str);
 
             $logger->error(
                 'Exception in checkout process',
-                array(
-                    'exception' => $exception->getMessage()
-                )
+                [
+                    'exception' => $exception->getMessage(),
+                ]
             );
             $this->errors[] = $errorMessage;
         }
@@ -153,7 +153,7 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
          * @var \ViaBill\Service\Order\CreateOrderService $orderCreateService
          */
         $orderCreateService = $this->module->getModuleContainer()->get('service.order.createOrder');
-        $order =  $orderCreateService->createOrder(
+        $order = $orderCreateService->createOrder(
             $this->context->cart,
             $this->context->currency
         );
@@ -177,7 +177,7 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
      *
      * @throws Exception
      */
-    private function createPaymentRequest(Order $order, \ViaBill\Util\LinksGenerator $linksGenerator)
+    private function createPaymentRequest(Order $order, ViaBill\Util\LinksGenerator $linksGenerator)
     {
         /**
          * @var \ViaBill\Service\UserService $userService
@@ -197,9 +197,9 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
         $currency = new Currency($order->id_currency);
 
         $callBackUrl = $this->getCallBackUrl(
-            array(
-                'key' => $signatureGenerator->generateCallBackSecurityKey()
-            )
+            [
+                'key' => $signatureGenerator->generateCallBackSecurityKey(),
+            ]
         );
 
         $totalAmount = $order->total_paid_tax_incl;
@@ -208,7 +208,7 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
         $idOrder = $order->id;
 
         $successUrl = $this->getReturnUrl([
-            "id_order" => $order->id,
+            'id_order' => $order->id,
         ]);
 
         $cancelUrl = $linksGenerator->getCancelLink(
@@ -250,7 +250,7 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
      *
      * @return string
      */
-    private function getCallBackUrl($params = array())
+    private function getCallBackUrl($params = [])
     {
         return $this->context->link->getModuleLink(
             $this->module->name,
@@ -266,7 +266,7 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
      *
      * @return string
      */
-    private function getReturnUrl($params = array())
+    private function getReturnUrl($params = [])
     {
         return $this->context->link->getModuleLink(
             $this->module->name,
@@ -277,26 +277,29 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
 
     /**
      * Get information about the customer for the active order
-     * 
+     *
      * @param Order $order
-     * 
+     *
      * @return array
      */
-    private function getCustomerInfo(Order $order) {        
-        $info = array(
-          'email'=>'',
-          'phone'=>'',
-          'first_name'=>'',
-          'last_name'=>'',
-          'full_name'=>'',
-          'address'=>'',
-          'city'=>'',
-          'postal_code'=>'',
-          'country'=>''
-        );
+    private function getCustomerInfo(Order $order)
+    {
+        $info = [
+            'email'=>'',
+            'phoneNumber'=>'',
+            'firstName'=>'',
+            'lastName'=>'',
+            'fullName'=>'',
+            'address'=>'',
+            'city'=>'',
+            'postalCode'=>'',
+            'country'=>''
+        ];
 
         // sanity check
-        if (empty($order)) return $info;
+        if (empty($order)) {
+            return $info;
+        }
 
         $id_address_delivery = (int) $order->id_address_delivery;
         if (!empty($id_address_delivery)) {
@@ -308,46 +311,46 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
             $phone = '';
             if (property_exists($details, 'phone_mobile')) {
                 $phone = trim($details->phone_mobile);
-            } 
+            }
             if (empty($phone)) {
                 if (property_exists($details, 'phone')) {
                     $phone = trim($details->phone);
                 }
-            }                        
-            $info['phone'] = $phone;
+            }
+            $info['phoneNumber'] = $phone;
             if (property_exists($details, 'firstname')) {
-                $info['first_name'] = $details->firstname;
+                $info['firstName'] = $details->firstname;
             }
             if (property_exists($details, 'lastname')) {
-                $info['last_name'] = $details->lastname;
+                $info['lastName'] = $details->lastname;
             }
-            $info['full_name'] = trim($info['first_name'].' '.$info['last_name']);
+            $info['fullName'] = trim($info['firstName'] . ' ' . $info['lastName']);
             $address = '';
             if (property_exists($details, 'address1')) {
                 $address .= $details->address1;
             }
             if (property_exists($details, 'address2')) {
-                $address .= ' '.$details->address2;
+                $address .= ' ' . $details->address2;
             }
             $info['address'] = trim($address);
             if (property_exists($details, 'city')) {
                 $info['city'] = $details->city;
             }
             if (property_exists($details, 'postcode')) {
-                $info['postal_code'] = $details->postcode;
+                $info['postalCode'] = $details->postcode;
             }
             if (property_exists($details, 'country')) {
                 $info['country'] = $details->country;
-            }            
-           
+            }
+
             if (!empty($details->id_customer)) {
-                $customer = new Customer((int)($details->id_customer));
+                $customer = new Customer((int) ($details->id_customer));
                 if (property_exists($customer, 'email')) {
                     $info['email'] = $customer->email;
                 }
-            }            
+            }
         }
-          
+
         return $info;
     }
 }

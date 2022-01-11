@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Api\Locale;
@@ -18,7 +18,6 @@ use ViaBill\Service\Api\ApiRequest;
 
 /**
  * Class LocaleService
- * @package ViaBill\Service\Api\Locale
  */
 class LocaleService
 {
@@ -55,7 +54,7 @@ class LocaleService
      */
     public function getLocale()
     {
-        $cacheKey = __CLASS__.__FUNCTION__;
+        $cacheKey = __CLASS__ . __FUNCTION__;
 
         if (Cache::isStored($cacheKey)) {
             return Cache::retrieve($cacheKey);
@@ -64,7 +63,7 @@ class LocaleService
         $response = $this->apiRequest->get('api/public/locale');
         $bodyNormalized = json_decode($response->getBody(), true);
 
-        $result = array();
+        $result = [];
         if (!empty($bodyNormalized)) {
             foreach ($bodyNormalized as $item) {
                 $locale = new Locale(
@@ -77,6 +76,7 @@ class LocaleService
             }
         }
         Cache::store($cacheKey, $result);
+
         return $result;
     }
 }

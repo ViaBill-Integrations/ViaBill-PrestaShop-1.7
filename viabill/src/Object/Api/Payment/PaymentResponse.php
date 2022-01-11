@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Object\Api\Payment;
@@ -15,8 +15,6 @@ use ViaBill\Object\Api\ApiResponseError;
 
 /**
  * Class PaymentResponse
- *
- * @package ViaBill\Object\Api\Payment
  */
 class PaymentResponse
 {
@@ -40,7 +38,7 @@ class PaymentResponse
      * @param string $effectiveUrl
      * @param ApiResponseError[] $errors
      */
-    public function __construct($effectiveUrl, $errors = array())
+    public function __construct($effectiveUrl, $errors = [])
     {
         $this->effectiveUrl = $effectiveUrl;
         $this->errors = $errors;

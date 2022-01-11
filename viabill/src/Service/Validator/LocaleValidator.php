@@ -5,21 +5,19 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Validator;
 
+use Language;
 use ViaBill\Adapter\Tools;
 use ViaBill\Config\Config;
 use ViaBill\Service\Api\Locale\LocaleService;
-use Language;
 
 /**
  * Class LocaleValidator
- *
- * @package ViaBill\Service\Validator
  */
 class LocaleValidator
 {

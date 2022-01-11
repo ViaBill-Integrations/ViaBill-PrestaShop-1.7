@@ -5,16 +5,14 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Builder\Template;
 
 /**
  * Class AuthenticationTemplate
- *
- * @package ViaBill\Builder\Template
  */
 class AuthenticationTemplate implements TemplateInterface
 {
@@ -93,10 +91,10 @@ class AuthenticationTemplate implements TemplateInterface
      */
     public function getSmartyParams()
     {
-        return array(
+        return [
             'newUser' => $this->newUser,
             'existingUser' => $this->existingUser,
-        );
+        ];
     }
 
     /**
@@ -109,6 +107,7 @@ class AuthenticationTemplate implements TemplateInterface
     public function getHtml()
     {
         $this->smarty->assign($this->getSmartyParams());
-        return $this->smarty->fetch($this->module->getLocalPath().'views/templates/admin/authentication.tpl');
+
+        return $this->smarty->fetch($this->module->getLocalPath() . 'views/templates/admin/authentication.tpl');
     }
 }

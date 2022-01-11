@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Install;
@@ -16,8 +16,6 @@ use ViaBill\Config\Config;
 
 /**
  * Class UnInstaller
- *
- * @package ViaBill\Install
  */
 class UnInstaller extends AbstractInstaller
 {
@@ -72,6 +70,7 @@ class UnInstaller extends AbstractInstaller
         $this->removeOrderStates();
         $this->removeConfiguration();
         $this->uninstallDb();
+
         return true;
     }
 
@@ -87,6 +86,7 @@ class UnInstaller extends AbstractInstaller
         $sqlStatements = $this->tools->fileGetContents($sqlFile);
         $sqlStatements = str_replace('PREFIX_', _DB_PREFIX_, $sqlStatements);
         $sqlStatements = str_replace('ENGINE_TYPE', _MYSQL_ENGINE_, $sqlStatements);
+
         return $sqlStatements;
     }
 
@@ -133,7 +133,7 @@ class UnInstaller extends AbstractInstaller
      */
     private function uninstallDb()
     {
-        $uninstallSqlFileName = $this->module->getLocalPath().'sql/uninstall/uninstall.sql';
+        $uninstallSqlFileName = $this->module->getLocalPath() . 'sql/uninstall/uninstall.sql';
         if (!file_exists($uninstallSqlFileName)) {
             return true;
         }
@@ -141,6 +141,7 @@ class UnInstaller extends AbstractInstaller
         $database = \Db::getInstance();
 
         $sqlStatements = $this->getSqlStatements($uninstallSqlFileName);
+
         return (bool) $this->execute($database, $sqlStatements);
     }
 }

@@ -5,20 +5,18 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Handler;
 
+use Language;
 use ViaBill\Service\Api\Countries\CountryService;
 use ViaBill\Service\Api\Locale\LocaleService;
-use Language;
 
 /**
  * Class ModuleRestrictionHandler
- *
- * @package ViaBill\Service\Handler
  */
 class ModuleRestrictionHandler
 {
@@ -82,10 +80,10 @@ class ModuleRestrictionHandler
             if (\Validate::isLoadedObject($currency)) {
                 $added = \Db::getInstance()->insert(
                     'module_currency',
-                    array(
+                    [
                         'id_module' => (int) $this->module->id,
-                        'id_currency' => $currency->id
-                    ),
+                        'id_currency' => $currency->id,
+                    ],
                     false,
                     true,
                     \Db::ON_DUPLICATE_KEY
@@ -114,25 +112,25 @@ class ModuleRestrictionHandler
             return false;
         }
 
-        $idCountries = array();
+        $idCountries = [];
         foreach ($countries as $country) {
             $idCountry = \Country::getByIso($country->getCode());
             $country = new \Country($idCountry);
             if (\Validate::isLoadedObject($country)) {
-                $idCountries[] = array(
-                    'id_country' => $country->id
-                );
+                $idCountries[] = [
+                    'id_country' => $country->id,
+                ];
             }
         }
 
         return \Country::addModuleRestrictions(
-            array(),
+            [],
             $idCountries,
-            array(
-                array(
-                    'id_module' => $this->module->id
-                )
-            )
+            [
+                [
+                    'id_module' => $this->module->id,
+                ],
+            ]
         );
     }
 }

@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Controller;
@@ -16,8 +16,6 @@ use ViaBill\Install\Tab;
 
 /**
  * Class AbstractAdminController
- *
- * @package ViaBill\Controller
  */
 class AbstractAdminController extends \ModuleAdminController
 {

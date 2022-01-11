@@ -5,16 +5,14 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Config;
 
 /**
  * Class Config
- *
- * @package ViaBill\Config
  */
 class Config
 {
@@ -48,7 +46,7 @@ class Config
     const SETTINGS_GENERAL_CONFIGURATION_SECTION = 'VB_GENERAL_CONFIGURATION';
     const SETTINGS_PAYMENT_CAPTURE_SECTION = 'VB_PAYMENT_CAPTURE';
     const SETTINGS_MY_VIABILL_SECTION = 'VB_MY_VIABILL';
-    const SETTINGS_DEBUG_SECTION='VB_DEBUG_INFO';
+    const SETTINGS_DEBUG_SECTION = 'VB_DEBUG_INFO';
 
     const ENABLE_PRICE_TAG_ON_PRODUCT_PAGE = 'VB_ENABLE_ON_PRODUCT_PAGE';
     const ENABLE_PRICE_TAG_ON_CART_SUMMARY = 'VB_ENABLE_ON_CART_SUMMARY';
@@ -78,7 +76,7 @@ class Config
     // Module Conflict
     const SETTINGS_MODULE_CONFLICT_WARNING = 'VB_MODULE_CONFLICT';
     const MODULE_CONFLICT_WARNING_BLOCK_FIELD = 'VB_MODULE_CONFLICT_WARNING_BLOCK';
-    const MODULE_CONFLICT_THIRD_PARTY_KEY='_QUICKPAY_VIABILL';
+    const MODULE_CONFLICT_THIRD_PARTY_KEY = '_QUICKPAY_VIABILL';
 
     // payment statuses
     const PAYMENT_PENDING = 'VB_PAYMENT_PENDING';
@@ -149,11 +147,11 @@ class Config
      */
     public static function getNorwayIsoExceptionsArray()
     {
-        return array(
+        return [
             'NO',
             'NN',
-            'NB'
-        );
+            'NB',
+        ];
     }
 
     /**
@@ -163,11 +161,11 @@ class Config
      */
     public static function getTagsControllers()
     {
-        return array(
+        return [
             'product',
             'order',
-            'cart'
-        );
+            'cart',
+        ];
     }
 
     /**
@@ -199,10 +197,10 @@ class Config
     public static function getLoginForgotPassUrl($isoCode)
     {
         if (self::DEV_MODE) {
-            return 'https://my-test.viabill.com/'.$isoCode.'/#/auth/forgot';
+            return 'https://my-test.viabill.com/' . $isoCode . '/#/auth/forgot';
         }
 
-        return 'https://viabill.com/auth/forgot/?lang='.$isoCode;
+        return 'https://viabill.com/auth/forgot/?lang=' . $isoCode;
     }
 
     /**
@@ -212,19 +210,20 @@ class Config
      */
     public static function getOrderStatuses()
     {
-        return array(
+        return [
             self::PAYMENT_PENDING,
             self::PAYMENT_ACCEPTED,
             self::PAYMENT_COMPLETED,
             self::PAYMENT_CANCELED,
-            self::PAYMENT_REFUNDED
-        );
+            self::PAYMENT_REFUNDED,
+        ];
     }
 
     /**
      * Checks If Price Tag Is Active.
      *
      * @param string $controllerName
+     *
      * @return bool|string
      */
     public static function isPriceTagActive($controllerName)

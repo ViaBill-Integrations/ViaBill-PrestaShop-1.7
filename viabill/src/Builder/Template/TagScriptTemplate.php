@@ -5,16 +5,14 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Builder\Template;
 
 /**
  * Class TagScriptTemplate
- *
- * @package ViaBill\Builder\Template
  */
 class TagScriptTemplate implements TemplateInterface
 {
@@ -76,9 +74,9 @@ class TagScriptTemplate implements TemplateInterface
      */
     public function getSmartyParams()
     {
-        return array(
-            'tagScript' => $this->tagScript
-        );
+        return [
+            'tagScript' => $this->tagScript,
+        ];
     }
 
     /**
@@ -91,6 +89,7 @@ class TagScriptTemplate implements TemplateInterface
     public function getHtml()
     {
         $this->smarty->assign($this->getSmartyParams());
-        return $this->smarty->fetch($this->module->getLocalPath().'views/templates/front/tag-script.tpl');
+
+        return $this->smarty->fetch($this->module->getLocalPath() . 'views/templates/front/tag-script.tpl');
     }
 }

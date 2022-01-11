@@ -5,25 +5,23 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Provider;
 
+use Order;
 use ViaBill\Adapter\Tools;
 use ViaBill\Config\Config;
 use ViaBill\Object\Api\Status\StatusRequest;
 use ViaBill\Service\Api\Status\StatusService;
 use ViaBill\Service\UserService;
 use ViaBill\Util\SignaturesGenerator;
-use Order;
 use ViaBillOrderCapture;
 
 /**
  * Class OrderStatusProvider
- *
- * @package ViaBill\Service\Provider
  */
 class OrderStatusProvider
 {
@@ -128,7 +126,7 @@ class OrderStatusProvider
             return false;
         }
 
-        $primaryRefund =\ViaBillOrderRefund::getPrimaryKey($order->id);
+        $primaryRefund = \ViaBillOrderRefund::getPrimaryKey($order->id);
         $orderRefund = new \ViaBillOrderRefund($primaryRefund);
         $ordersRefunded = $orderRefund->getRefundedOrdersCount();
         $hasRefundOrders = $ordersRefunded !== 0;
@@ -162,6 +160,7 @@ class OrderStatusProvider
         $primary = ViaBillOrderCapture::getPrimaryKey($order->id);
         $orderCapture = new ViaBillOrderCapture($primary);
         $total = $order->total_paid_tax_incl;
+
         return $this->tools->displayNumber($orderCapture->getTotalCaptured()) < $this->tools->displayNumber($total);
     }
 
@@ -199,6 +198,7 @@ class OrderStatusProvider
 
         $idRefund = \ViaBillOrderRefund::getPrimaryKey($order->id);
         $refund = new \ViaBillOrderRefund($idRefund);
+
         return $totalCaptured - $refund->getTotalRefunded();
     }
 
@@ -211,7 +211,6 @@ class OrderStatusProvider
 
         return (float) $orderTotal - (float) $orderCapture->getTotalCaptured();
     }
-
 
     /**
      * Checks If Order Can Be Renewed.
@@ -234,12 +233,13 @@ class OrderStatusProvider
         $isFullCapture = $orderTotal === $this->tools->displayNumber($capture->getTotalCaptured());
         $isValidStatus = in_array(
             $status->getStatus(),
-            array(
+            [
                 Config::ORDER_STATUS_APPROVED,
-                Config::ORDER_STATUS_CAPTURED
-            ),
+                Config::ORDER_STATUS_CAPTURED,
+            ],
             true
         );
+
         return $isValidStatus && !$isFullCapture;
     }
 
@@ -254,7 +254,7 @@ class OrderStatusProvider
      */
     private function getStatus(Order $order)
     {
-        $cacheKey = __CLASS__.__FUNCTION__.$order->id;
+        $cacheKey = __CLASS__ . __FUNCTION__ . $order->id;
 
         if (\Cache::isStored($cacheKey)) {
             return \Cache::retrieve($cacheKey);
@@ -276,6 +276,7 @@ class OrderStatusProvider
         }
 
         \Cache::store($cacheKey, $statusResponse);
+
         return $statusResponse;
     }
 }

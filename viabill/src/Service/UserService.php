@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service;
@@ -17,8 +17,6 @@ use ViaBill\Object\ViaBillUser;
 
 /**
  * Class UserService
- *
- * @package ViaBill\Service
  */
 class UserService
 {

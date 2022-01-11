@@ -5,16 +5,14 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Install;
 
 /**
  * Class Tab
- *
- * @package ViaBill\Install
  */
 class Tab
 {
@@ -96,56 +94,56 @@ class Tab
      */
     public function getTabs()
     {
-        return array(
-            array(
+        return [
+            [
                 'name' => $this->module->displayName,
                 'ParentClassName' => 'AdminParentModulesSf',
                 'class_name' => $this->controllerInvisibleName,
-                'visible' => false
-            ),
-            array(
+                'visible' => false,
+            ],
+            [
                 'name' => $this->module->l('Ajax', self::FILENAME),
                 'ParentClassName' => 'AdminParentModulesSf',
                 'class_name' => $this->controllerActionsName,
                 'visible' => false,
-                'module_tab' => true
-            ),
-            array(
+                'module_tab' => true,
+            ],
+            [
                 'name' => $this->module->l('Authentication', self::FILENAME),
                 'ParentClassName' => $this->controllerInvisibleName,
                 'class_name' => $this->controllerAuthenticationName,
                 'visible' => true,
-                'module_tab' => true
-            ),
-            array(
+                'module_tab' => true,
+            ],
+            [
                 'name' => $this->module->l('Settings', self::FILENAME),
                 'ParentClassName' => $this->controllerInvisibleName,
                 'class_name' => $this->controllerSettingsName,
                 'visible' => true,
-                'module_tab' => true
-            ),
-            array(
+                'module_tab' => true,
+            ],
+            [
                 'name' => $this->module->l('Contact', self::FILENAME),
                 'ParentClassName' => $this->controllerInvisibleName,
                 'class_name' => $this->controllerContactName,
                 'visible' => true,
-                'module_tab' => true
-            ),
-            array(
+                'module_tab' => true,
+            ],
+            [
                 'name' => $this->module->l('Troubleshooting', self::FILENAME),
                 'ParentClassName' => $this->controllerInvisibleName,
                 'class_name' => $this->controllerTroubleshootName,
                 'visible' => true,
-                'module_tab' => true
-            ),
-            array(
+                'module_tab' => true,
+            ],
+            [
                 'name' => $this->module->l('Ajax', self::FILENAME),
                 'ParentClassName' => 'AdminParentModulesSf',
                 'class_name' => $this->controllerActionsName,
                 'visible' => false,
-                'module_tab' => true
-            ),
-        );
+                'module_tab' => true,
+            ],
+        ];
     }
 
     /**

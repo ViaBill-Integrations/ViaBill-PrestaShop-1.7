@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Api\Status;
@@ -20,8 +20,6 @@ use ViaBill\Util\DebugLog;
 
 /**
  * Class StatusService
- *
- * @package ViaBill\Service\Api\Status
  */
 class StatusService
 {
@@ -81,14 +79,14 @@ class StatusService
             );
 
         // debug info
-        $debug_str = "Status API Request/ [URL: ".var_export($requestUrl, true)."]";
+        $debug_str = 'Status API Request/ [URL: ' . var_export($requestUrl, true) . ']';
         DebugLog::msg($debug_str, 'debug');
 
         $response = $this->apiRequest->get($requestUrl);
         $body = json_decode($response->getBody(), true);
 
         // debug info
-        $debug_str = "Status API Request/ [Response: ".var_export($response, true)."]";
+        $debug_str = 'Status API Request/ [Response: ' . var_export($response, true) . ']';
         DebugLog::msg($debug_str, 'debug');
 
         return new StatusResponse($body['state'], $response->getErrors());

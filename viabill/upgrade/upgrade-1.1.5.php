@@ -5,8 +5,8 @@
  * @author    Written for or by ViaBill
  * @copyright Copyright (c) Viabill
  * @license   Addons PrestaShop license limitation
- * @see       /LICENSE
  *
+ * @see       /LICENSE
  */
 
 use ViaBill\Config\Config;
@@ -16,8 +16,8 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- *
  * @param Viabill $module
+ *
  * @return bool
  */
 function upgrade_module_1_1_5($module)
@@ -27,7 +27,7 @@ function upgrade_module_1_1_5($module)
 
     $orderStateToUpdate = [
         Configuration::get(Config::PAYMENT_ACCEPTED),
-        Configuration::get(Config::PAYMENT_COMPLETED)
+        Configuration::get(Config::PAYMENT_COMPLETED),
     ];
 
     $db = Db::getInstance();

@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Builder\Message;
@@ -16,8 +16,6 @@ use ViaBill\Adapter\Tools;
 
 /**
  * Class OrderMessageBuilder
- *
- * @package ViaBill\Builder\Message
  */
 class OrderMessageBuilder implements MessageBuilderInterface
 {
@@ -67,7 +65,7 @@ class OrderMessageBuilder implements MessageBuilderInterface
         if (is_array($message)) {
             $message = json_encode($message);
         } else {
-            $message = json_encode(array($message));
+            $message = json_encode([$message]);
         }
 
         $this->context->cookie->viaBillSuccessMessage = $message;
@@ -83,7 +81,7 @@ class OrderMessageBuilder implements MessageBuilderInterface
         if (is_array($message)) {
             $message = json_encode($message);
         } else {
-            $message = json_encode(array($message));
+            $message = json_encode([$message]);
         }
 
         $this->context->cookie->viaBillWarningMessage = $message;
@@ -99,7 +97,7 @@ class OrderMessageBuilder implements MessageBuilderInterface
         if (is_array($message)) {
             $message = json_encode($message);
         } else {
-            $message = json_encode(array($message));
+            $message = json_encode([$message]);
         }
 
         $this->context->cookie->viaBillErrorMessage = $message;

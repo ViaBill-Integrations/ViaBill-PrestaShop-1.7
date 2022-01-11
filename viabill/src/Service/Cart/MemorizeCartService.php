@@ -5,6 +5,7 @@
  * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
+*
  * @see       /LICENSE
  *
  * International Registered Trademark & Property of Viabill */
@@ -12,9 +13,9 @@
 namespace ViaBill\Service\Cart;
 
 use Cart;
+use Order;
 use ViaBill\Repository\ReadOnlyRepositoryInterface;
 use ViaBillPendingOrderCart;
-use Order;
 
 /**
  * Memorizes the cart
@@ -42,7 +43,7 @@ class MemorizeCartService
     {
         /** @var ViaBillPendingOrderCart|null $pendingOrderCart */
         $pendingOrderCart = $this->pendingOrderCartRepository->findOneBy([
-            'order_id' => $successfulProcessedOrder->id
+            'order_id' => $successfulProcessedOrder->id,
         ]);
 
         if (null === $pendingOrderCart) {

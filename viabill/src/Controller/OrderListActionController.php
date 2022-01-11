@@ -5,16 +5,17 @@
  * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
+*
  * @see       /LICENSE
  *
  * International Registered Trademark & Property of Viabill */
 
 namespace ViaBill\Controller;
 
-use ViaBill\Service\Order\OrderListActionsService;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
 use Symfony\Component\HttpFoundation\Response;
+use ViaBill\Service\Order\OrderListActionsService;
 
 class OrderListActionController extends FrameworkBundleAdminController
 {
@@ -36,9 +37,13 @@ class OrderListActionController extends FrameworkBundleAdminController
 
     /**
      * Capture payment viabill
+     *
      * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))")
+     *
      * @param int $orderId
+     *
      * @return Response
+     *
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
@@ -53,14 +58,19 @@ class OrderListActionController extends FrameworkBundleAdminController
             false
         );
         $this->setFlashMessages();
+
         return $this->redirectToRoute('admin_orders_view', ['orderId' => $orderId]);
     }
 
     /**
      * Cancel payment viabill
+     *
      * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))")
+     *
      * @param int $orderId
+     *
      * @return Response
+     *
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
@@ -75,14 +85,19 @@ class OrderListActionController extends FrameworkBundleAdminController
             false
         );
         $this->setFlashMessages();
+
         return $this->redirectToRoute('admin_orders_view', ['orderId' => $orderId]);
     }
 
     /**
      * Refund payment viabill
+     *
      * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))")
+     *
      * @param int $orderId
+     *
      * @return Response
+     *
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
@@ -97,11 +112,13 @@ class OrderListActionController extends FrameworkBundleAdminController
             false
         );
         $this->setFlashMessages();
+
         return $this->redirectToRoute('admin_orders_view', ['orderId' => $orderId]);
     }
 
     /**
      * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))")
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function bulkCapturePayments()
@@ -121,6 +138,7 @@ class OrderListActionController extends FrameworkBundleAdminController
 
     /**
      * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))")
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function bulkCancelPayments()
@@ -140,6 +158,7 @@ class OrderListActionController extends FrameworkBundleAdminController
 
     /**
      * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))")
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function bulkRefundPayments()

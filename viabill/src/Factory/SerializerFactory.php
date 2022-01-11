@@ -5,8 +5,8 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Factory;
@@ -17,12 +17,9 @@ use Symfony\Component\Serializer\Serializer;
 
 /**
  * Class SerializerFactory
- *
- * @package ViaBill\Factory
  */
 class SerializerFactory
 {
-
     /**
      * Gets New Instance Of Serializer Class That Serializes And Deserializes Data.
      *
@@ -30,10 +27,11 @@ class SerializerFactory
      */
     public function getSerializer()
     {
-        $normalizers = array(new ObjectNormalizer());
-        $encoders = array(new JsonEncoder());
+        $normalizers = [new ObjectNormalizer()];
+        $encoders = [new JsonEncoder()];
 
         $serializer = new Serializer($normalizers, $encoders);
+
         return $serializer;
     }
 }

@@ -5,17 +5,17 @@
  * @author    Written for or by ViaBill
  * @copyright Copyright (c) Viabill
  * @license   Addons PrestaShop license limitation
- * @see       /LICENSE
  *
+ * @see       /LICENSE
  */
 
 namespace ViaBill\Util;
 
-use ViaBill\Config\Config;
 use Monolog\Handler\FirePHPHandler;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use ViaBill\Config\Config;
 
 class DebugLog
 {
@@ -28,7 +28,7 @@ class DebugLog
         }
 
         $logger = new Logger('ViabillLogger');
-        
+
         $fileName = self::getFilename();
         $logger->pushHandler(new StreamHandler($fileName));
         $logger->pushHandler(new RotatingFileHandler($fileName));
@@ -45,19 +45,20 @@ class DebugLog
                 $logger->notice($msg);
                 break;
         }
-        
+
         $logger->close();
     }
-    
+
     public static function isEnabled()
     {
         $isEnabled = (bool) \Configuration::get(Config::ENABLE_DEBUG);
+
         return $isEnabled;
     }
 
     public static function getFilename()
     {
-        $full_path = _PS_ROOT_DIR_.'/modules/viabill'.self::LOG_FILEPATH;
+        $full_path = _PS_ROOT_DIR_ . '/modules/viabill' . self::LOG_FILEPATH;
         if (file_exists($full_path)) {
             $full_path = realpath($full_path);
         }

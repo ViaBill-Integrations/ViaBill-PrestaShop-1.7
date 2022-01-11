@@ -5,22 +5,19 @@
 * @author    Written for or by ViaBill
 * @copyright Copyright (c) Viabill
 * @license   Addons PrestaShop license limitation
-* @see       /LICENSE
 *
+* @see       /LICENSE
 */
 
 namespace ViaBill\Service\Handler;
 
 use Context;
+use Order;
 use ViaBill\Factory\LoggerFactory;
 use ViaBill\Object\Handler\HandlerResponse;
-use ViaBill\Util\DebugLog;
-use Order;
 
 /**
  * Class PaymentManagementHandler
- *
- * @package ViaBill\Service\Handler
  */
 class PaymentManagementHandler
 {
@@ -128,10 +125,11 @@ class PaymentManagementHandler
                 $this->module->l('Order %s is not related with viaBill system.', self::FILENAME),
                 $order->reference
             );
+
             return new HandlerResponse(
                 $order,
                 404,
-                array($errorMessage)
+                [$errorMessage]
             );
         }
 
@@ -153,7 +151,6 @@ class PaymentManagementHandler
 
         return new HandlerResponse($order, 200);
     }
-
 
     /**
      * Handles Multiple Payment Management.
@@ -181,8 +178,8 @@ class PaymentManagementHandler
 
         $orders = $this->getOrders($orderIds);
         $logger = $this->loggerFactory->create();
-        $allErrors = array();
-        $allWarnings = array();
+        $allErrors = [];
+        $allWarnings = [];
         $operationName = $this->getOperationName($isCancel, $isRefund, $isCapture);
 
         foreach ($orders as $order) {
@@ -217,9 +214,9 @@ class PaymentManagementHandler
                 $allErrors[] = $errorMessage;
                 $logger->error(
                     $errorMessage,
-                    array(
-                        'errors' =>$errors
-                    )
+                    [
+                        'errors' => $errors,
+                    ]
                 );
             }
 
@@ -232,9 +229,9 @@ class PaymentManagementHandler
                 $allWarnings[] = $warningMessage;
                 $logger->warning(
                     $warningMessage,
-                    array(
-                        'warning' => $warnings
-                    )
+                    [
+                        'warning' => $warnings,
+                    ]
                 );
             }
         }
@@ -242,6 +239,7 @@ class PaymentManagementHandler
         if (empty($allWarnings) && empty($allErrors)) {
             $context->controller->confirmations[] =
                 sprintf($this->module->l('%s operation is completed', self::FILENAME), $operationName);
+
             return;
         }
 
@@ -261,7 +259,7 @@ class PaymentManagementHandler
      */
     private function getOrders(array $orderIds)
     {
-        $result = array();
+        $result = [];
         foreach ($orderIds as $id) {
             $order = new Order($id);
 
@@ -271,6 +269,7 @@ class PaymentManagementHandler
 
             $result[] = $order;
         }
+
         return $result;
     }
 
