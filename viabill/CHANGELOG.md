@@ -197,5 +197,9 @@
 - Add filter the js script
 
 ### Changed
-## [1.1.25] - 2021-10-04
+## [1.1.25] - 2022-01-11
 - Add customer info during checkout
+
+### Changed
+## [1.1.26] - 2022-03-24
+- New checkout Viabill logo

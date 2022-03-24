@@ -184,11 +184,14 @@ class PaymentOptionsBuilder
         $url = $this->link->getModuleLink($this->module->name, 'checkout');
 
         $paymentOption = new PaymentOption();
-        $paymentOption->setAction($url);
-        $paymentOption->setCallToActionText($this->module->l('Pay with ViaBill', self::FILENAME));
+        $paymentOption->setAction($url);        
 
         if (Configuration::get(Config::VIABILL_LOGO_DISPLAY_IN_CHECKOUT)) {
-            $paymentOption->setLogo($this->module->getPathUri() . 'views/img/viabill.png');
+            // Hide payment method name by commenting the following line
+            // $paymentOption->setCallToActionText($this->module->l('Pay with ViaBill', self::FILENAME));
+            $paymentOption->setLogo($this->module->getPathUri() . 'views/img/viabill_logo_tagline.png');
+        } else {
+            $paymentOption->setCallToActionText($this->module->l('Pay with ViaBill', self::FILENAME));
         }
 
         $paymentOption->setModuleName($this->module->name);
