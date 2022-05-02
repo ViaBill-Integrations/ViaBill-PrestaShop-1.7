@@ -10,6 +10,7 @@
 */
 
 use ViaBill\Config\Config;
+use ViaBillTransactionHistory;
 
 require_once dirname(__FILE__) . '/../../vendor/autoload.php';
 
@@ -87,11 +88,14 @@ class AdminViaBillTroubleshootController extends ModuleAdminController
 
         $this->scanDirForTemplates($theme_dir);
 
+        $this->setDatatablesMedia();
+
         $theme_info = $this->getThemeInfo();
         $price_tags_info = $this->getPriceTagsParams();
         $product_price_tags_info = $this->getProductInfo();
         $cart_price_tags_info = $this->getCartInfo();
         $checkout_price_tags_info = $this->getCheckoutInfo();
+        $recent_transactions_info = $this->getRecentTransactionsInfo();        
 
         $html = '
         <div class="container" style="margin-top: 20px;margin-bottom: 20px;">' .
@@ -105,9 +109,18 @@ class AdminViaBillTroubleshootController extends ModuleAdminController
         $html .= $product_price_tags_info;
         $html .= $cart_price_tags_info;
         $html .= $checkout_price_tags_info;
+        $html .= $recent_transactions_info;        
         $html .= '</div>';
 
         return $html;
+    }
+
+    private function setDatatablesMedia() 
+    {
+        $this->addCSS($this->module->getLocalPath() . '/views/css/admin/datatables.min.css');        
+        $this->addCSS($this->module->getLocalPath() . '/views/css/admin/datatables-transactions.css'); 
+        $this->addJS($this->module->getLocalPath() . '/views/js/admin/datatables.min.js');
+        $this->addJS($this->module->getLocalPath() . '/views/js/admin/datatables-transactions.js');
     }
 
     private function getThemeInfo()
@@ -485,6 +498,86 @@ class AdminViaBillTroubleshootController extends ModuleAdminController
         return $checkout_price_tags_info;
     }
 
+    private function getRecentTransactionsInfo()
+    {
+        $recent_transactions_info = '';
+
+        $recent_transactions = ViaBillTransactionHistory::getRecentTransactions();
+        if (!empty($recent_transactions)) {            
+            $recent_transactions_count = count($recent_transactions);
+            $time_window = ViaBillTransactionHistory::getRecentTransactionsDays();            
+
+            $transactions_table = '<table id="recent_transactions" >'.
+                '<thead>
+                <tr class="trans_header">'.
+                '<td>'.'Date'.'</td>'.
+                '<td>'.'Transaction ID'.'</td>'.
+                '<td>'.'Order ID'.'</td>'.
+                '<td>'.'Status'.'</td>'.
+                '<td>'.'Irregular'.'</td>'.
+                '<td>'.'Details'.'</td>'.
+                '</tr>
+                <tr class="trans_subheader">'.
+                '<td><input id="filter_0" class="transfilter" type="text" placeholder="Search..." value="" /></td>'.
+                '<td><input id="filter_1" class="transfilter" type="text" placeholder="Search..." value="" /></td>'.
+                '<td><input id="filter_2" class="transfilter" type="text" placeholder="Search..." value="" /></td>'.
+                '<td><select id="filter_3" class="transfilter"><option value="">All</option></select></td>'.
+                '<td><select id="filter_4" class="transfilter"><option value="">All</option>
+                        <option value="Yes">Yes</option><option value="No">No</option></select></td>'.
+                '<td></td>'.
+                '</tr>
+                </thead><tbody>';
+
+            foreach ($recent_transactions as $trans) {
+                $transaction_id = $trans['transaction_id'];
+                $status = $trans['status'];
+                unset($trans['status']);
+                $status_class = $trans['status_class'];
+                unset($trans['status_class']);
+                $notes = $trans['notes'];
+                unset($trans['notes']);                
+                $irregular = $trans['irregular'];
+                unset($trans['irregular']);
+                $irregular_notes =  $trans['irregular_notes'];
+                unset($trans['irregular_notes']);
+
+                $trans_details = $this->getTransactionTreeDetails($trans);
+                if (!empty($notes)) {
+                    $trans_details .= '<div class="notes_trans notes_'.$status_class.'">'.$notes.'</div>';
+                }
+                $irregular_class = '';
+                if (!empty($irregular_notes)) {
+                    $trans_details .= '<div class="notes_irregular">'.$irregular_notes.'</div>';
+                    $irregular_class = ' trans_irregular';
+                }
+                
+                $transactions_table .= '<tr id="'.$transaction_id.'" class="trans_'.$status_class.$irregular_class.'">'.
+                    '<td>'.$trans['checkout_date'].'</td>'.
+                    '<td>'.$transaction_id.'</td>'.
+                    '<td>'.$trans['order_id'].'</td>'.
+                    '<td>'.$status.'</td>'.
+                    '<td>'.$irregular.'</td>'.
+                    '<td><button type="button" class="details_toggle" id="details_toggle_'.$transaction_id.'" onclick="toggleTransDetails(\''.$transaction_id.'\')">Show</button>'.
+                        '<div style="display: none" id="details_'.$transaction_id.'">'.$trans_details.'</div></td></tr>';
+            }
+            $transactions_table .= '</tbody></table>';            
+
+            $recent_transactions_info = sprintf('%s recent transactions found in the last %d days.', $recent_transactions_count, $time_window);                        
+
+            $recent_transactions_info = '
+            <div class="alert alert-info" role="alert">
+                <strong>Recent transactions</strong><br/>
+                ' . $recent_transactions_info . '
+                <div>'.$debug_str.'</div>
+            </div>' . 
+            '<div class="transactions_table">'.
+                $transactions_table.
+            '</div>';            
+        }
+
+        return $recent_transactions_info;
+    }    
+
     private function findPriceTagsTemplates($prefix, $raw_query_selector, $price_var)
     {
         $result = [
@@ -645,6 +738,22 @@ class AdminViaBillTroubleshootController extends ModuleAdminController
         $html .= '</dl>';
         $html .= '</div>';
 
+        return $html;
+    }
+
+    private function getTransactionTreeDetails($trans, $level = 1)
+    {
+        $html = '';
+        foreach ($trans as $key => $value) {
+            if (is_array($value)) {
+                $value = '<ul>'.$this->getTransactionTreeDetails($value, $level + 1).'</ul>';
+            }
+            if ($level == 1) {                
+                $html .= '<li><strong>'.$key.'</strong> : '. $value.'</li>';
+            } else {
+                $html .= '<li><em>'.$key.'</em> : '. $value.'</li>';
+            }
+        }
         return $html;
     }
 

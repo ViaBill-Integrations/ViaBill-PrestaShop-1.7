@@ -1,0 +1,27 @@
+#recent_transactions tr.trans_header { background-color: #7A7A7A; color: #FFFFFF; font-weight: bold; }
+#recent_transactions tr.trans_approved td:nth-child(4) {background-color: #23c925; }
+#recent_transactions tr.trans_rejected td:nth-child(4) {background-color: #ee8733; }
+#recent_transactions tr.trans_cancelled td:nth-child(4) {background-color: #ef462b; }
+#recent_transactions tr.trans_pending td:nth-child(4) {background-color: #aec6da; }
+#recent_transactions tr.trans_unknown td:nth-child(4) {background-color: #f7f8a6; }
+#recent_transactions tr.trans_irregular td { background-color: #f7f8a6; }
+#recent_transactions tr td { padding: 3px; border: 1px solid #A0A0A0; } 
+
+#recent_transactions tr td div.notes_trans {
+    border: 1px solid #555;
+    background-color: #e2fbff;
+    padding: 5px;
+    margin-top: 5px;
+    border-radius: 6px;
+}
+
+#recent_transactions tr td div.notes_irregular {
+    border: 1px solid #555;
+    background-color: #fd7474;
+    padding: 5px;
+    margin-top: 5px;
+    border-radius: 6px;
+}
+
+span.details_toggle { border-radius: 50%; color: black; }
+.transactions_table { margin-bottom: 15px; }

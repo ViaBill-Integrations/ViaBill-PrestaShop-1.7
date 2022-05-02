@@ -17,6 +17,7 @@ use ViaBill\Object\Api\Payment\PaymentRequest;
 use ViaBill\Object\Api\Payment\PaymentResponse;
 use ViaBill\Service\Api\ApiRequest;
 use ViaBill\Util\DebugLog;
+use ViaBillTransactionHistory;
 
 /**
  * Class PaymentService
@@ -72,7 +73,7 @@ class PaymentService
     {
         // debug info
         $debug_str = 'Payment API Request/ [body: ' . var_export($paymentRequest, true) . ']';
-        DebugLog::msg($debug_str, 'debug');
+        DebugLog::msg($debug_str, 'debug');                        
 
         $apiResponse = $this->apiRequest->post(
             '/api/checkout-authorize/addon/prestashop',
@@ -84,6 +85,10 @@ class PaymentService
         // debug info
         $debug_str = 'Payment API Request/ [response: ' . var_export($apiResponse, true) . ']';
         DebugLog::msg($debug_str, 'debug');
+
+        // transaction history info
+        $transactionHistory = new ViaBillTransactionHistory();
+        $transactionHistory->createNew($paymentRequest, $apiResponse);
 
         if (!in_array($apiResponse->getStatusCode(), [200, 204])) {
             $logger = $this->loggerFactory->create();

@@ -127,6 +127,7 @@ class ComposerStaticInit79d9ee46ab900dd3be0d010246681d45
         'ViaBillOrderCapture' => __DIR__ . '/../..' . '/src/Entity/ViaBillOrderCapture.php',
         'ViaBillOrderRefund' => __DIR__ . '/../..' . '/src/Entity/ViaBillOrderRefund.php',
         'ViaBillPendingOrderCart' => __DIR__ . '/../..' . '/src/Entity/ViaBillPendingOrderCart.php',
+        'ViaBillTransactionHistory' => __DIR__ . '/../..' . '/src/Entity/ViaBillTransactionHistory.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

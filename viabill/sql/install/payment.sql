@@ -41,3 +41,21 @@ CREATE TABLE IF NOT EXISTS `PREFIX_viabill_order_conf_mail` (
     `template_vars` text NOT NULL,
     `date_created` datetime NOT NULL
 ) ENGINE=ENGINE_TYPE DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `PREFIX_viabill_transaction_history` (
+    `id_viabill_transaction_history`  INT(64) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `transaction_id` varchar(256) NOT NULL,
+    `order_id` INT(64) NOT NULL,
+    `checkout_out_date` datetime NOT NULL,
+    `checkout_out_params` varchar(2048) NOT NULL,
+    `checkout_out_response` varchar(2048) NOT NULL,
+    `checkout_out_success` TINYINT(1) NOT NULL,
+    `callback_in_date` datetime DEFAULT NULL,
+    `callback_in_params` varchar(2048) DEFAULT NULL,
+    `callback_in_status` varchar(32) DEFAULT NULL,
+    `complete_in_date` datetime DEFAULT NULL,
+    `complete_in_approved` TINYINT(1) NOT NULL,
+    `cancel_in_date` datetime DEFAULT NULL,
+    `cancel_in_params` varchar(2048) DEFAULT NULL,
+    `notes` text DEFAULT NULL
+) ENGINE=ENGINE_TYPE DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

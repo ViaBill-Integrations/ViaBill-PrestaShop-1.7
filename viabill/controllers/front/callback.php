@@ -9,6 +9,7 @@
 */
 
 use ViaBill\Util\DebugLog;
+use ViaBillTransactionHistory;
 
 /**
  * ViaBill CallBack Module Front Controller Class.
@@ -64,6 +65,17 @@ class ViaBillCallBackModuleFrontController extends ModuleFrontController
                 'json'
             );
 
+            // update transaction history
+            $idTransaction = $callBackResponse->getTransaction();            
+            if ($idTransaction) {
+                $idTransactionHistory = ViaBillTransactionHistory::getPrimaryKeyByTransaction($idTransaction);                
+                if ($idTransactionHistory) {
+                    $transactionHistory = new ViaBillTransactionHistory($idTransactionHistory);                    
+                    $transactionHistory->updateAfterCallback($callBackResponse);
+                }
+            }                        
+
+            // add a log entry
             $debug_str = var_export($requestContent, true);
             DebugLog::msg('Callback postProcess / content success: ' . $debug_str);
         } catch (Exception $exception) {
@@ -78,7 +90,8 @@ class ViaBillCallBackModuleFrontController extends ModuleFrontController
             $er = $exception->getMessage();
             $exc_msg = var_export($er, true);
             $debug_str = var_export($requestContent, true);
-            DebugLog::msg('Callback postProcess / [error msg: ' . $exc_msg . '][content: ' . $debug_str . ']');
+            $raw_request = print_r($_REQUEST, true);
+            DebugLog::msg('Callback postProcess / [error msg: '.$exc_msg.'][content: '.$debug_str.'][raw request: '.$raw_request.']');
 
             $this->ajaxDie('ERROR');
         }

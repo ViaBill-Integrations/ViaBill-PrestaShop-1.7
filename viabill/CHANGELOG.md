@@ -203,3 +203,7 @@
 ### Changed
 ## [1.1.26] - 2022-03-24
 - New checkout Viabill logo
+
+### Changed
+## [1.1.27] - 2022-04-29
+- New logging capabilities with transactions history db table

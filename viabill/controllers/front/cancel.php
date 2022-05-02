@@ -10,6 +10,7 @@
 */
 
 use ViaBill\Util\DebugLog;
+use ViaBillTransactionHistory;
 
 /**
  * ViaBill Cancel Module Front Controller Class.
@@ -63,6 +64,22 @@ class ViaBillCancelModuleFrontController extends ModuleFrontController
         $this->id_order = Order::getIdByCartId((int) ($this->id_cart));
         $this->secure_key = Tools::getValue('key', false);
         $order = new Order((int) $this->id_order);
+
+        // update transaction history
+        $idOrder = $this->id_order;
+        if ($idOrder) {
+            $transactionHistory = new ViaBillTransactionHistory();
+            $idTransactionHistory = ViaBillTransactionHistory::getPrimaryKeyByOrder($idOrder);
+            if ($idTransactionHistory) {
+                $transactionHistory = new ViaBillTransactionHistory($idTransactionHistory);
+                $cancelResponse = array(
+                    'cart' => $this->id_cart,
+                    'order_id' => $this->id_order,
+                    'secure_key' => $this->secure_key
+                );
+                $transactionHistory->updateAfterCancel($cancelResponse);
+            }
+        }
 
         // Debug info
         $debug_str = '[Cart id: ' . $this->id_cart . '][Order id: ' . $this->id_order . '][Secure key: ' . $this->secure_key . ']';

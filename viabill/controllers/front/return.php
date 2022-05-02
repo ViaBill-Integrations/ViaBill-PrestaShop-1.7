@@ -10,6 +10,7 @@
 */
 
 use ViaBill\Util\DebugLog;
+use ViaBillTransactionHistory;
 
 /**
  * ViaBill Checkout Module Front Controller Class.
@@ -47,6 +48,15 @@ class ViaBillReturnModuleFrontController extends ModuleFrontController
              */
             $memorizeService = $this->module->getModuleContainer()->get('cart.memorizeCartService');
             $memorizeService->removeMemorizedCart($order);
+        }
+        
+        // update transaction history       
+        if ($orderId) {
+            $idTransactionHistory = ViaBillTransactionHistory::getPrimaryKeyByOrder($orderId);
+            if ($idTransactionHistory) {
+                $transactionHistory = new ViaBillTransactionHistory($idTransactionHistory);
+                $transactionHistory->updateAfterComplete($isOrderApproved);
+            }
         }
 
         // Debug info

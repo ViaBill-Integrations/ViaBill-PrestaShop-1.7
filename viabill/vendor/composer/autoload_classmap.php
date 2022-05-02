@@ -112,4 +112,5 @@ return array(
     'ViaBillOrderCapture' => $baseDir . '/src/Entity/ViaBillOrderCapture.php',
     'ViaBillOrderRefund' => $baseDir . '/src/Entity/ViaBillOrderRefund.php',
     'ViaBillPendingOrderCart' => $baseDir . '/src/Entity/ViaBillPendingOrderCart.php',
+    'ViaBillTransactionHistory' => $baseDir . '/src/Entity/ViaBillTransactionHistory.php',
 );
