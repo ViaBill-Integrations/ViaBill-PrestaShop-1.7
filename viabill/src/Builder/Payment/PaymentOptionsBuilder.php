@@ -188,8 +188,13 @@ class PaymentOptionsBuilder
 
         if (Configuration::get(Config::VIABILL_LOGO_DISPLAY_IN_CHECKOUT)) {
             // Hide payment method name by commenting the following line
-            // $paymentOption->setCallToActionText($this->module->l('Pay with ViaBill', self::FILENAME));
-            $paymentOption->setLogo($this->module->getPathUri() . 'views/img/viabill_logo_tagline.png');
+            // $paymentOption->setCallToActionText($this->module->l('Pay with ViaBill', self::FILENAME));            
+            $lang = strtolower($this->language->iso_code);
+            if ($lang) {
+                $paymentOption->setLogo($this->module->getPathUri() . 'views/img/viabill_logo_tagline.'.$lang.'.png');
+            } else {
+                $paymentOption->setLogo($this->module->getPathUri() . 'views/img/viabill_logo_tagline.png');
+            }            
         } else {
             $paymentOption->setCallToActionText($this->module->l('Pay with ViaBill', self::FILENAME));
         }

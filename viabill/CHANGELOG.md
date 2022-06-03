@@ -207,3 +207,7 @@
 ### Changed
 ## [1.1.27] - 2022-04-29
 - New logging capabilities with transactions history db table
+
+### Changed
+## [1.1.28] - 2022-05-24
+- New language specific logo
