@@ -198,7 +198,7 @@
 
 ### Changed
 ## [1.1.25] - 2022-01-11
-- Add customer info during checkout
+- Added customer info during checkout
 
 ### Changed
 ## [1.1.26] - 2022-03-24
@@ -211,3 +211,7 @@
 ### Changed
 ## [1.1.28] - 2022-05-24
 - New language specific logo
+
+### Changed
+## [1.1.29] - 2022-08-22
+- Added cart info during checkout

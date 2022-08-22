@@ -228,6 +228,8 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
 
         $customerInfo = $this->getCustomerInfo($order);
 
+        $cartInfo = $this->getCartInfo($order);
+
         return new \ViaBill\Object\Api\Payment\PaymentRequest(
             $user->getKey(),
             $transaction,
@@ -239,7 +241,8 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
             $callBackUrl,
             $config->isTestingEnvironment(),
             $md5Check,
-            $customerInfo
+            $customerInfo,
+            $cartInfo
         );
     }
 
@@ -353,4 +356,146 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
 
         return $info;
     }
+
+    /**
+     * Get information about the cart items/products for the active order
+     *
+     * @param Order $order
+     *
+     * @return array
+     */
+    private function getCartInfo(Order $order)
+    {        
+        // sanity check
+        if (empty($order)) {
+            return null;
+        }
+
+        $products = $order->getProducts();
+        if (empty($products)) {
+            return null;
+        }
+
+        $lang_id = (int)$this->context->language->id;
+        
+        $tax_total = (float) ($order->getTotalProductsWithoutTaxes() - $order->getTotalProductsWithTaxes());
+        if ($tax_total > 0.01) {
+            $tax_total_amount = number_format($tax_total, 2);
+        } else {
+            $tax_total_amount = '0';
+        }
+
+        $currency_name = '';
+        $currency_id = (int) $order->id_currency;
+        if ($currency_id) {
+            $currency = new Currency($currency_id, $lang_id);
+            if ($currency) {
+                $currency_name = $currency->iso_code;
+            }            
+        }        
+        
+        $order_quantity = 0;
+
+        $info = [                   
+            'subtotal'=> number_format((float) $order->total_products, 2),        
+            'tax' => number_format((float) $tax_total_amount, 2),
+            'shipping'=> number_format((float) $order->total_shipping, 2),
+            'discount'=> number_format((float) $order->total_discounts, 2),
+            'total'=> number_format((float) $order->total_paid, 2),
+            'currency'=>$currency_name,
+            'quantity'=> $order_quantity,
+            'products' => []
+        ];         
+
+        foreach ( $products as $product ) {
+            $product_id = (int) $product['id_product'];                       
+            
+            $total_tax_incl = (float) $product['total_price_tax_incl']; // or total_wt
+            $total_tax_excl = (float) $product['total_price_tax_excl']; // or total_price
+            $tax_amount = abs($total_tax_incl - $total_tax_excl);
+            $tax_percentage = ($tax_amount/$total_tax_excl)*100.00;
+            $product_quantity = (int) $product['product_quantity'];
+            $order_quantity += $product_quantity;
+            
+            $product_entry = [
+                'name' => $product['product_name'],
+                'quantity' => $product_quantity,
+                'subtotal' => number_format($total_tax_excl, 2),
+                'tax' => number_format($tax_amount, 2)
+            ];
+
+            if ($tax_amount > 0.01) {
+                $product_entry['tax_class'] = number_format($tax_percentage, 2);
+            }
+            
+            if (!empty($lang_id)) {       
+                $product_id = (int) $product['id_product']; 
+                if ($product_id) {
+                    $product_obj = new Product($product_id, $lang_id);
+                    if (!empty($product_obj)) {                                               
+                        $description = $product_obj->description[$lang_id];
+                        $short_description = $product_obj->description_short[$lang_id];
+                        if (!empty($short_description)) {
+                            //$product_entry['description'] = strip_tags($short_description);
+                        } else if (!empty($description)) {
+                            //$product_entry['description'] = strip_tags($description);
+                        }
+                        
+                        $meta_description = $product_obj->meta_description[$lang_id];
+                        $meta_keywords = $product_obj->meta_keywords[$lang_id];
+                        if (!empty($meta_description)) {                            
+                            $product_entry['meta'] = $meta_description[$lang_id];
+                        }
+                        if (!empty($meta_keywords)) {
+                            $product_entry['meta'] = $meta_keywords[$lang_id];
+                        }                        
+                    }
+                }
+
+                $category_id = (int) $product['id_category_default'];
+                if ($category_id) {
+                    $category = new Category($category_id, $lang_id);
+                    if (!empty($category)) {
+                        $product_entry['categories'] = $category->name;
+                    }
+                }
+
+                $manufacturer_id = (int) $product['id_manufacturer'];
+                if ($manufacturer_id) {
+                    $manufacturer = new Manufacturer($manufacturer_id, $lang_id);
+                    if (!empty($manufacturer)) {
+                        $product_entry['manufacturer'] = $manufacturer->name;
+                    }
+                }
+            }                        
+
+            $weight = (float)$product['weight'];
+            if ($weight > 0.01) {
+                $product_entry['weight'] = number_format($weight, 2);
+            }
+            if (!empty($product['download_hash'])) {
+                $product_entry['virtual'] = 1;
+            }
+            if (!empty($product['on_sale'])) {
+                $product_entry['on_sale'] = 1;
+            }  
+
+            $reduction_price = (float) $product['reduction_price']."\n";
+            $reduction_percent = (float) $product['reduction_percent']."\n";
+            if ($reduction_price > 0.01) {
+                $initial_price = (float) $product['price'];
+                $product_entry['reduced_price'] = number_format( (float) (($initial_price - $reduction_price) / $initial_price) * 100.00, 2);
+            } else if ($reduction_percent > 0.01) {                
+                $product_entry['reduced_price'] = number_format($reduction_percent, 2);
+            }
+
+            $info['products'][] = $product_entry;
+        }
+
+        // update order quantity with the calculated value
+        $info['quantity'] = $order_quantity;
+               
+        return $info;        
+    }
+
 }

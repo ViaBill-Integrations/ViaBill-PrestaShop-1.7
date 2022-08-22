@@ -103,6 +103,13 @@ class PaymentRequest implements SerializedObjectInterface
     private $customParams;
 
     /**
+     * Payment Request Cart Info
+     *
+     * @var array
+     */
+    private $cartParams;
+
+    /**
      * PaymentRequest constructor.
      *
      * @param $apiKey
@@ -116,6 +123,7 @@ class PaymentRequest implements SerializedObjectInterface
      * @param bool $test
      * @param string $md5Check
      * @param array $ustomer_info
+     * @param array $cartParams
      */
     public function __construct(
         $apiKey,
@@ -128,7 +136,8 @@ class PaymentRequest implements SerializedObjectInterface
         $callback_url,
         $test,
         $md5Check,
-        $customParams
+        $customParams,
+        $cartParams
     ) {
         $this->apiKey = $apiKey;
         $this->transaction = $transaction;
@@ -141,6 +150,7 @@ class PaymentRequest implements SerializedObjectInterface
         $this->md5Check = $md5Check;
         $this->callback_url = $callback_url;
         $this->customParams = $this->cleanCustomParams($customParams);
+        $this->cartParams = $this->cleanCartParams($cartParams);
     }
 
     /**
@@ -174,6 +184,23 @@ class PaymentRequest implements SerializedObjectInterface
         }
 
         return $customParams;
+    }
+
+    /**
+     * Clearn custom params to be compatible with viabill server
+     *
+     * @param array $cartParams
+     *
+     * @return array
+     */
+    private function cleanCartParams($cartParams)
+    {
+        if (empty($cartParams)) {
+            return null;
+        }        
+
+        // double json encode this paramater
+        return json_encode($cartParams);
     }
 
     /**
@@ -297,6 +324,16 @@ class PaymentRequest implements SerializedObjectInterface
     }
 
     /**
+     * Gets Cart Info.
+     *
+     * @return string
+     */
+    public function getCartParams()
+    {
+        return json_encode($this->cartParams);
+    }
+
+    /**
      * Gets Payment Request Serialized Data.
      *
      * @return array
@@ -315,7 +352,8 @@ class PaymentRequest implements SerializedObjectInterface
             'callback_url' => $this->callback_url,
             'test' => (bool) $this->test,
             'md5check' => $this->md5Check,
-            'customParams' => $this->customParams
+            'customParams' => $this->customParams,
+            'cartParams' => $this->cartParams
         ];
     }
 }

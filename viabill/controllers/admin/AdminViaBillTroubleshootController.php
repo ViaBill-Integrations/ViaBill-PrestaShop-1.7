@@ -567,8 +567,7 @@ class AdminViaBillTroubleshootController extends ModuleAdminController
             $recent_transactions_info = '
             <div class="alert alert-info" role="alert">
                 <strong>Recent transactions</strong><br/>
-                ' . $recent_transactions_info . '
-                <div>'.$debug_str.'</div>
+                ' . $recent_transactions_info . '                
             </div>' . 
             '<div class="transactions_table">'.
                 $transactions_table.
