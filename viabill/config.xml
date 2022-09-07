@@ -2,7 +2,7 @@
 <module>
     <name>viabill</name>
     <displayName><![CDATA[ViaBill]]></displayName>
-    <version><![CDATA[1.1.29]]></version>
+    <version><![CDATA[1.1.30]]></version>
     <description><![CDATA[ViaBill Official - Try, before you buy!]]></description>
     <author><![CDATA[Written for or by ViaBill]]></author>
     <tab><![CDATA[payments_gateways]]></tab>

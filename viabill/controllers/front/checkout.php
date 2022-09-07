@@ -396,7 +396,63 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
         
         $order_quantity = 0;
 
-        $info = [                   
+        $order_data = $order->getFields();
+
+        $billing_email = '';
+        $billing_phone = '';
+        $shipping_city = '';
+        $shipping_postcode = '';
+        $shipping_country = '';        
+
+        if (isset($order_data['id_address_invoice'])) {
+            if (!empty($order_data['id_address_invoice'])) {
+                $billing_address_obj = new Address((int) $order_data['id_address_invoice']);
+                $billing_address = $billing_address_obj->getFields();
+                $billing_street = trim($billing_address['address1'].' '.$billing_address['address2']);
+                $billing_city = trim($billing_address['city']);
+                $billing_postcode = trim($billing_address['postcode']);
+                $billing_country = trim($billing_address['country']);
+                $billing_phone = (empty($billing_address['phone_mobile']))?$billing_address['phone']:$billing_address['phone_mobile'];
+            }
+        }
+
+        if (isset($order_data['id_address_delivery'])) {
+            if (!empty($order_data['id_address_delivery'])) {
+                $shipping_address_obj = new Address((int) $order_data['id_address_delivery']);
+                $shipping_address = $shipping_address_obj->getFields();
+                $shipping_street = trim($shipping_address['address1'].' '.$shipping_address['address2']);
+                $shipping_city = trim($shipping_address['city']);
+                $shipping_postcode = trim($shipping_address['postcode']);
+                $shipping_country = trim($shipping_address['country']);
+            }
+        }
+
+        $shipping_same_as_billing = 'yes';
+        $compare_addresses = [
+            'street' => [$billing_address, $shipping_address],
+            'city' => [$billing_city, $shipping_city],
+            'postcode' => [$billing_postcode, $shipping_postcode],
+            'country' => [$billing_country, $shipping_country]
+        ];
+        foreach ($compare_addresses as $c_values) {
+            $b_value = $c_values[0];
+            $s_value = $c_values[1];
+            if (!empty($b_value) && !empty($s_value)) {
+                if ($b_value != $s_value) {
+                    $shipping_same_as_billing = 'no';
+                }
+            }
+        }
+
+        if (!empty($order_data['id_customer'])) {
+            $customer = new Customer((int) ($order_data['id_customer']));
+            if (property_exists($customer, 'email')) {
+                $billing_email = $customer->email;
+            }
+        }                 
+
+        $info = [           
+            'date_created' => $order_data['date_add'],
             'subtotal'=> number_format((float) $order->total_products, 2),        
             'tax' => number_format((float) $tax_total_amount, 2),
             'shipping'=> number_format((float) $order->total_shipping, 2),
@@ -404,8 +460,14 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
             'total'=> number_format((float) $order->total_paid, 2),
             'currency'=>$currency_name,
             'quantity'=> $order_quantity,
+            'billing_email' => $billing_email,
+            'billing_phone' => $billing_phone, 
+            'shipping_city' => $shipping_city,
+            'shipping_postcode' => $shipping_postcode,
+            'shipping_country' => $shipping_country,
+            'shipping_same_as_billing' => $shipping_same_as_billing,
             'products' => []
-        ];         
+        ];      
 
         foreach ( $products as $product ) {
             $product_id = (int) $product['id_product'];                       
@@ -427,27 +489,38 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
             if ($tax_amount > 0.01) {
                 $product_entry['tax_class'] = number_format($tax_percentage, 2);
             }
+
+            $product_url = null;
+            $image_url = null;
             
             if (!empty($lang_id)) {       
                 $product_id = (int) $product['id_product']; 
                 if ($product_id) {
                     $product_obj = new Product($product_id, $lang_id);
-                    if (!empty($product_obj)) {                                               
+                    if (!empty($product_obj)) {     
+                        // Initialize the link object
+                        // $link = new Link;
+                        $product_url = $this->context->link->getProductLink($product_id);
+                        $image = $product_obj->getCover($product_id);
+                        if (!empty($image)) {
+                            $image_url = $this->context->link->getImageLink($lang_id, $image['id_image'], 'home_default');
+                        }
+                        /*                        
                         $description = $product_obj->description[$lang_id];
                         $short_description = $product_obj->description_short[$lang_id];
                         if (!empty($short_description)) {
-                            //$product_entry['description'] = strip_tags($short_description);
+                            $product_entry['description'] = $this->truncateDescription(strip_tags($short_description));
                         } else if (!empty($description)) {
-                            //$product_entry['description'] = strip_tags($description);
+                            $product_entry['description'] = $this->truncateDescription(strip_tags($description));
                         }
+                        */
                         
                         $meta_description = $product_obj->meta_description[$lang_id];
                         $meta_keywords = $product_obj->meta_keywords[$lang_id];
                         if (!empty($meta_description)) {                            
-                            $product_entry['meta'] = $meta_description[$lang_id];
-                        }
-                        if (!empty($meta_keywords)) {
-                            $product_entry['meta'] = $meta_keywords[$lang_id];
+                            $product_entry['meta'] = $this->truncateDescription(strip_tags($meta_description[$lang_id]));
+                        } else if (!empty($meta_keywords)) {
+                            $product_entry['meta'] = $this->truncateDescription(strip_tags($meta_keywords[$lang_id]));
                         }                        
                     }
                 }
@@ -478,15 +551,26 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
             }
             if (!empty($product['on_sale'])) {
                 $product_entry['on_sale'] = 1;
-            }  
-
-            $reduction_price = (float) $product['reduction_price']."\n";
+            }               
+                        
+            $reduction_amount = (float) $product['reduction_amount']."\n";
             $reduction_percent = (float) $product['reduction_percent']."\n";
-            if ($reduction_price > 0.01) {
-                $initial_price = (float) $product['price'];
-                $product_entry['reduced_price'] = number_format( (float) (($initial_price - $reduction_price) / $initial_price) * 100.00, 2);
-            } else if ($reduction_percent > 0.01) {                
-                $product_entry['reduced_price'] = number_format($reduction_percent, 2);
+            $initial_price = (float) $product['price'];                
+            $product_discount = 0;
+            if ($reduction_amount > 0.01) {                
+                $product_discount = $reduction_amount;
+            } else if ($reduction_percent > 0.01) {      
+                $product_discount = ($reduction_percent * $initial_price)/100;                          
+            } 
+            if ($product_discount) {
+                $product_entry['discount'] = number_format($product_discount * $product_quantity, 2);
+            }
+
+            if (!empty($product_url)) {
+                $product_entry['product_url'] = str_replace('\\/','/', $product_url);
+            }
+            if (!empty($image_url)) {
+                $product_entry['image_url'] = str_replace('\\/','/', $image_url);
             }
 
             $info['products'][] = $product_entry;
@@ -496,6 +580,29 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
         $info['quantity'] = $order_quantity;
                
         return $info;        
+    }
+
+    public function truncateDescription($text, $maxchar=200, $end='...') {
+        if (strlen($text) > $maxchar || $text == '') {
+            $words = preg_split('/\s/', $text);      
+            $output = '';
+            $i      = 0;
+            while (1) {
+                $length = strlen($output)+strlen($words[$i]);
+                if ($length > $maxchar) {
+                    break;
+                } 
+                else {
+                    $output .= " " . $words[$i];
+                    ++$i;
+                }
+            }
+            $output .= $end;
+        } 
+        else {
+            $output = $text;
+        }
+        return $output;
     }
 
 }

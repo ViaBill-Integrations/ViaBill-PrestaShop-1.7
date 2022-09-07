@@ -215,3 +215,7 @@
 ### Changed
 ## [1.1.29] - 2022-08-22
 - Added cart info during checkout
+
+### Changed
+## [1.1.30] - 2022-09-01
+- Improved cart info
