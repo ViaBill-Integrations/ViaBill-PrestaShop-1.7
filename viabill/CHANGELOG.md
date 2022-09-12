@@ -219,3 +219,7 @@
 ### Changed
 ## [1.1.30] - 2022-09-01
 - Improved cart info
+
+### Changed
+## [1.1.31] - 2022-09-12
+- Sanitize phone number
