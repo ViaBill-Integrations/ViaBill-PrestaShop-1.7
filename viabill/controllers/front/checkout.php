@@ -308,6 +308,16 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
         if (!empty($id_address_delivery)) {
             $details = new Address($id_address_delivery);
 
+            $country_code = null;
+            if (property_exists($details, 'id_country')) {         
+                $country_obj = new Country($details->id_country);
+                if (property_exists($country_obj, 'iso_code')) {
+                    $country_code = strtoupper($country_obj->iso_code);
+                }
+            } else if (property_exists($details, 'country')) {
+                $country_code = $details->country;                
+            }
+
             if (property_exists($details, 'email')) {
                 $info['email'] = $details->email;
             }
@@ -319,8 +329,8 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
                 if (property_exists($details, 'phone')) {
                     $phone = trim($details->phone);
                 }
-            }
-            $info['phoneNumber'] = $phone;
+            }                        
+            $info['phoneNumber'] = $this->sanitizePhone($phone, $country_code);
             if (property_exists($details, 'firstname')) {
                 $info['firstName'] = $details->firstname;
             }
@@ -343,7 +353,7 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
                 $info['postalCode'] = $details->postcode;
             }
             if (property_exists($details, 'country')) {
-                $info['country'] = $details->country;
+                $info['country'] = $country_code;
             }
 
             if (!empty($details->id_customer)) {
@@ -580,8 +590,56 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
         $info['quantity'] = $order_quantity;
                
         return $info;        
-    }
+    }    
 
+    public function sanitizePhone($phone, $country_code = null) {
+        if (empty($phone)) {
+            return $phone;
+        }
+        if (empty($country_code)) {
+            return $phone;
+        }
+        $clean_phone = str_replace(array('+','(',')','-',' '),'',$phone);
+        if (strlen($clean_phone)<3) {
+            return $phone;
+        }
+        $country_code = strtoupper($country_code);
+        switch ($country_code) {
+            case 'US':
+            case 'USA': // +1
+                $prefix = substr($clean_phone, 0, 1);
+                if ($prefix == '1') {
+                    $phone_number = substr($clean_phone, 1);
+                    if (strlen($phone_number)==10) {
+                        $phone = $phone_number;
+                    }
+                }                
+                break;
+            case 'DK': 
+            case 'DNK': // +45
+                $prefix = substr($clean_phone, 0, 2);
+                if ($prefix == '45') {
+                    $phone_number = substr($clean_phone, 2);
+                    if (strlen($phone_number)==8) {
+                        $phone = $phone_number;
+                    }
+                }
+                break;
+            case 'ES': 
+            case 'ESP': // +34
+                $prefix = substr($clean_phone, 0, 2);
+                if ($prefix == '34') {
+                    $phone_number = substr($clean_phone, 2);
+                    if (strlen($phone_number)==9) {
+                        $phone = $phone_number;
+                    }
+                }
+                break;        
+        }
+  
+        return $phone;
+    }
+    
     public function truncateDescription($text, $maxchar=200, $end='...') {
         if (strlen($text) > $maxchar || $text == '') {
             $words = preg_split('/\s/', $text);      
