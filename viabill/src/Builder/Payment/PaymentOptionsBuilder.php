@@ -183,8 +183,10 @@ class PaymentOptionsBuilder
 
         $url = $this->link->getModuleLink($this->module->name, 'checkout');
 
+        // regular Viabill payment method
+
         $paymentOption = new PaymentOption();
-        $paymentOption->setAction($url);        
+        $paymentOption->setAction($url);
 
         if (Configuration::get(Config::VIABILL_LOGO_DISPLAY_IN_CHECKOUT)) {
             // Hide payment method name by commenting the following line
@@ -205,7 +207,59 @@ class PaymentOptionsBuilder
             $this->constructTag($paymentOption);
         }
 
-        return [$paymentOption];
+        // Try now, buy later Viabill payment method
+        if (Config::TRY_BEFORE_YOU_BUY_SHOW_SETTING_OPTION) {
+            if (Configuration::get(Config::ENABLE_TRY_BEFORE_YOU_BUY)) {
+            
+                $url = $this->link->getModuleLink($this->module->name, 'checkout');
+                $url = $this->addTryBeforeYouBuyURLParam($url);            
+                
+                $tryPaymentOption = new PaymentOption();
+                $tryPaymentOption->setAction($url);        
+
+                if (Configuration::get(Config::VIABILL_LOGO_DISPLAY_IN_CHECKOUT)) {
+                    // Hide payment method name by commenting the following line
+                    // $paymentOption->setCallToActionText($this->module->l('Pay with ViaBill', self::FILENAME));            
+                    $lang = strtolower($this->language->iso_code);
+                    if ($lang) {
+                        $tryPaymentOption->setLogo($this->module->getPathUri() . 'views/img/viabill_try_logo_tagline.'.$lang.'.png');
+                    } else {
+                        $tryPaymentOption->setLogo($this->module->getPathUri() . 'views/img/viabill_try_logo_tagline.png');
+                    }            
+                } else {
+                    $tryPaymentOption->setCallToActionText($this->module->l('Pay with ViaBill - Try before you Buy', self::FILENAME));
+                }
+
+                $tryPaymentOption->setModuleName($this->module->name);
+
+                if ($this->module->isPriceTagActive($this->controller)) {
+                    $this->constructTag($tryPaymentOption);
+                }
+                
+                // Return both of payment methods
+                return [$paymentOption, $tryPaymentOption];
+            } else {
+                return [$paymentOption];    
+            }
+        } else {
+            return [$paymentOption];
+        }        
+    }
+
+    /**
+     * Constructs Price Tag.
+     *
+     * @param string $url
+     * 
+     * @return string          
+     */
+    private function addTryBeforeYouBuyURLParam($url) { 
+        if (strpos($url, '?')!==false) {
+            $url = $url . '&trybeforeyoubuy=1'; 
+        } else {
+            $url = $url . '?trybeforeyoubuy=1';
+        }        
+        return $url; 
     }
 
     /**

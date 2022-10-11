@@ -20,6 +20,7 @@ parameters:
             'VB_BULK_ACTION_CANCEL_CONF_MESSAGE' : 1
             'VB_ENABLE_AUTO_PAYMENT_CAPTURE' : 0
             'VB_CAPTURE_ORDER_STATUS_MULTISELECT' : '[]'
+            'VB_TRY_BEFORE_YOU_BUY' : 0
             'VB_PAYMENT_PENDING' : 0
             'VB_PAYMENT_ACCEPTED' : 0
             'VB_PAYMENT_COMPLETED' : 0

@@ -110,6 +110,13 @@ class PaymentRequest implements SerializedObjectInterface
     private $cartParams;
 
     /**
+     * Try before you Buy flag.
+     *
+     * @var int
+     */
+    private $tbyb;
+
+    /**
      * PaymentRequest constructor.
      *
      * @param $apiKey
@@ -124,6 +131,7 @@ class PaymentRequest implements SerializedObjectInterface
      * @param string $md5Check
      * @param array $ustomer_info
      * @param array $cartParams
+     * @param int $tbyb
      */
     public function __construct(
         $apiKey,
@@ -137,7 +145,8 @@ class PaymentRequest implements SerializedObjectInterface
         $test,
         $md5Check,
         $customParams,
-        $cartParams
+        $cartParams,
+        $tbyb
     ) {
         $this->apiKey = $apiKey;
         $this->transaction = $transaction;
@@ -151,6 +160,7 @@ class PaymentRequest implements SerializedObjectInterface
         $this->callback_url = $callback_url;
         $this->customParams = $this->cleanCustomParams($customParams);
         $this->cartParams = $this->cleanCartParams($cartParams);
+        $this->tbyb = $tbyb;
     }
 
     /**
@@ -177,11 +187,7 @@ class PaymentRequest implements SerializedObjectInterface
             case 'SPAIN':
                 $customParams['country'] = 'ES';
                 break;
-        }
-
-        foreach ($customParams['country'] as &$value) {
-            $value = str_replace("\n", " ", $value);
-        }
+        }       
 
         return $customParams;
     }
@@ -334,6 +340,16 @@ class PaymentRequest implements SerializedObjectInterface
     }
 
     /**
+     * Checks If Try before you Buy.
+     *
+     * @return bool
+     */
+    public function getTbyb()
+    {
+        return (empty($this->tbyb))?0:1;
+    }
+
+    /**
      * Gets Payment Request Serialized Data.
      *
      * @return array
@@ -353,7 +369,8 @@ class PaymentRequest implements SerializedObjectInterface
             'test' => (bool) $this->test,
             'md5check' => $this->md5Check,
             'customParams' => $this->customParams,
-            'cartParams' => $this->cartParams
+            'cartParams' => $this->cartParams,
+            'tbyb' => $this->tbyb
         ];
     }
 }

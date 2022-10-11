@@ -10,7 +10,6 @@
 */
 
 use ViaBill\Config\Config;
-use ViaBillTransactionHistory;
 
 require_once dirname(__FILE__) . '/../../vendor/autoload.php';
 
@@ -502,10 +501,10 @@ class AdminViaBillTroubleshootController extends ModuleAdminController
     {
         $recent_transactions_info = '';
 
-        $recent_transactions = ViaBillTransactionHistory::getRecentTransactions();
+        $recent_transactions = \ViaBillTransactionHistory::getRecentTransactions();
         if (!empty($recent_transactions)) {            
             $recent_transactions_count = count($recent_transactions);
-            $time_window = ViaBillTransactionHistory::getRecentTransactionsDays();            
+            $time_window = \ViaBillTransactionHistory::getRecentTransactionsDays();            
 
             $transactions_table = '<table id="recent_transactions" >'.
                 '<thead>

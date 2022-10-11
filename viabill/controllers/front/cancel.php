@@ -10,7 +10,6 @@
 */
 
 use ViaBill\Util\DebugLog;
-use ViaBillTransactionHistory;
 
 /**
  * ViaBill Cancel Module Front Controller Class.
@@ -68,10 +67,10 @@ class ViaBillCancelModuleFrontController extends ModuleFrontController
         // update transaction history
         $idOrder = $this->id_order;
         if ($idOrder) {
-            $transactionHistory = new ViaBillTransactionHistory();
-            $idTransactionHistory = ViaBillTransactionHistory::getPrimaryKeyByOrder($idOrder);
+            $transactionHistory = new \ViaBillTransactionHistory();
+            $idTransactionHistory = \ViaBillTransactionHistory::getPrimaryKeyByOrder($idOrder);
             if ($idTransactionHistory) {
-                $transactionHistory = new ViaBillTransactionHistory($idTransactionHistory);
+                $transactionHistory = new \ViaBillTransactionHistory($idTransactionHistory);
                 $cancelResponse = array(
                     'cart' => $this->id_cart,
                     'order_id' => $this->id_order,

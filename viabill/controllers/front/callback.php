@@ -9,7 +9,6 @@
 */
 
 use ViaBill\Util\DebugLog;
-use ViaBillTransactionHistory;
 
 /**
  * ViaBill CallBack Module Front Controller Class.
@@ -68,9 +67,9 @@ class ViaBillCallBackModuleFrontController extends ModuleFrontController
             // update transaction history
             $idTransaction = $callBackResponse->getTransaction();            
             if ($idTransaction) {
-                $idTransactionHistory = ViaBillTransactionHistory::getPrimaryKeyByTransaction($idTransaction);                
+                $idTransactionHistory = \ViaBillTransactionHistory::getPrimaryKeyByTransaction($idTransaction);                
                 if ($idTransactionHistory) {
-                    $transactionHistory = new ViaBillTransactionHistory($idTransactionHistory);                    
+                    $transactionHistory = new \ViaBillTransactionHistory($idTransactionHistory);                    
                     $transactionHistory->updateAfterCallback($callBackResponse);
                 }
             }                        

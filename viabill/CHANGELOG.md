@@ -223,3 +223,7 @@
 ### Changed
 ## [1.1.31] - 2022-09-12
 - Sanitize phone number
+
+### Changed
+## [1.1.40] - 2022-09-29
+- Try before you Buy

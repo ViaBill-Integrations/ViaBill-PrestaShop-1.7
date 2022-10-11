@@ -277,6 +277,23 @@ class AdminViaBillSettingsController extends ModuleAdminController
                 'title' => $this->l('Save'),
             ],
         ];
+        if (Config::TRY_BEFORE_YOU_BUY_SHOW_SETTING_OPTION) {
+            $this->fields_options[Config::SETTINGS_TRY_BEFORE_YOU_BUY_SECTION] = [
+                'title' => $this->l('Try Before You Buy'),
+                'icon' => 'icon-money',
+                'fields' => [
+                    Config::ENABLE_TRY_BEFORE_YOU_BUY => [
+                        'title' => $this->l('Enable Try Before You Buy'),
+                        'validation' => 'isBool',
+                        'cast' => 'boolval',
+                        'type' => 'bool',
+                    ],
+                ],
+                'submit' => [
+                    'title' => $this->l('Save'),
+                ],
+            ];
+        }        
         $this->fields_options[Config::SETTINGS_MY_VIABILL_SECTION] = [
             'title' => $this->l('My ViaBill'),
             'icon' => 'icon-info-sign',

@@ -230,6 +230,8 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
 
         $cartInfo = $this->getCartInfo($order);
 
+        $tbyb = $this->getTbyb($order);
+
         return new \ViaBill\Object\Api\Payment\PaymentRequest(
             $user->getKey(),
             $transaction,
@@ -242,7 +244,8 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
             $config->isTestingEnvironment(),
             $md5Check,
             $customerInfo,
-            $cartInfo
+            $cartInfo,
+            $tbyb
         );
     }
 
@@ -591,6 +594,28 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
                
         return $info;        
     }    
+
+    /**
+     * Get if "Try before you Buy" option is selected instead of "Easy Monthly Payments"
+     * 
+     * @param Order $order
+     *
+     * @return int
+     */
+    public function getTbyb(Order $order)
+    {        
+        // sanity check
+        if (empty($order)) {
+            return 0;            
+        }
+
+        $payment_method_url = $_SERVER['REQUEST_URI'];
+        if (strpos($payment_method_url, 'trybeforeyoubuy')!==false) {
+            return 1;
+        }
+                                        
+        return 0;
+    }
 
     public function sanitizePhone($phone, $country_code = null) {
         if (empty($phone)) {

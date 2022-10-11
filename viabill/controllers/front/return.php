@@ -10,7 +10,6 @@
 */
 
 use ViaBill\Util\DebugLog;
-use ViaBillTransactionHistory;
 
 /**
  * ViaBill Checkout Module Front Controller Class.
@@ -52,9 +51,9 @@ class ViaBillReturnModuleFrontController extends ModuleFrontController
         
         // update transaction history       
         if ($orderId) {
-            $idTransactionHistory = ViaBillTransactionHistory::getPrimaryKeyByOrder($orderId);
+            $idTransactionHistory = \ViaBillTransactionHistory::getPrimaryKeyByOrder($orderId);
             if ($idTransactionHistory) {
-                $transactionHistory = new ViaBillTransactionHistory($idTransactionHistory);
+                $transactionHistory = new \ViaBillTransactionHistory($idTransactionHistory);
                 $transactionHistory->updateAfterComplete($isOrderApproved);
             }
         }
