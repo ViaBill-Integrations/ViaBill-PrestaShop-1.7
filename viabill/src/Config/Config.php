@@ -64,7 +64,7 @@ class Config
     const CAPTURE_ORDER_STATUS_MULTISELECT = 'VB_CAPTURE_ORDER_STATUS_MULTISELECT';
 
     // Hide "try before you buy" payment option in backend settings
-    const TRY_BEFORE_YOU_BUY_SHOW_SETTING_OPTION = 0;
+    const TRY_BEFORE_YOU_BUY_SHOW_SETTING_OPTION = 1;
     const ENABLE_TRY_BEFORE_YOU_BUY = "VB_ENABLE_TRY_BEFORE_YOU_BUY";    
 
     const PRICETAG_SETTINGS_INFO_BLOCK_FIELD = 'VB_PRICE_TAG_INFO_BLOCK';
@@ -201,11 +201,22 @@ class Config
      */
     public static function getLoginForgotPassUrl($isoCode)
     {
-        if (self::DEV_MODE) {
-            return 'https://my-test.viabill.com/' . $isoCode . '/#/auth/forgot';
+        switch ($isoCode) {
+            case 'en':
+            case 'es':
+            case 'da':
+                // don't do anything, it's accetable
+                break;
+            default:
+                $isoCode = 'en';
+                break;    
         }
 
-        return 'https://viabill.com/auth/forgot/?lang=' . $isoCode;
+        if (self::DEV_MODE) {
+            return 'https://my-test.viabill.com/' . $isoCode . '/#/auth/forgot';
+        }        
+
+        return 'https://my.viabill.com/merchant/'.$isoCode.'/#/auth/forgot';
     }
 
     /**

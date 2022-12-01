@@ -227,3 +227,8 @@
 ### Changed
 ## [1.1.40] - 2022-09-29
 - Try before you Buy
+
+### Changed
+## [1.1.41] - 2022-09-29
+- Fixed Forgot Password URL
+- New TBYB logos
