@@ -232,3 +232,8 @@
 ## [1.1.41] - 2022-09-29
 - Fixed Forgot Password URL
 - New TBYB logos
+
+### Changed
+## [1.1.42] - 2022-12-20
+- Different checkout page PriceTags
+- New TBYB logos

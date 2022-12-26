@@ -23,6 +23,7 @@
         dataCountryCodeIso=$dataCountryCodeIso
         dynamicPriceSelector=$dynamicPriceSelector
         dynamicPriceTrigger=$dynamicPriceTrigger
+        dataCheckoutProductTypes=$dataCheckoutProductTypes
         }
     </div>
 

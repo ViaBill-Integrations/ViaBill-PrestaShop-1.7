@@ -62,6 +62,13 @@ class TagBodyTemplate implements TemplateInterface
     private $dynamicPriceTrigger;
 
     /**
+     * product types are used to differentiate between "monthly" and "tbyb" options
+     *
+     * @var array
+     */
+    private $productTypes;
+
+    /**
      * TagScriptTemplate constructor.
      *
      * @param \ViaBill $module
@@ -199,6 +206,20 @@ class TagBodyTemplate implements TemplateInterface
     }
 
     /**
+     * Used during checkout the differentiate between "monthly" and "tbyb"
+     *
+     * @param string $productTypes
+     */
+    public function setProductTypes($payment_method)
+    {
+        if ($payment_method == 'tbyb') {
+            $this->productTypes = ['tbyb'];
+        } else {
+            $this->productTypes = ['light','liberty','plus'];
+        }
+    }
+
+    /**
      * Gets Smarty Params.
      *
      * @return array
@@ -215,6 +236,7 @@ class TagBodyTemplate implements TemplateInterface
             'dynamicPriceTrigger' => $this->dynamicPriceTrigger,
             'useColumns' => $this->useColumns,
             'useExtraGap' => $this->useExtraGap,
+            'dataCheckoutProductTypes' => (empty($this->productTypes))?'':$this->productTypes
         ];
     }
 

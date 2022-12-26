@@ -23,4 +23,7 @@
         data-language="{$dataLanguageIso}"
         data-currency="{$dataCurrencyIso}"
         data-country-code="{$dataCountryCodeIso}"
+        {if $dataCheckoutProductTypes != ''}
+            data-checkout-product-types='{$dataCheckoutProductTypes|@json_encode nofilter}';
+        {/if}
 ></div>

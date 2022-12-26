@@ -84,6 +84,11 @@ class PaymentOptionsBuilder
      */
     private $currency;
 
+    /*
+    * @var Array
+    */
+    private $productTypes;
+
     /**
      * Currency Validator Variable Declaration.
      *
@@ -166,6 +171,20 @@ class PaymentOptionsBuilder
     public function setCurrency($currency)
     {
         $this->currency = $currency;
+    }    
+
+    /**
+     * Sets Product Types based on payment method.
+     *
+     * @param string $payment_method
+     */
+    public function setProductTypes($payment_method)
+    {        
+        if ($payment_method == 'tbyb') {
+            $this->productTypes = ['tbyb'];
+        } else {
+            $this->productTypes = ['light','liberty','plus'];
+        }
     }
 
     /**
@@ -204,7 +223,7 @@ class PaymentOptionsBuilder
         $paymentOption->setModuleName($this->module->name);
 
         if ($this->module->isPriceTagActive($this->controller)) {
-            $this->constructTag($paymentOption);
+            $this->constructTag($paymentOption, 'monthly');
         }
 
         // Try now, buy later Viabill payment method
@@ -233,7 +252,7 @@ class PaymentOptionsBuilder
                 $tryPaymentOption->setModuleName($this->module->name);
 
                 if ($this->module->isPriceTagActive($this->controller)) {
-                    $this->constructTag($tryPaymentOption);
+                    $this->constructTag($tryPaymentOption, 'tbyb');
                 }
                 
                 // Return both of payment methods
@@ -269,13 +288,14 @@ class PaymentOptionsBuilder
      *
      * @throws \SmartyException
      */
-    private function constructTag(PaymentOption $paymentOption)
+    private function constructTag(PaymentOption $paymentOption, $payment_method = null)
     {
         $this->tagBodyTemplate->setSmarty($this->smarty);
         $this->tagBodyTemplate->setPrice($this->orderPrice);
         $this->tagBodyTemplate->setView(Config::DATA_PAYMENT);
         $this->tagBodyTemplate->setLanguage($this->language);
         $this->tagBodyTemplate->setCurrency($this->currency);
+        $this->tagBodyTemplate->setProductTypes($payment_method);
         $this->smarty->assign($this->tagBodyTemplate->getSmartyParams());
         $html = $this->tagBodyTemplate->getHtml();
         $paymentOption->setAdditionalInformation($html);
