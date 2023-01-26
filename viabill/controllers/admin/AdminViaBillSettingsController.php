@@ -277,7 +277,7 @@ class AdminViaBillSettingsController extends ModuleAdminController
                 'title' => $this->l('Save'),
             ],
         ];
-        if (Config::TRY_BEFORE_YOU_BUY_SHOW_SETTING_OPTION) {
+        if (Config::isTBYBAvailable($this->context->country, null)) {
             $this->fields_options[Config::SETTINGS_TRY_BEFORE_YOU_BUY_SECTION] = [
                 'title' => $this->l('Try Before You Buy'),
                 'icon' => 'icon-money',

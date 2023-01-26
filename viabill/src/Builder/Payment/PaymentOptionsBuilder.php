@@ -227,7 +227,7 @@ class PaymentOptionsBuilder
         }
 
         // Try now, buy later Viabill payment method
-        if (Config::TRY_BEFORE_YOU_BUY_SHOW_SETTING_OPTION) {
+        if (Config::isTBYBAvailable(null, $this->currency)) {
             if (Configuration::get(Config::ENABLE_TRY_BEFORE_YOU_BUY)) {
             
                 $url = $this->link->getModuleLink($this->module->name, 'checkout');

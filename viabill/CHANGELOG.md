@@ -237,3 +237,7 @@
 ## [1.1.42] - 2022-12-20
 - Different checkout page PriceTags
 - New TBYB logos
+
+### Changed
+## [1.1.43] - 2023-01-25
+- Hide TBYB method for merchants in Spain

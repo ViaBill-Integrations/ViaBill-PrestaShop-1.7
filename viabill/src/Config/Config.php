@@ -291,6 +291,69 @@ class Config
     }
 
     /**
+     * Check if TBYB method should be available
+     * 
+     * @return boolean
+     */
+    public function isTBYBAvailable($country = null, $currency = null)
+    {        
+        if (self::TRY_BEFORE_YOU_BUY_SHOW_SETTING_OPTION) {
+            // check if merchant country is acceptable
+            $country_code = null;            
+            if (!empty($country)) {
+                if (property_exists($country, 'iso_code')) {
+                    $country_code = strtoupper($country->iso_code);
+                }                
+            }
+            
+            $currency_code = null;
+            if (!empty($currency)) {
+                if (property_exists($currency, 'iso_code')) {
+                    $currency_code = strtoupper($currency->iso_code);
+                }                
+            }            
+
+            if (empty($country_code) && empty($currency_code)) {
+                $context = Context::getContext();
+                if (!empty($context)) {
+                    if (property_exists($context, 'country')) {
+                        if (!empty($context->country)) {
+                            $country = new Country($context->country->id);
+                            $country_code = strtoupper($country->iso_code);
+                        }
+                    }
+                }
+            }
+
+            // fallback to currency, if country is not available
+            if (empty($country_code) && !empty($currency_code)) {
+                if ($currency_code == 'EUR') {
+                    $country_code = 'ES';
+                }
+            }
+
+            if (empty($country_code)) {
+                return true;
+            } else {
+                switch ($country_code) {
+                    case 'ES':
+                    case 'SP':
+                        return false;
+                        break;
+                    case 'DK':
+                        return true;    
+                    default:
+                        return true;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Checks If User Is Logged In.
      *
      * @return bool
