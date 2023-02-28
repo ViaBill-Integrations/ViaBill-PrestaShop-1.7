@@ -13,10 +13,12 @@ namespace ViaBill\Service\Api;
 
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\TransferStats;
 use ViaBill\Adapter\Tools;
 use ViaBill\Factory\HttpClientFactory;
 use ViaBill\Object\Api\ApiResponse;
 use ViaBill\Object\Api\ApiResponseError;
+use ViaBill\Config\Config;
 
 /**
  * Class ApiRequest
@@ -74,14 +76,24 @@ class ApiRequest
         $effectiveUrl = '';
 
         try {
+            if (Config::isVersionAbove8()) {
+                // Use this method to retrieve the "effective URL"
+                // which could be the redirect URL
+                $params['on_stats'] = function (TransferStats $stats) use (&$effectiveUrl) {
+                    $effectiveUrl = $stats->getEffectiveUri();				               
+                };	
+            }
+
             $response = $this->clientFactory->getClient()->post($url, $params);
 
             if ($response->getBody()) {
                 $body = $response->getBody()->__toString();
             }
 
-            $statusCode = $response->getStatusCode();
-            $effectiveUrl = $response->getEffectiveUrl();
+            $statusCode = $response->getStatusCode();            
+            if (!Config::isVersionAbove8()) {
+                $effectiveUrl = $response->getEffectiveUrl();
+            }
         } catch (ClientException $clientException) {
             $errorBody = $clientException->getResponse()->getBody() ?
                 $clientException->getResponse()->getBody()->__toString() :

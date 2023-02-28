@@ -25,7 +25,7 @@ class Config
 
     const VIABILL_LOGO_DISPLAY_IN_CHECKOUT = 'VB_LOGO_DISPLAY_IN_CHECKOUT';
 
-    const BASE_URL_TEST = 'https://secure-test.viabill.com';
+    const BASE_URL_TEST = 'https://secure.viabill.com';
     const BASE_URL_LIVE = 'https://secure.viabill.com';
 
     const API_KEY = 'VB_API_KEY';
@@ -295,7 +295,7 @@ class Config
      * 
      * @return boolean
      */
-    public function isTBYBAvailable($country = null, $currency = null)
+    public static function isTBYBAvailable($country = null, $currency = null)
     {        
         if (self::TRY_BEFORE_YOU_BUY_SHOW_SETTING_OPTION) {
             // check if merchant country is acceptable
@@ -371,6 +371,14 @@ class Config
     public static function isVersionAbove177()
     {
         return (bool) version_compare(_PS_VERSION_, '1.7.7', '>=');
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isVersionAbove8()
+    {
+        return (bool) version_compare(_PS_VERSION_, '8.0.0', '>=');
     }
 
     /**

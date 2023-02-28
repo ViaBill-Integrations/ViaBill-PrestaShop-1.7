@@ -1,4 +1,8 @@
 services:
+# Make services public, so you don't need Dependency Injection
+    _defaults:
+        public: true
+
     ViaBill:
         class: 'ViaBill'
         factory: ['Module', 'getInstanceByName']

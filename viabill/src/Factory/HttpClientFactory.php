@@ -43,16 +43,26 @@ class HttpClientFactory
      */
     public function getClient()
     {
-        $config = [
-            'base_url' => $this->config->getBaseUrl(),
-            'defaults' => [
+        if (Config::isVersionAbove8()) {
+            $config = [
+                'base_uri' => $this->config->getBaseUrl(),            
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
                 ],
-            ],
-        ];
-
+            ];
+        } else {
+            $config = [
+                'base_url' => $this->config->getBaseUrl(),
+                'defaults' => [
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'Accept' => 'application/json',
+                    ],
+                ],
+            ];
+        }
+        
         return new Client($config);
     }
 }

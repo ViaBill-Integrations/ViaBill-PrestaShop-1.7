@@ -3,7 +3,7 @@
     "config": {
         "prepend-autoloader": false,
         "platform": {
-            "php": "5.4"
+            "php": ">=5.4"
         }
     },
     "type": "prestashop-module",

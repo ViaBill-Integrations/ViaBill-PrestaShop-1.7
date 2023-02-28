@@ -241,3 +241,7 @@
 ### Changed
 ## [1.1.43] - 2023-01-25
 - Hide TBYB method for merchants in Spain
+
+### Changed
+## [8.1.0] - 2023-02-07
+- First version compatible with Prestashop 8.x
