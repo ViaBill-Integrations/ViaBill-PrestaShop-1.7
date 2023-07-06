@@ -23,6 +23,8 @@ class Config
 
     const VIABILL_TEST_MODE = 'VB_TEST_MODE';
 
+    const VIABILL_HIDE_IN_CHECKOUT = 'VB_HIDE_IN_CHECKOUT';
+
     const VIABILL_LOGO_DISPLAY_IN_CHECKOUT = 'VB_LOGO_DISPLAY_IN_CHECKOUT';
 
     const BASE_URL_TEST = 'https://secure.viabill.com';
@@ -274,6 +276,18 @@ class Config
     public function isLiveEnvironment()
     {
         return !\Configuration::get(self::VIABILL_TEST_MODE);
+    }
+
+    /**
+     * Checks If Viabill payments should be hidden in checkout page.
+     * This is used when you only want to display the pricetags, but use another
+     * method for the payment processing (e.g. QuickPay)
+     *
+     * @return bool
+     */
+    public static function isHideInCheckout()
+    {
+        return (bool) \Configuration::get(self::VIABILL_HIDE_IN_CHECKOUT);
     }
 
     /**

@@ -245,3 +245,7 @@
 ### Changed
 ## [8.1.0] - 2023-02-07
 - First version compatible with Prestashop 8.x
+
+### Changed
+## [8.1.2] - 2023-07-05
+- Added the option to hide Viabill payment method in the checkout page

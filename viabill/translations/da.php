@@ -141,7 +141,7 @@ $_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_f6824483d630ef3041
 $_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_c661cf76442d8d2cb318d560285a2a57'] = 'Kontaktformular';
 $_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_1f311cc2e9587a47fb340fa2e37f4714'] = 'Hvis du har problemer med at få vist PriceTags, skal du besøge';
 $_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_231cf4c70d866b616c21baddaeed0696'] = 'Fejlfinding';
-$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_34dde8dad60f3c321e0b107a6c085a39'] = 'VIGTIGT! Du har allerede ViaBill aktiveret via din indløser. For at brugeViaBill som betalingsmetode via ViaBill’s eget WooCommerce plugin, kræver det at ViaBill deaktiveres hos din indløser. Heldigvis kan vi hjælpe dig med dét ved blot at trykke “Deaktiver nu“ herunder. Alt andet forbliver naturligvis, som det allerede er.';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_34dde8dad60f3c321e0b107a6c085a39'] = 'VIGTIG! Du har ViaBill-betalinger aktiveret gennem en betalingsgateway. ViaBill-betalingsmetoden leveret af dette ViaBill Prestashop-modul kræver, at ViaBill som betalingsmetode er deaktiveret i den pågældende gateway. Heldigvis har vi gjort det nemt for dig; klik blot på knappen nedenfor, og den deaktiveres øjeblikkeligt (alt andet forbliver selvfølgelig aktiveret)';
 $_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_7d226b54cb66e19e50507c11fd9f04ff'] = 'Deaktiver nu';
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_c75f7811d70d17dbcd88e9d03752cbed'] = 'Godkendelse';
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_213efbb61d2055f3df09a61ed15a0365'] = 'Email er nødvendig for at oprette en konto';

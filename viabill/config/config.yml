@@ -5,6 +5,7 @@ parameters:
     module_settings:
         configuration:
             'VB_TEST_MODE' : 0
+            'VB_HIDE_IN_CHECKOUT': 0
             'VB_API_KEY' : ''
             'VB_API_SECRET' : ''
             'VB_TAGS_SCRIPT' : ''

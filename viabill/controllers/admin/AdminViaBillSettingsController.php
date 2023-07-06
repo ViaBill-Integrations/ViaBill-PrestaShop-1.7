@@ -251,6 +251,12 @@ class AdminViaBillSettingsController extends ModuleAdminController
                     'cast' => 'boolval',
                     'type' => 'bool',
                 ],
+                Config::VIABILL_HIDE_IN_CHECKOUT => [
+                    'title' => $this->l('Hide in checkout page'),
+                    'validation' => 'isBool',
+                    'cast' => 'boolval',
+                    'type' => 'bool',
+                ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),

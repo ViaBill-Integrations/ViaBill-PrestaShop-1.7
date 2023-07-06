@@ -202,28 +202,35 @@ class PaymentOptionsBuilder
 
         $url = $this->link->getModuleLink($this->module->name, 'checkout');
 
-        // regular Viabill payment method
+        $paymentOptions = [];
 
-        $paymentOption = new PaymentOption();
-        $paymentOption->setAction($url);
+        if (!Config::isHideInCheckout()) {
 
-        if (Configuration::get(Config::VIABILL_LOGO_DISPLAY_IN_CHECKOUT)) {
-            // Hide payment method name by commenting the following line
-            // $paymentOption->setCallToActionText($this->module->l('Pay with ViaBill', self::FILENAME));            
-            $lang = strtolower($this->language->iso_code);
-            if ($lang) {
-                $paymentOption->setLogo($this->module->getPathUri() . 'views/img/viabill_logo_tagline.'.$lang.'.png');
+            // regular Viabill payment method           
+
+            $paymentOption = new PaymentOption();
+            $paymentOption->setAction($url);
+
+            if (Configuration::get(Config::VIABILL_LOGO_DISPLAY_IN_CHECKOUT)) {
+                // Hide payment method name by commenting the following line
+                // $paymentOption->setCallToActionText($this->module->l('Pay with ViaBill', self::FILENAME));            
+                $lang = strtolower($this->language->iso_code);
+                if ($lang) {
+                    $paymentOption->setLogo($this->module->getPathUri() . 'views/img/viabill_logo_tagline.'.$lang.'.png');
+                } else {
+                    $paymentOption->setLogo($this->module->getPathUri() . 'views/img/viabill_logo_tagline.png');
+                }            
             } else {
-                $paymentOption->setLogo($this->module->getPathUri() . 'views/img/viabill_logo_tagline.png');
-            }            
-        } else {
-            $paymentOption->setCallToActionText($this->module->l('Pay with ViaBill', self::FILENAME));
-        }
+                $paymentOption->setCallToActionText($this->module->l('Pay with ViaBill', self::FILENAME));
+            }
 
-        $paymentOption->setModuleName($this->module->name);
+            $paymentOption->setModuleName($this->module->name);
 
-        if ($this->module->isPriceTagActive($this->controller)) {
-            $this->constructTag($paymentOption, 'monthly');
+            if ($this->module->isPriceTagActive($this->controller)) {
+                $this->constructTag($paymentOption, 'monthly');
+            }
+
+            $paymentOptions[] = $paymentOption;
         }
 
         // Try now, buy later Viabill payment method
@@ -254,15 +261,12 @@ class PaymentOptionsBuilder
                 if ($this->module->isPriceTagActive($this->controller)) {
                     $this->constructTag($tryPaymentOption, 'tbyb');
                 }
-                
-                // Return both of payment methods
-                return [$paymentOption, $tryPaymentOption];
-            } else {
-                return [$paymentOption];    
+
+                $paymentOptions[] = $tryPaymentOption;                                
             }
-        } else {
-            return [$paymentOption];
-        }        
+        }
+        
+        return $paymentOptions;
     }
 
     /**
