@@ -162,9 +162,13 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
             $regPhone = Tools::getValue('register_user_phone');
             $termsAccepted = Tools::getValue('terms_and_conditions');
 
-            if (!$regEmail || !$regCountry || !$regShopUrl || !$termsAccepted) {
+            if (!$regEmail || !$regName || !$regCountry || !$regShopUrl || !$termsAccepted) {
                 if (!$regEmail) {
                     $errorsArray[] = $this->l('Email is required to create an account');
+                }
+
+                if (!$regName) {
+                    $errorsArray[] = $this->l('Contact Name is required to create an account');
                 }
 
                 if (!$regCountry) {
@@ -328,6 +332,7 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
                     'label' => $this->l('Contact name'),
                     'name' => 'register_user_name',
                     'class' => 'fixed-width-xxl',
+                    'required' => true,
                 ],
                 [
                     'type' => 'text',
@@ -400,13 +405,13 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
      */
     protected function registerFormRequest()
     {
-        $regEmail = Tools::getValue('register_user_email');
+        $regEmail = Tools::getValue('register_user_email');     
+        $regName = Tools::getValue('register_user_name');   
         $regCountryIso = Tools::getValue('register_user_country');
-        $regShopUrl = Tools::getValue('register_user_shop_url');
-        $regName = Tools::getValue('register_user_name');
+        $regShopUrl = Tools::getValue('register_user_shop_url');        
         $regPhone = Tools::getValue('register_user_phone');
 
-        $resigterRequest = new RegisterRequest($regEmail, $regShopUrl, $regCountryIso, [$regName, $regPhone]);
+        $resigterRequest = new RegisterRequest($regEmail, $regName, $regShopUrl, $regCountryIso, [$regPhone]);
 
         /** @var \ViaBill\Service\Api\Authentication\RegisterService $registerService */
         $registerService = $this->module->getModuleContainer()->get('service.register');

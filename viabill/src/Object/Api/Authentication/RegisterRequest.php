@@ -27,6 +27,13 @@ class RegisterRequest implements SerializedObjectInterface
     private $email;
 
     /**
+     * Registration Request Name Variable Declaration.
+     *
+     * @var string
+     */
+    private $name;
+
+    /**
      * Registration Request URL Variable Declaration.
      *
      * @var string
@@ -51,13 +58,15 @@ class RegisterRequest implements SerializedObjectInterface
      * RegisterRequest constructor.
      *
      * @param string $email
+     * @param string $name
      * @param string $url
      * @param string $country
      * @param string[] $additionalInfo
      */
-    public function __construct($email, $url, $country, array $additionalInfo)
+    public function __construct($email, $name, $url, $country, array $additionalInfo)
     {
         $this->email = $email;
+        $this->name = $name;
         $this->url = $url;
         $this->country = $country;
         $this->additionalInfo = $additionalInfo;
@@ -71,6 +80,16 @@ class RegisterRequest implements SerializedObjectInterface
     public function getEmail()
     {
         return $this->email;
+    }
+
+    /**
+     * Gets Register Name.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**
@@ -112,6 +131,7 @@ class RegisterRequest implements SerializedObjectInterface
     {
         return [
             'email' => $this->email,
+            'name' => $this->name,
             'url' => $this->url,
             'country' => $this->country,
             'affiliate' => Config::REGISTER_REQUEST_AFFILIATE,

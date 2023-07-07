@@ -142,6 +142,23 @@ class UnInstaller extends AbstractInstaller
 
         $sqlStatements = $this->getSqlStatements($uninstallSqlFileName);
 
-        return (bool) $this->execute($database, $sqlStatements);
+        // Split the string into an array of individual SQL statements
+		$statementsArray = explode(';', $sqlStatements);
+
+		// Removing any empty elements from the array, in case there's a trailing semicolon
+		$statementsArray = array_filter($statementsArray);
+
+        $success = true;
+		
+		foreach ($statementsArray as $statement) {
+			
+			$statement = trim($statement);
+			if (empty($statement)) continue;
+
+			$success = $this->execute($database, $statement);
+			if (!$success) break;
+		}	
+		
+		return $success;        
     }
 }

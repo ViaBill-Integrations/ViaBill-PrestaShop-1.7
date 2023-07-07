@@ -73,7 +73,7 @@ class ApiRequest
         $response = null;
         $body = '';
         $errors = [];
-        $effectiveUrl = '';
+        $effectiveUrl = $url;
 
         try {
             if (Config::isVersionAbove8()) {

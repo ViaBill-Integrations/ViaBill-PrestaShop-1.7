@@ -301,11 +301,23 @@ class Installer extends AbstractInstaller
         foreach ($installSqlFiles as $sqlFile) {
             $sqlStatements = $this->getSqlStatements($sqlFile);
 
-            try {
-                $this->execute($database, $sqlStatements);
-            } catch (Exception $exception) {
-                throw new Exception($exception->getMessage());
-            }
+            // Split the string into an array of individual SQL statements
+			$statementsArray = explode(';', $sqlStatements);
+
+			// Removing any empty elements from the array, in case there's a trailing semicolon
+			$statementsArray = array_filter($statementsArray);
+
+            foreach ($statementsArray as $statement) {
+				
+				$statement = trim($statement);
+				if (empty($statement)) continue;						
+
+				try {
+					$this->execute($database, $statement);
+				} catch (Exception $exception) {					
+					throw new Exception($exception->getMessage());
+				}			
+			}            
         }
 
         return true;
