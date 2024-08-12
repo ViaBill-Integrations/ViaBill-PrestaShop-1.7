@@ -342,7 +342,7 @@ class Config
             // fallback to currency, if country is not available
             if (empty($country_code) && !empty($currency_code)) {
                 if ($currency_code == 'EUR') {
-                    $country_code = 'ES';
+                    $country_code = self::ES_COUNTRY_ISO_CODE;
                 }
             }
 

@@ -254,3 +254,7 @@
 ## [8.2.0] - 2023-07-07
 - Changed the way the viabill tables are installed and uninstalled
 - Changed the way the name of the merchant is sent via the register call
+
+### Changed
+## [8.2.1] - 2024-08-08
+- Added the taxId registration parameters, which is required for Spanish merchant.

@@ -160,8 +160,10 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
             $regShopUrl = Tools::getValue('register_user_shop_url');
             $regName = Tools::getValue('register_user_name');
             $regPhone = Tools::getValue('register_user_phone');
+            $regTaxID = Tools::getValue('register_tax_id');
             $termsAccepted = Tools::getValue('terms_and_conditions');
 
+            # Empty values
             if (!$regEmail || !$regName || !$regCountry || !$regShopUrl || !$termsAccepted) {
                 if (!$regEmail) {
                     $errorsArray[] = $this->l('Email is required to create an account');
@@ -190,8 +192,49 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
                 );
 
                 return parent::postProcess();
+            }          
+
+            # Tax ID
+            if (($regCountry == Config::ES_COUNTRY_ISO_CODE) && (empty($regTaxID))) {
+                $errorsArray[] = $this->l('Tax Id should not be empty.');
+
+                $this->context->cookie->authErrorMessage = json_encode($errorsArray);
+
+                Tools::redirectAdmin(
+                    $this->context->link->getAdminLink('AdminViaBillAuthentication') . '&registerUser=1'
+                );
+
+                return parent::postProcess();
             }
 
+            if (!empty($regTaxID)) {
+                $tax_id_error_msg = '';
+                if ($regCountry == Config::ES_COUNTRY_ISO_CODE) {                    
+                    // validate tax id value, based on the ES acceptable values
+                    if (!$this->sanitizeTaxId($regTaxID, $regCountry)) {
+                        $tax_id_error_msg = $this->l('The Spanish Tax Id is invalid.');
+                    }
+                } else if ($regCountry == Config::DK_COUNTRY_ISO_CODE) {
+                    // validate tax id value, based on the DK acceptable values
+                    if (!$this->sanitizeTaxId($regTaxID, $regCountry)) {
+                        $tax_id_error_msg = $this->l('The Danish Tax Id is invalid.');
+                    }
+                }
+
+                if (!empty($tax_id_error_msg)) {
+                    $errorsArray[] = $tax_id_error_msg;
+
+                    $this->context->cookie->authErrorMessage = json_encode($errorsArray);
+    
+                    Tools::redirectAdmin(
+                        $this->context->link->getAdminLink('AdminViaBillAuthentication') . '&registerUser=1'
+                    );
+    
+                    return parent::postProcess();
+                }                
+            }
+
+            # Other validation
             if (!Validate::isCleanHtml($regName) ||
                 !Validate::isCleanHtml($regPhone) ||
                 !Validate::isCleanHtml($regShopUrl)) {
@@ -336,6 +379,13 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
                 ],
                 [
                     'type' => 'text',
+                    'label' => $this->l('Tax Id'),
+                    'name' => 'register_tax_id',
+                    'class' => 'fixed-width-xxl',
+                    'required' => false,
+                ],
+                [
+                    'type' => 'text',
                     'label' => $this->l('Phone'),
                     'name' => 'register_user_phone',
                     'class' => 'fixed-width-xxl',
@@ -410,8 +460,10 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
         $regCountryIso = Tools::getValue('register_user_country');
         $regShopUrl = Tools::getValue('register_user_shop_url');        
         $regPhone = Tools::getValue('register_user_phone');
+        $regTaxID = Tools::getValue('register_tax_id');
+        $regTaxID = $this->sanitizeTaxId($regTaxID, $regCountryIso);
 
-        $resigterRequest = new RegisterRequest($regEmail, $regName, $regShopUrl, $regCountryIso, [$regPhone]);
+        $resigterRequest = new RegisterRequest($regEmail, $regName, $regShopUrl, $regCountryIso, $regTaxID, [$regPhone]);
 
         /** @var \ViaBill\Service\Api\Authentication\RegisterService $registerService */
         $registerService = $this->module->getModuleContainer()->get('service.register');
@@ -637,5 +689,32 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
         $countries = $countryService->getCountries($locale);
 
         $this->viaBillCountries = $countries;
+    }
+
+    /**
+    * Sanitize and format the Tax ID (if given)
+    */
+    private function sanitizeTaxId($tax_id, $country) {
+        $tax_id = str_replace(array(' ','-'), '', trim($tax_id));
+        if ($country == Config::ES_COUNTRY_ISO_CODE) {
+            $regex_with_prefix = '/^ES[0-9A-Z]*/';
+            if (preg_match($regex_with_prefix, $tax_id)) {
+                return $tax_id;
+            }
+            $regex_without_prefix = '/^[0-9A-Z]+/';
+            if (preg_match($regex_without_prefix, $tax_id)) {
+                return 'ES'.$tax_id;
+            }
+        } else if ($country == Config::DK_COUNTRY_ISO_CODE) {
+            $regex_with_prefix = '/^DK[0-9]{8}$/';
+            if (preg_match($regex_with_prefix, $tax_id)) {
+                return $tax_id;
+            }
+            $regex_without_prefix = '/^[0-9]{8}$/';
+            if (preg_match($regex_without_prefix, $tax_id)) {
+                return 'DK'.$tax_id;
+            }
+        }
+        return '';
     }
 }

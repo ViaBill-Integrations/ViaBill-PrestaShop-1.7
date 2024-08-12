@@ -48,6 +48,13 @@ class RegisterRequest implements SerializedObjectInterface
     private $country;
 
     /**
+     * Registration Request Tax ID Declaration.
+     *
+     * @var string
+     */
+    private $taxId;
+
+    /**
      * Registration Request Additional Info Variable Declaration.
      *
      * @var string[]
@@ -61,14 +68,16 @@ class RegisterRequest implements SerializedObjectInterface
      * @param string $name
      * @param string $url
      * @param string $country
+     * @param string $taxId
      * @param string[] $additionalInfo
      */
-    public function __construct($email, $name, $url, $country, array $additionalInfo)
+    public function __construct($email, $name, $url, $country, $taxId, array $additionalInfo)
     {
         $this->email = $email;
         $this->name = $name;
         $this->url = $url;
         $this->country = $country;
+        $this->taxId = $taxId;
         $this->additionalInfo = $additionalInfo;
     }
 
@@ -113,6 +122,16 @@ class RegisterRequest implements SerializedObjectInterface
     }
 
     /**
+     * Gets Register Tax ID.
+     *
+     * @return string
+     */
+    public function getTaxId()
+    {
+        return $this->taxId;
+    }
+
+    /**
      * Gets Register Additional Info.
      *
      * @return string[]
@@ -134,6 +153,7 @@ class RegisterRequest implements SerializedObjectInterface
             'name' => $this->name,
             'url' => $this->url,
             'country' => $this->country,
+            'taxId' => $this->taxId,
             'affiliate' => Config::REGISTER_REQUEST_AFFILIATE,
             'additionalInfo' => $this->additionalInfo,
         ];

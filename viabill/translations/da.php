@@ -1,7 +1,7 @@
 <?php
 
 global $_MODULE;
-$_MODULE = [];
+$_MODULE = array();
 $_MODULE['<{viabill}prestashop>viabill_b294d0df04c6d0d0d30c5e3b48c0fa09'] = 'ViaBill';
 $_MODULE['<{viabill}prestashop>viabill_7c97bc3631fe4447e56f23749b224b76'] = 'Status kan ikke ændres, da ViaBill endnu ikke har godkendt betalingen. Prøv igen senere.';
 $_MODULE['<{viabill}prestashop>viabill_a003f7e0f8c01f2ab7bbfba13d9fcb43'] = 'Hæv ViaBill-betalinger';
@@ -90,6 +90,7 @@ $_MODULE['<{viabill}prestashop>capturepaymenthandler_cf8fc70a60481b761aff4872351
 $_MODULE['<{viabill}prestashop>apirequest_365777a6e4be971cec32a5c47bcafa44'] = 'ViaBill-tjenesten er nede i øjeblikket. Vent og opdater siden, eller kontakt ViaBill-support på merchants@viabill.com ';
 $_MODULE['<{viabill}prestashop>orderstatusapiservice_4e0dec937cbd919782bfd55c7dc31642'] = 'En uventet fejl opstod for ordrer %s. Status code %s';
 $_MODULE['<{viabill}prestashop>paymentoptionsbuilder_54a23c9edf58e8e81c0f104e80e298e9'] = 'Betal med ViaBill';
+$_MODULE['<{viabill}prestashop>paymentoptionsbuilder_74abebcac5f468cb376eb110f042786d'] = 'Betal med ViaBill - Prøv før du køber';
 $_MODULE['<{viabill}prestashop>paymentmanagementtemplate_d9978999a407502fb2de0f93ae38964d'] = 'På denne ordre er kun %s understøttet som valuta';
 $_MODULE['<{viabill}prestashop>installer_16a179ec546b3cbd0638c6444c61856a'] = 'ViaBill: Betaling afventer';
 $_MODULE['<{viabill}prestashop>installer_5aae3f26a4016c2c0b6abe11a9561054'] = 'ViaBill: Betaling godkendt';
@@ -120,9 +121,12 @@ $_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_f0a83b8b9a87711bb3
 $_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_48a393ac037738f469f880e7c6c4d996'] = 'Bekræftelsesmeddelelse for massekrediteringer';
 $_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_06ab89db9aa1cb67436f76df083a25a1'] = 'Bekræftelsesmeddelelse for enkelte annulleringer';
 $_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_45ce2ab9bb2c6e65e732e5ce761aa8ba'] = 'Bekræftelsesmeddelelse for masseannulleringer';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_4c437acea5e0514dda6b86a278f25cf4'] = 'Skjul i kassesiden';
 $_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_7869c432170f99eb24577354a4a30142'] = 'Konfiguration af betalingskontrol';
 $_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_6c3aecec185cbd287b6044c9e3b9bdd2'] = 'Aktivér ViaBill-betaling automatisk indfangning';
 $_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_be934836dffa88dedb28c97f6f824700'] = 'Automatisk indfangning af ViaBill-betaling, når status er sat til';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_6dd469ffa17ce9aff5af7ee7e0d80a71'] = 'Prøv før du køber';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_536440922714036c49a82de415ddc000'] = 'Aktiver Prøv før du køber';
 $_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_36446d7e26cd4386d636acc3207bc3de'] = 'Mit ViaBill';
 $_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_c7ab1687952ee068090478935f833535'] = 'Gå til MitViaBill';
 $_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_4ea164d922c6e8dd96c894cafc94402b'] = 'Fejlfindings- og fejlfindingsoplysninger ';
@@ -145,9 +149,13 @@ $_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_34dde8dad60f3c321e
 $_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_7d226b54cb66e19e50507c11fd9f04ff'] = 'Deaktiver nu';
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_c75f7811d70d17dbcd88e9d03752cbed'] = 'Godkendelse';
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_213efbb61d2055f3df09a61ed15a0365'] = 'Email er nødvendig for at oprette en konto';
+$_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_d9deb784e7cb3efd4567e38834ad5be6'] = 'Kontaktnavn er påkrævet for at oprette en konto';
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_1ec967e78771cb5dd3ae025ccf458e50'] = 'Land er nødvendig for at oprette en konto';
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_c9b698cce8d2a5fd858dae0f094c4df3'] = 'Webshop URL er nødvendig for at oprette en konto';
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_2ec33bad8aacecc71791a7594f9f6951'] = 'Jeg accepterer at have læst og godkendt betingelser og vilkår';
+$_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_5e47da513a7f201b2a5034a3686e37f5'] = 'CVR bør ikke være tom.';
+$_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_b6c660d2567bc7e3107d16f2afc3e6ff'] = 'CIF/NIF er ugyldig.';
+$_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_55da1bcede2835446b3f21ac410844b4'] = 'CVR-afgifts-id er ugyldigt.';
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_0430ca8dd47addb2270367f6e30992ca'] = 'Webshop URL felt er ikke gyldigt';
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_c80502972e0c438052b6cec6463e039b'] = 'Navnefelt er ikke gyldigt';
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_b6f5c7a52721714235e3303e02e6cbef'] = 'Telefonfelt er ikke gyldigt';
@@ -157,6 +165,7 @@ $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_ce8ae9da5b7c
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_59716c97497eb9694541f7c3d37b1a4d'] = 'Land';
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_65f93b2f594b2bbf954c07a2f7372d67'] = 'Live webshop URL';
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_8728ddcf2beef397dc6198b241e24abd'] = 'Kontaktperson';
+$_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_9359846aa120ba9c5d6f3eabeaad9bb3'] = 'CVR';
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_bcc254b55c4a1babdf1dcb82c207506b'] = 'Telefonnummer';
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_b0fe3f00fc48580d0a253c8bc6fb61fb'] = 'Opret ViaBill konto';
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_99dea78007133396a7b8ed70578ac6ae'] = 'Login';
@@ -177,7 +186,6 @@ $_MODULE['<{viabill}prestashop>adminviabillactionscontroller_bcb6eb5bb4429d025a2
 $_MODULE['<{viabill}prestashop>adminviabillconflictcontroller_a994e746ff65a5db688aefdf496bf0f0'] = 'Formtoken misforhold registreret.';
 $_MODULE['<{viabill}prestashop>adminviabillconflictcontroller_3c1ea4fcfcd11b794cbc43a338a99322'] = 'Tredjeparts betalingsmetode deaktiveret!';
 $_MODULE['<{viabill}prestashop>adminviabillconflictcontroller_13dc262f11d0aa5d3a4b31ad225fed3c'] = 'Tredjeparts betalingsmetode kunne ikke findes!';
-$_MODULE['<{viabill}prestashop>adminviabillthirdpartycontroller_a994e746ff65a5db688aefdf496bf0f0'] = 'Formtoken misforhold registreret.';
 $_MODULE['<{viabill}prestashop>adminviabillcontactcontroller_902b0d55fddef6f8d651fe1035b7d4bd'] = 'Fejl';
 $_MODULE['<{viabill}prestashop>adminviabillcontactcontroller_64cc975bdc209bdd7361783936b9c6c5'] = 'Din anmodning er modtaget med succes! ';
 $_MODULE['<{viabill}prestashop>adminviabillcontactcontroller_9a00047065c40abdc217463672124c83'] = 'Vi vender snart tilbage til dig på ';
