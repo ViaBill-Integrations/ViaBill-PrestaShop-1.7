@@ -258,3 +258,7 @@
 ### Changed
 ## [8.2.1] - 2024-08-08
 - Added the taxId registration parameters, which is required for Spanish merchant.
+
+### Changed
+## [8.2.2] - 2024-08-08
+- Made the taxId registration parameter required for all merchants.

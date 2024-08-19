@@ -159,6 +159,8 @@ class AdminViaBillContactController extends ModuleAdminController
                 $storeEmail = $employee->email;
             }
 
+            $apiKey = Configuration::get('VB_API_KEY');
+
             $file_lines = self::LOG_FILE_LINES_TO_READ;
 
             $debug_log_entries = 'N/A';
@@ -201,6 +203,7 @@ class AdminViaBillContactController extends ModuleAdminController
                 'currencyCode' => $currencyCode,
                 'storeName' => $storeName,
                 'storeURL' => $storeURL,
+                'apiKey' => $apiKey,
                 'storeEmail' => $storeEmail,
                 'storeCountry' => $storeCountry,
             ];

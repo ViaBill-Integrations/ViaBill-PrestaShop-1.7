@@ -65,7 +65,12 @@
             <label>{l s='Eshop Currency' mod='viabill'}</label>
             <input class="form-control" type="text" required="true"
              value="{$currencyCode}" name="shop_info[currency]" />
-        </div>                
+        </div>
+        <div class="form-group">
+            <label>{l s='API Key' mod='viabill'}</label>
+            <input class="form-control" type="text" required="true"
+             value="{$apiKey}" name="shop_info[apiKey]" />
+        </div>
         <div class="form-group">
             <label>{l s='Module Version' mod='viabill'}</label>
             <input class="form-control" type="text"

@@ -195,7 +195,7 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
             }          
 
             # Tax ID
-            if (($regCountry == Config::ES_COUNTRY_ISO_CODE) && (empty($regTaxID))) {
+            if (empty($regTaxID)) {
                 $errorsArray[] = $this->l('Tax Id should not be empty.');
 
                 $this->context->cookie->authErrorMessage = json_encode($errorsArray);
@@ -382,7 +382,7 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
                     'label' => $this->l('Tax Id'),
                     'name' => 'register_tax_id',
                     'class' => 'fixed-width-xxl',
-                    'required' => false,
+                    'required' => true,
                 ],
                 [
                     'type' => 'text',
