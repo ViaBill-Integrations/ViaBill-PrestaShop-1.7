@@ -1,4 +1,4 @@
-# ViaBill - Seamless financing! Module for PrestaShop 1.7
+# ViaBill - Seamless financing! Module for PrestaShop 1.7 and Prestashop 8.x
 
 ## About ViaBill
 
@@ -7,7 +7,7 @@ ViaBill is changing the way people shop online. We offer a payment solution that
 For more information about ViaBill, please visit our [ViaBill](https://viabill.com) site.
 
 ## Pre-Requisites
-* PrestaShop 1.7.3 or newer
+* PrestaShop 1.7.3 or newer, Prestashop 8.0.0 or newer.
 
 ## Installation and Configuration
 

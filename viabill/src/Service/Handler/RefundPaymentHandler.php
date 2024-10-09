@@ -271,8 +271,8 @@ class RefundPaymentHandler
         $refundRemaining = $totalCaptured - $totalRefunded;
 
         $currency = new \Currency($order->id_currency);
-
-        if ($this->tools->displayNumber($amount) > $this->tools->displayNumber($refundRemaining)) {
+        
+        if ($amount > $refundRemaining) {
             $errorMessage = sprintf(
                 $this->module->l('The total amount of refund %s is greater then the remaining amount of %s'),
                 $this->tools->displayPrice($amount, $currency),

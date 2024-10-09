@@ -1,5 +1,5 @@
 # ViaBill - seamless financing! 
-## Module for PrestaShop 1.7
+## Module for PrestaShop 1.7 and Prestashop 8.x
 
 # Prerequisites
 

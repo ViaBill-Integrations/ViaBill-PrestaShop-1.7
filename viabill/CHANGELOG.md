@@ -262,3 +262,7 @@
 ### Changed
 ## [8.2.2] - 2024-08-08
 - Made the taxId registration parameter required for all merchants.
+
+### Changed
+## [8.2.3] - 2024-10-08
+- Change the refund and capture validation method to handle irregular numeric amounts.

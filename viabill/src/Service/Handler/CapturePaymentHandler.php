@@ -278,7 +278,7 @@ class CapturePaymentHandler
 
         $total = $capturedAmount + (float) $amount;
 
-        if ($this->tools->displayNumber($total) > $this->tools->displayNumber($order->total_paid_tax_incl)) {
+        if ($total > $order->total_paid_tax_incl) {        
             $message =
             $this->module->l('Total amount of capture breached. Remaining left to capture is %s', self::FILENAME);
 
