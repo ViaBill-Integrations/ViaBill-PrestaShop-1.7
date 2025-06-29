@@ -12,6 +12,10 @@ parameters:
             'VB_LOGO_DISPLAY_IN_CHECKOUT' : 1
             'VB_ENABLE_ON_PRODUCT_PAGE' : 1
             'VB_ENABLE_ON_CART_SUMMARY' : 1
+            'VB_PRICE_TAG_PRODUCT_SELECTOR': '#product|.dynamic-price-tag-selector'
+            'VB_PRICE_TAG_PRODUCT_TRIGGER': '#dynamic-price-tag-trigger'
+            'VB_PRICE_TAG_CART_SELECTOR': '.cart-grid|.dynamic-price-tag-selector'
+            'VB_PRICE_TAG_CART_TRIGGER': '#dynamic-price-tag-trigger'
             'VB_ENABLE_ON_PAYMENT_SELECTION' : 1
             'VB_SINGLE_ACTION_CAPTURE_CONF_MESSAGE' : 0
             'VB_BULK_ACTION_CONF_MESSAGE' : 0
@@ -21,6 +25,8 @@ parameters:
             'VB_BULK_ACTION_CANCEL_CONF_MESSAGE' : 1
             'VB_ENABLE_AUTO_PAYMENT_CAPTURE' : 0
             'VB_CAPTURE_ORDER_STATUS_MULTISELECT' : '[]'
+            'VIABILL_ORDER_STATE_AFTER_AUTHORIZATION': ''
+            'VIABILL_ORDER_STATE_AFTER_CAPTURE': ''
             'VB_TRY_BEFORE_YOU_BUY' : 0
             'VB_PAYMENT_PENDING' : 0
             'VB_PAYMENT_ACCEPTED' : 0

@@ -164,7 +164,7 @@ class AdminViaBillSettingsController extends ModuleAdminController
                     ],
                 ],
             ];
-        }
+        }        
 
         $this->fields_options[Config::SETTINGS_PRICETAG_SETTINGS_SECTION] = [
             'title' => $this->l('Pricetag Settings'),
@@ -176,18 +176,45 @@ class AdminViaBillSettingsController extends ModuleAdminController
                     'class' => 'hidden',
                     'form_group_class' => 'viabill-info-block',
                 ],
+
                 Config::ENABLE_PRICE_TAG_ON_PRODUCT_PAGE => [
                     'title' => $this->l('Enable on Product page'),
                     'validation' => 'isBool',
                     'cast' => 'boolval',
                     'type' => 'bool',
                 ],
+                Config::DYNAMIC_PRICE_PRODUCT_SELECTOR => [
+                    'title' => $this->l('Product price selector'),                    
+                    'desc' => $this->l('The data-dynamic-price query selector'),
+                    'type' => 'text',
+                    'default' => Configuration::get(Config::DYNAMIC_PRICE_PRODUCT_SELECTOR),
+                ],
+                Config::DYNAMIC_PRICE_PRODUCT_TRIGGER => [
+                    'title' => $this->l('Product price trigger'),                    
+                    'desc' => $this->l('The data-dynamic-price-triggers query selector'),
+                    'type' => 'text',
+                    'default' => Configuration::get(Config::DYNAMIC_PRICE_PRODUCT_TRIGGER),
+                ],
+                           
                 Config::ENABLE_PRICE_TAG_ON_CART_SUMMARY => [
                     'title' => $this->l('Enable on Cart Summary'),
                     'validation' => 'isBool',
                     'cast' => 'boolval',
                     'type' => 'bool',
                 ],
+                Config::DYNAMIC_PRICE_CART_SELECTOR => [
+                    'title' => $this->l('Cart price selector'),
+                    'desc' => $this->l('The data-dynamic-price query selector'),
+                    'type' => 'text',
+                    'default' => Configuration::get(Config::DYNAMIC_PRICE_CART_SELECTOR),
+                ],
+                Config::DYNAMIC_PRICE_CART_TRIGGER => [
+                    'title' => $this->l('Cart price trigger'),
+                    'desc' => $this->l('The data-dynamic-price-triggers query selector'),
+                    'type' => 'text',
+                    'default' => Configuration::get(Config::DYNAMIC_PRICE_CART_TRIGGER),
+                ],
+
                 Config::ENABLE_PRICE_TAG_ON_PAYMENT_SELECTION => [
                     'title' => $this->l('Enable on Payment selection'),
                     'validation' => 'isBool',
@@ -199,6 +226,7 @@ class AdminViaBillSettingsController extends ModuleAdminController
                 'title' => $this->l('Save'),
             ],
         ];
+
         $this->fields_options[Config::SETTINGS_GENERAL_CONFIGURATION_SECTION] = [
             'title' => $this->l('General Configuration'),
             'icon' => 'icon-cog',
@@ -262,6 +290,7 @@ class AdminViaBillSettingsController extends ModuleAdminController
                 'title' => $this->l('Save'),
             ],
         ];
+
         $this->fields_options[Config::SETTINGS_PAYMENT_CAPTURE_SECTION] = [
             'title' => $this->l('Payment Capture Configuration'),
             'icon' => 'icon-money',
@@ -283,6 +312,35 @@ class AdminViaBillSettingsController extends ModuleAdminController
                 'title' => $this->l('Save'),
             ],
         ];
+
+        $this->fields_options[Config::SETTINGS_ORDER_STATES_SECTION] = [
+            'title' => $this->l('Order Status Configuration'),
+            'icon' => 'icon-list-alt',
+            'fields' => [
+                Config::ORDER_STATE_AFTER_AUTHORIZATION => [
+                    'title' => $this->l('Order status after payment authorization'),
+                    'desc' => $this->l('Select the order status to set when payment is authorized but not yet captured'),
+                    'type' => 'select',
+                    'list' => $this->getOrderStatesForSelect(),
+                    'identifier' => 'id_order_state',
+                    'name' => 'name',
+                    'class' => 'fixed-width-xxl',
+                ],
+                Config::ORDER_STATE_AFTER_CAPTURE => [
+                    'title' => $this->l('Order status after payment capture'),
+                    'desc' => $this->l('Select the order status to set when payment is successfully captured'),
+                    'type' => 'select',
+                    'list' => $this->getOrderStatesForSelect(),
+                    'identifier' => 'id_order_state',
+                    'name' => 'name',
+                    'class' => 'fixed-width-xxl',
+                ],
+            ],
+            'submit' => [
+                'title' => $this->l('Save'),
+            ],
+        ];
+
         if (Config::isTBYBAvailable($this->context->country, null)) {
             $this->fields_options[Config::SETTINGS_TRY_BEFORE_YOU_BUY_SECTION] = [
                 'title' => $this->l('Try Before You Buy'),
@@ -299,7 +357,8 @@ class AdminViaBillSettingsController extends ModuleAdminController
                     'title' => $this->l('Save'),
                 ],
             ];
-        }        
+        }
+
         $this->fields_options[Config::SETTINGS_MY_VIABILL_SECTION] = [
             'title' => $this->l('My ViaBill'),
             'icon' => 'icon-info-sign',
@@ -321,6 +380,7 @@ class AdminViaBillSettingsController extends ModuleAdminController
                 ],
             ],
         ];
+
         $this->fields_options[Config::SETTINGS_DEBUG_SECTION] = [
             'title' => $this->l('Debug and troubleshooting information'),
             'icon' => 'icon-clipboard',
@@ -342,6 +402,26 @@ class AdminViaBillSettingsController extends ModuleAdminController
                 'title' => $this->l('Save'),
             ],
         ];
+    }
+
+    /**
+     * Get all order states formatted for select dropdown
+     *
+     * @return array
+     */
+    private function getOrderStatesForSelect()
+    {
+        $orderStates = OrderState::getOrderStates($this->context->language->id);
+        
+        $formattedStates = [];
+        foreach ($orderStates as $state) {
+            $formattedStates[] = [
+                'id_order_state' => $state['id_order_state'],
+                'name' => $state['name'],
+            ];
+        }
+        
+        return $formattedStates;
     }
 
     /**

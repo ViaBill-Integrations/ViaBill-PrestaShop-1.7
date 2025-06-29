@@ -18,7 +18,7 @@
         {if !$dynamicPriceSelector}data-price="{$dataPrice}"{/if}
         {if $dynamicPriceSelector}
             data-dynamic-price="{$dynamicPriceSelector}"
-            data-dynamic-price-triggers="#{$dynamicPriceTrigger}"
+            data-dynamic-price-triggers="{$dynamicPriceTrigger}"
         {/if}
         data-language="{$dataLanguageIso}"
         data-currency="{$dataCurrencyIso}"

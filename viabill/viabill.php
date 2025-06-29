@@ -49,10 +49,10 @@ class ViaBill extends PaymentModule
     {
         $this->name = 'viabill';
         $this->author = 'Written for or by ViaBill';
-        $this->description = 'ViaBill Official - Try, before you buy!';
+        $this->description = 'ViaBill Official';
         $this->tab = 'payments_gateways';
         $this->displayName = $this->l('ViaBill');
-        $this->version = '8.2.3';
+        $this->version = '8.2.4';
         $this->ps_versions_compliancy = ['min' => '1.7.3.0', 'max' => _PS_VERSION_];
         $this->module_key = '026cfbb4e50aac4d9074eb7c9ddc2584';
 
@@ -1010,18 +1010,19 @@ class ViaBill extends PaymentModule
         $tagBodyTemplate->setLanguage($this->context->language);
         $tagBodyTemplate->setCurrency($this->context->currency);
         $tagBodyTemplate->setSmarty($this->context->smarty);
-        $tagBodyTemplate->setDynamicPriceSelector(Config::DYNAMIC_PRICE_PRODUCT_SELECTOR);
+        $tagBodyTemplate->setDynamicPriceSelector(
+            Configuration::get(Config::DYNAMIC_PRICE_PRODUCT_SELECTOR));
         $tagBodyTemplate->useExtraGap(true);
 
         $tagBodyTemplate->setDynamicPriceTrigger(
-            Config::DYNAMIC_PRICE_PRODUCT_TRIGGER
+            Configuration::get(Config::DYNAMIC_PRICE_PRODUCT_TRIGGER)
         );
 
         $this->context->smarty->assign($tagBodyTemplate->getSmartyParams());
 
         $mediaAdapter->addJsDef([
             'priceTagScriptHolder' => $tagBodyTemplate->getHtml(),
-            'dynamicPriceTagTrigger' => Config::DYNAMIC_PRICE_PRODUCT_TRIGGER,
+            'dynamicPriceTagTrigger' => Configuration::get(Config::DYNAMIC_PRICE_PRODUCT_TRIGGER),
         ]);
 
         $mediaAdapter->addJs($this->context, 'views/js/front/product_update_handler.js');
@@ -1046,15 +1047,17 @@ class ViaBill extends PaymentModule
         $tagBodyTemplate->setView(Config::getTagsViewByController($this->context->controller->php_self));
         $tagBodyTemplate->setCurrency($this->context->currency);
         $tagBodyTemplate->setLanguage($this->context->language);
-        $tagBodyTemplate->setDynamicPriceSelector(Config::DYNAMIC_PRICE_CART_SELECTOR);
-        $tagBodyTemplate->setDynamicPriceTrigger(Config::DYNAMIC_PRICE_CART_TRIGGER);
+        $tagBodyTemplate->setDynamicPriceSelector(
+            Configuration::get(Config::DYNAMIC_PRICE_CART_SELECTOR));
+        $tagBodyTemplate->setDynamicPriceTrigger(
+            Configuration::get(Config::DYNAMIC_PRICE_CART_TRIGGER));
         $tagBodyTemplate->useColumns(true);
         $tagBodyTemplate->useExtraGap(true);
 
         $this->context->smarty->assign($tagBodyTemplate->getSmartyParams());
         $mediaAdapter->addJsDef([
             'priceTagCartBodyHolder' => $tagBodyTemplate->getHtml(),
-            'dynamicPriceTagTrigger' => Config::DYNAMIC_PRICE_CART_TRIGGER,
+            'dynamicPriceTagTrigger' => Configuration::get(Config::DYNAMIC_PRICE_CART_TRIGGER),
         ]);
         $mediaAdapter->addJs($this->context, 'views/js/front/cart_update_handler.js');
         $mediaAdapter->addCss($this->context, 'views/css/front/price-tag.css');

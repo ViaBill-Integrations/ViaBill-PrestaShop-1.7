@@ -90,7 +90,7 @@ $_MODULE['<{viabill}prestashop>capturepaymenthandler_cf8fc70a60481b761aff4872351
 $_MODULE['<{viabill}prestashop>apirequest_365777a6e4be971cec32a5c47bcafa44'] = 'El servicio de ViaBill no funciona en este momento. Espere y actualice la página o contacte con el soporte de ViaBill al correo electrónico: merchants@viabill.com';
 $_MODULE['<{viabill}prestashop>orderstatusapiservice_4e0dec937cbd919782bfd55c7dc31642'] = 'Se ha producido un error inesperado en el pedido %s. Código de estado: %s';
 $_MODULE['<{viabill}prestashop>paymentoptionsbuilder_54a23c9edf58e8e81c0f104e80e298e9'] = 'Pagar con ViaBill';
-$_MODULE['<{viabill}prestashop>paymentoptionsbuilder_74abebcac5f468cb376eb110f042786d'] = 'Pagar con ViaBill - Pagar en 30 días';
+$_MODULE['<{viabill}prestashop>paymentoptionsbuilder_74abebcac5f468cb376eb110f042786d'] = 'Pagar con ViaBill';
 $_MODULE['<{viabill}prestashop>paymentmanagementtemplate_d9978999a407502fb2de0f93ae38964d'] = 'Para el pedido actual, la única moneda que puede utilizar es %s.';
 $_MODULE['<{viabill}prestashop>installer_16a179ec546b3cbd0638c6444c61856a'] = 'Pago pendiente con ViaBill';
 $_MODULE['<{viabill}prestashop>installer_5aae3f26a4016c2c0b6abe11a9561054'] = 'Pago aceptado por ViaBill';

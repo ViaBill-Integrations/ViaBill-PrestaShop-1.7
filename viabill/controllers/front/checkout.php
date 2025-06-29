@@ -411,38 +411,56 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
 
         $order_data = $order->getFields();
 
+        // Initialize variables
         $billing_email = '';
         $billing_phone = '';
+        $billing_street = '';
+        $billing_city = '';
+        $billing_postcode = '';
+        $billing_country = '';
+        $shipping_street = '';
         $shipping_city = '';
         $shipping_postcode = '';
-        $shipping_country = '';        
-
-        if (isset($order_data['id_address_invoice'])) {
-            if (!empty($order_data['id_address_invoice'])) {
-                $billing_address_obj = new Address((int) $order_data['id_address_invoice']);
-                $billing_address = $billing_address_obj->getFields();
-                $billing_street = trim($billing_address['address1'].' '.$billing_address['address2']);
-                $billing_city = trim($billing_address['city']);
-                $billing_postcode = trim($billing_address['postcode']);
-                $billing_country = trim($billing_address['country']);
-                $billing_phone = (empty($billing_address['phone_mobile']))?$billing_address['phone']:$billing_address['phone_mobile'];
+        $shipping_country = '';
+        
+        // Handle billing address
+        if (isset($order_data['id_address_invoice']) && !empty($order_data['id_address_invoice'])) {
+            $billing_address_obj = new Address((int) $order_data['id_address_invoice']);
+            $billing_address = $billing_address_obj->getFields();
+            
+            $billing_street = trim(
+                (isset($billing_address['address1']) ? $billing_address['address1'] : '') . ' ' . 
+                (isset($billing_address['address2']) ? $billing_address['address2'] : '')
+            );
+            $billing_city = isset($billing_address['city']) ? trim($billing_address['city']) : '';
+            $billing_postcode = isset($billing_address['postcode']) ? trim($billing_address['postcode']) : '';
+            $billing_country = isset($billing_address['country']) ? trim($billing_address['country']) : '';
+            
+            $billing_phone = '';
+            if (isset($billing_address['phone_mobile']) && !empty($billing_address['phone_mobile'])) {
+                $billing_phone = $billing_address['phone_mobile'];
+            } elseif (isset($billing_address['phone']) && !empty($billing_address['phone'])) {
+                $billing_phone = $billing_address['phone'];
             }
         }
 
-        if (isset($order_data['id_address_delivery'])) {
-            if (!empty($order_data['id_address_delivery'])) {
-                $shipping_address_obj = new Address((int) $order_data['id_address_delivery']);
-                $shipping_address = $shipping_address_obj->getFields();
-                $shipping_street = trim($shipping_address['address1'].' '.$shipping_address['address2']);
-                $shipping_city = trim($shipping_address['city']);
-                $shipping_postcode = trim($shipping_address['postcode']);
-                $shipping_country = trim($shipping_address['country']);
-            }
-        }
+        // Handle shipping address
+        if (isset($order_data['id_address_delivery']) && !empty($order_data['id_address_delivery'])) {
+            $shipping_address_obj = new Address((int) $order_data['id_address_delivery']);
+            $shipping_address = $shipping_address_obj->getFields();
+            
+            $shipping_street = trim(
+                (isset($shipping_address['address1']) ? $shipping_address['address1'] : '') . ' ' . 
+                (isset($shipping_address['address2']) ? $shipping_address['address2'] : '')
+            );
+            $shipping_city = isset($shipping_address['city']) ? trim($shipping_address['city']) : '';
+            $shipping_postcode = isset($shipping_address['postcode']) ? trim($shipping_address['postcode']) : '';
+            $shipping_country = isset($shipping_address['country']) ? trim($shipping_address['country']) : '';
+        }        
 
         $shipping_same_as_billing = 'yes';
-        $compare_addresses = [
-            'street' => [$billing_address, $shipping_address],
+        $compare_addresses = [            
+            'street' => [$billing_street, $shipping_street],
             'city' => [$billing_city, $shipping_city],
             'postcode' => [$billing_postcode, $shipping_postcode],
             'country' => [$billing_country, $shipping_country]
@@ -453,19 +471,20 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
             if (!empty($b_value) && !empty($s_value)) {
                 if ($b_value != $s_value) {
                     $shipping_same_as_billing = 'no';
+                    break;
                 }
             }
         }
-
-        if (!empty($order_data['id_customer'])) {
+        
+        if (isset($order_data['id_customer']) && !empty($order_data['id_customer'])) {            
             $customer = new Customer((int) ($order_data['id_customer']));
             if (property_exists($customer, 'email')) {
                 $billing_email = $customer->email;
             }
         }                 
 
-        $info = [           
-            'date_created' => $order_data['date_add'],
+        $info = [                       
+            'date_created' => isset($order_data['date_add']) ? $order_data['date_add'] : '',
             'subtotal'=> number_format((float) $order->total_products, 2),        
             'tax' => number_format((float) $tax_total_amount, 2),
             'shipping'=> number_format((float) $order->total_shipping, 2),
@@ -483,99 +502,94 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
         ];      
 
         foreach ( $products as $product ) {
-            $product_id = (int) $product['id_product'];                       
+            $product_id = isset($product['id_product']) ? (int) $product['id_product'] : 0;
             
-            $total_tax_incl = (float) $product['total_price_tax_incl']; // or total_wt
-            $total_tax_excl = (float) $product['total_price_tax_excl']; // or total_price
+            $total_tax_incl = isset($product['total_price_tax_incl']) ? (float) $product['total_price_tax_incl'] : 0;
+            $total_tax_excl = isset($product['total_price_tax_excl']) ? (float) $product['total_price_tax_excl'] : 0;
             $tax_amount = abs($total_tax_incl - $total_tax_excl);
-            $tax_percentage = ($tax_amount/$total_tax_excl)*100.00;
-            $product_quantity = (int) $product['product_quantity'];
+            $tax_percentage = $total_tax_excl > 0 ? ($tax_amount/$total_tax_excl)*100.00 : 0;
+            $product_quantity = isset($product['product_quantity']) ? (int) $product['product_quantity'] : 0;
             $order_quantity += $product_quantity;
             
             $product_entry = [
-                'name' => $product['product_name'],
+                'name' => isset($product['product_name']) ? $product['product_name'] : '',
                 'quantity' => $product_quantity,
                 'subtotal' => number_format($total_tax_excl, 2),
                 'tax' => number_format($tax_amount, 2)
             ];
-
+            
             if ($tax_amount > 0.01) {
                 $product_entry['tax_class'] = number_format($tax_percentage, 2);
-            }
+            }                        
 
             $product_url = null;
             $image_url = null;
-            
-            if (!empty($lang_id)) {       
-                $product_id = (int) $product['id_product']; 
-                if ($product_id) {
-                    $product_obj = new Product($product_id, $lang_id);
-                    if (!empty($product_obj)) {     
-                        // Initialize the link object
-                        // $link = new Link;
-                        $product_url = $this->context->link->getProductLink($product_id);
-                        $image = $product_obj->getCover($product_id);
-                        if (!empty($image)) {
-                            $image_url = $this->context->link->getImageLink($lang_id, $image['id_image'], 'home_default');
-                        }
-                        /*                        
-                        $description = $product_obj->description[$lang_id];
-                        $short_description = $product_obj->description_short[$lang_id];
-                        if (!empty($short_description)) {
-                            $product_entry['description'] = $this->truncateDescription(strip_tags($short_description));
-                        } else if (!empty($description)) {
-                            $product_entry['description'] = $this->truncateDescription(strip_tags($description));
-                        }
-                        */
-                        
-                        $meta_description = $product_obj->meta_description[$lang_id];
-                        $meta_keywords = $product_obj->meta_keywords[$lang_id];
-                        if (!empty($meta_description)) {                            
-                            $product_entry['meta'] = $this->truncateDescription(strip_tags($meta_description[$lang_id]));
-                        } else if (!empty($meta_keywords)) {
-                            $product_entry['meta'] = $this->truncateDescription(strip_tags($meta_keywords[$lang_id]));
-                        }                        
+
+            if (!empty($lang_id) && $product_id > 0) {
+                $product_obj = new Product($product_id, $lang_id);
+                if (!empty($product_obj)) {     
+                    $product_url = $this->context->link->getProductLink($product_id);
+                    $image = $product_obj->getCover($product_id);
+                    if (!empty($image) && isset($image['id_image'])) {
+                        $image_url = $this->context->link->getImageLink($lang_id, $image['id_image'], 'home_default');
                     }
+                    
+                    // Safe access to meta data
+                    if (isset($product_obj->meta_description[$lang_id]) && !empty($product_obj->meta_description[$lang_id])) {                            
+                        $product_entry['meta'] = $this->truncateDescription(strip_tags($product_obj->meta_description[$lang_id]));
+                    } elseif (isset($product_obj->meta_keywords[$lang_id]) && !empty($product_obj->meta_keywords[$lang_id])) {
+                        $product_entry['meta'] = $this->truncateDescription(strip_tags($product_obj->meta_keywords[$lang_id]));
+                    }                        
                 }
 
-                $category_id = (int) $product['id_category_default'];
+                // Handle category
+                $category_id = isset($product['id_category_default']) ? (int) $product['id_category_default'] : 0;
                 if ($category_id) {
                     $category = new Category($category_id, $lang_id);
-                    if (!empty($category)) {
+                    if (!empty($category) && isset($category->name)) {
                         $product_entry['categories'] = $category->name;
                     }
                 }
 
-                $manufacturer_id = (int) $product['id_manufacturer'];
+                // Handle manufacturer
+                $manufacturer_id = isset($product['id_manufacturer']) ? (int) $product['id_manufacturer'] : 0;
                 if ($manufacturer_id) {
                     $manufacturer = new Manufacturer($manufacturer_id, $lang_id);
-                    if (!empty($manufacturer)) {
+                    if (!empty($manufacturer) && isset($manufacturer->name)) {
                         $product_entry['manufacturer'] = $manufacturer->name;
                     }
                 }
-            }                        
+            }
 
-            $weight = (float)$product['weight'];
+            // Handle weight
+            $weight = isset($product['weight']) ? (float)$product['weight'] : 0;
             if ($weight > 0.01) {
                 $product_entry['weight'] = number_format($weight, 2);
             }
-            if (!empty($product['download_hash'])) {
+            
+            // Handle virtual products
+            if (isset($product['download_hash']) && !empty($product['download_hash'])) {
                 $product_entry['virtual'] = 1;
             }
-            if (!empty($product['on_sale'])) {
+            
+            // Handle sale products
+            if (isset($product['on_sale']) && !empty($product['on_sale'])) {
                 $product_entry['on_sale'] = 1;
             }               
                         
-            $reduction_amount = (float) $product['reduction_amount']."\n";
-            $reduction_percent = (float) $product['reduction_percent']."\n";
-            $initial_price = (float) $product['price'];                
+            // Handle discounts
+            $reduction_amount = isset($product['reduction_amount']) ? (float) $product['reduction_amount'] : 0;
+            $reduction_percent = isset($product['reduction_percent']) ? (float) $product['reduction_percent'] : 0;
+            $initial_price = isset($product['price']) ? (float) $product['price'] : 0;                
             $product_discount = 0;
+            
             if ($reduction_amount > 0.01) {                
                 $product_discount = $reduction_amount;
-            } else if ($reduction_percent > 0.01) {      
+            } elseif ($reduction_percent > 0.01) {      
                 $product_discount = ($reduction_percent * $initial_price)/100;                          
             } 
-            if ($product_discount) {
+            
+            if ($product_discount > 0) {
                 $product_entry['discount'] = number_format($product_discount * $product_quantity, 2);
             }
 
@@ -586,8 +600,8 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
                 $product_entry['image_url'] = str_replace('\\/','/', $image_url);
             }
 
-            $info['products'][] = $product_entry;
-        }
+            $info['products'][] = $product_entry;            
+        }                
 
         // update order quantity with the calculated value
         $info['quantity'] = $order_quantity;

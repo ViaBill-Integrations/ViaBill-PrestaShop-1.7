@@ -55,6 +55,11 @@ class Config
     const ENABLE_PRICE_TAG_ON_CART_SUMMARY = 'VB_ENABLE_ON_CART_SUMMARY';
     const ENABLE_PRICE_TAG_ON_PAYMENT_SELECTION = 'VB_ENABLE_ON_PAYMENT_SELECTION';
 
+    const DYNAMIC_PRICE_PRODUCT_SELECTOR = 'VB_PRICE_TAG_PRODUCT_SELECTOR';
+    const DYNAMIC_PRICE_PRODUCT_TRIGGER = 'VB_PRICE_TAG_PRODUCT_TRIGGER';
+    const DYNAMIC_PRICE_CART_SELECTOR = 'VB_PRICE_TAG_CART_SELECTOR';
+    const DYNAMIC_PRICE_CART_TRIGGER = 'VB_PRICE_TAG_CART_TRIGGER';    
+
     const SINGLE_ACTION_CAPTURE_CONF_MESSAGE = 'VB_SINGLE_ACTION_CAPTURE_CONF_MESSAGE';
     const BULK_ACTION_CAPTURE_CONF_MESSAGE = 'VB_BULK_ACTION_CONF_MESSAGE';
     const SINGLE_ACTION_REFUND_CONF_MESSAGE = 'VB_SINGLE_ACTION_REFUND_CONF_MESSAGE';
@@ -64,18 +69,16 @@ class Config
 
     const ENABLE_AUTO_PAYMENT_CAPTURE = 'VB_ENABLE_AUTO_PAYMENT_CAPTURE';
     const CAPTURE_ORDER_STATUS_MULTISELECT = 'VB_CAPTURE_ORDER_STATUS_MULTISELECT';
+    const SETTINGS_ORDER_STATES_SECTION = 'order_states_section';
+    const ORDER_STATE_AFTER_AUTHORIZATION = 'VIABILL_ORDER_STATE_AFTER_AUTHORIZATION';
+    const ORDER_STATE_AFTER_CAPTURE = 'VIABILL_ORDER_STATE_AFTER_CAPTURE';
 
     // Hide "try before you buy" payment option in backend settings
-    const TRY_BEFORE_YOU_BUY_SHOW_SETTING_OPTION = 1;
+    const TRY_BEFORE_YOU_BUY_SHOW_SETTING_OPTION = 0;
     const ENABLE_TRY_BEFORE_YOU_BUY = "VB_ENABLE_TRY_BEFORE_YOU_BUY";    
 
     const PRICETAG_SETTINGS_INFO_BLOCK_FIELD = 'VB_PRICE_TAG_INFO_BLOCK';
     const MY_VIABILL_INFO_BLOCK_FIELD = 'VB_MY_VIABILL_INFO_BLOCK';
-
-    const DYNAMIC_PRICE_CART_SELECTOR = '.cart-grid|.dynamic-price-tag-selector';
-    const DYNAMIC_PRICE_CART_TRIGGER = 'dynamic-price-tag-trigger';
-    const DYNAMIC_PRICE_PRODUCT_SELECTOR = '#product|.dynamic-price-tag-selector';
-    const DYNAMIC_PRICE_PRODUCT_TRIGGER = 'dynamic-price-tag-trigger';
 
     const ENABLE_DEBUG = 'VB_ENABLE_DEBUG';
     const MODULE_INFO_FIELD = 'VB_MODULE_INFO_BLOCK';
@@ -256,7 +259,43 @@ class Config
             default:
                 return false;
         }
+    }          
+
+    public static function getPriceTagProductSelector()
+    {
+        $value = \Configuration::get(self::DYNAMIC_PRICE_PRODUCT_SELECTOR);
+        if (empty($value) || ($value == 'VB_PRICE_TAG_PRODUCT_SELECTOR')) {
+            $value = '#product|.dynamic-price-tag-selector';
+        }
+        return $value;
     }
+
+    public static function getPriceTagProductTrigger()
+    {
+        $value = \Configuration::get(self::DYNAMIC_PRICE_PRODUCT_TRIGGER);
+        if (empty($value) || ($value == 'VB_PRICE_TAG_PRODUCT_TRIGGER')) {
+            $value = '#dynamic-price-tag-trigger';
+        }
+        return $value;
+    }
+
+    public static function getPriceTagCartSelector()
+    {
+        $value = \Configuration::get(self::DYNAMIC_PRICE_CART_SELECTOR);
+        if (empty($value) || ($value == 'VB_PRICE_TAG_CART_SELECTOR')) {
+            $value = '.cart-grid|.dynamic-price-tag-selector';
+        }
+        return $value;
+    }
+
+    public static function getPriceTagCartTrigger()
+    {
+        $value = \Configuration::get(self::DYNAMIC_PRICE_CART_TRIGGER);
+        if (empty($value) || ($value == 'VB_PRICE_TAG_CART_TRIGGER')) {
+            $value = '#dynamic-price-tag-trigger';
+        }
+        return $value;        
+    }    
 
     /**
      * Checks If Testing Environment Is On.

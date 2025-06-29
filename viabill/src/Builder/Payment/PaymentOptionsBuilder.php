@@ -252,8 +252,8 @@ class PaymentOptionsBuilder
                     } else {
                         $tryPaymentOption->setLogo($this->module->getPathUri() . 'views/img/viabill_try_logo_tagline.png');
                     }            
-                } else {
-                    $tryPaymentOption->setCallToActionText($this->module->l('Pay with ViaBill - Try before you Buy', self::FILENAME));
+                } else {                    
+                    $tryPaymentOption->setCallToActionText($this->module->l('Pay with ViaBill', self::FILENAME));
                 }
 
                 $tryPaymentOption->setModuleName($this->module->name);

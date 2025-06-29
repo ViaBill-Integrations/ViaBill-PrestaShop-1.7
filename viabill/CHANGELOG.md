@@ -266,3 +266,8 @@
 ### Changed
 ## [8.2.3] - 2024-10-08
 - Change the refund and capture validation method to handle irregular numeric amounts.
+
+### Changed
+## [8.2.4] - 2025-06-24
+- Added new configuration options to control the order status after payment.
+- Added new configuration options to control the pricetag selector and triggers.

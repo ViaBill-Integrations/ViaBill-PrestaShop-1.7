@@ -771,8 +771,8 @@ class AdminViaBillTroubleshootController extends ModuleAdminController
             $this->context->currency->iso_code
         );
 
-        $params['dynamicPriceTrigger'] = Config::DYNAMIC_PRICE_PRODUCT_TRIGGER;
-        $params['dynamicPriceSelector'] = Config::DYNAMIC_PRICE_PRODUCT_SELECTOR;
+        $params['dynamicPriceTrigger'] = Configuration::get(Config::DYNAMIC_PRICE_PRODUCT_TRIGGER);
+        $params['dynamicPriceSelector'] = Configuration::get(Config::DYNAMIC_PRICE_PRODUCT_SELECTOR);
 
         $params['Tags Script'] = Configuration::get(Config::API_TAGS_SCRIPT);
 
