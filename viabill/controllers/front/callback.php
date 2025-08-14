@@ -53,16 +53,71 @@ class ViaBillCallBackModuleFrontController extends ModuleFrontController
         $callBackResponse = null;
 
         try {
-            $requestContent = $request->getContent();
+            // Capture Content-Type to help detection
+            $ct = isset($_SERVER['CONTENT_TYPE']) ? $_SERVER['CONTENT_TYPE'] : (isset($_SERVER['HTTP_CONTENT_TYPE']) ? $_SERVER['HTTP_CONTENT_TYPE'] : '');
 
-            /**
-             * @var \ViaBill\Object\Api\CallBack\CallBackResponse $callBackResponse
-             */
+            // 1) Try Symfony's raw content first
+            $requestContent = $request->getContent();
+            if ($requestContent === null) {
+                $requestContent = '';
+            }
+
+            // 2) Fallback to php://input
+            if ($requestContent === '') {
+                $rawInput = @file_get_contents('php://input');
+                if (is_string($rawInput) && $rawInput !== '') {
+                    $requestContent = $rawInput;
+                }
+            }
+
+            // 3) Normalize to JSON
+            $normalizedJson = '';
+            if ($requestContent !== '') {
+                $trim = ltrim($requestContent);
+                $looksJsonHeader = is_string($ct) && stripos($ct, 'application/json') !== false;
+                $looksJsonBody   = $trim !== '' && ($trim[0] === '{' || $trim[0] === '[');
+
+                if ($looksJsonHeader || $looksJsonBody) {
+                    // Raw body is JSON already
+                    $normalizedJson = $requestContent;
+                } else {
+                    // Raw body might be form-encoded query string; convert it
+                    if (strpos($requestContent, '=') !== false) {
+                        $asArray = [];
+                        parse_str($requestContent, $asArray);
+                        if (!empty($asArray)) {
+                            $normalizedJson = json_encode($asArray, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PARTIAL_OUTPUT_ON_ERROR);
+                        }
+                    }
+                }
+            }
+
+            // 4) Fallback to superglobals if we still don't have JSON
+            if ($normalizedJson === '') {
+                if (!empty($_POST)) {
+                    $normalizedJson = json_encode($_POST, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PARTIAL_OUTPUT_ON_ERROR);
+                } elseif (!empty($_GET)) {
+                    $normalizedJson = json_encode($_GET, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PARTIAL_OUTPUT_ON_ERROR);
+                }
+            }
+
+            // 5) As a last resort, log & short-circuit to avoid deserializing an empty string
+            if ($normalizedJson === '' || $normalizedJson === false) {
+                DebugLog::msg('Callback requestContent empty after normalization. ' .
+                    'CT=' . var_export($ct, true) .
+                    ' $_POST=' . var_export($_POST, true) .
+                    ' $_GET='  . var_export($_GET, true)
+                );
+                $this->ajaxDie('ERROR'); // or keep your current behavior
+            }
+
+            // 6) Deserialize using normalized JSON
+            /** @var \ViaBill\Object\Api\CallBack\CallBackResponse $callBackResponse */
             $callBackResponse = $serializer->deserialize(
-                $requestContent,
+                $normalizedJson,
                 'ViaBill\Object\Api\CallBack\CallBackResponse',
                 'json'
-            );
+            );            
 
             // update transaction history
             $idTransaction = $callBackResponse->getTransaction();            
@@ -93,7 +148,7 @@ class ViaBillCallBackModuleFrontController extends ModuleFrontController
             DebugLog::msg('Callback postProcess / [error msg: '.$exc_msg.'][content: '.$debug_str.'][raw request: '.$raw_request.']');
 
             $this->ajaxDie('ERROR');
-        }
+        }        
 
         /**
          * @var \ViaBill\Service\Validator\CallBack\OrderCallBackValidator $orderValidator

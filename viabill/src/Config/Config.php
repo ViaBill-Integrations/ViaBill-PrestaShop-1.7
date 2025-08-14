@@ -27,7 +27,7 @@ class Config
 
     const VIABILL_LOGO_DISPLAY_IN_CHECKOUT = 'VB_LOGO_DISPLAY_IN_CHECKOUT';
 
-    const BASE_URL_TEST = 'https://secure.viabill.com';
+    const BASE_URL_TEST = 'https://secure-test.viabill.com';
     const BASE_URL_LIVE = 'https://secure.viabill.com';
 
     const API_KEY = 'VB_API_KEY';

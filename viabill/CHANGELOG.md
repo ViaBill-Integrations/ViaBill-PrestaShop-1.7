@@ -271,3 +271,7 @@
 ## [8.2.4] - 2025-06-24
 - Added new configuration options to control the order status after payment.
 - Added new configuration options to control the pricetag selector and triggers.
+
+### Changed
+## [8.2.5] - 2025-08-12
+- Made more robust the way the callback are handling the incoming arguments.
