@@ -1,0 +1,35 @@
+/**
+ * ViaBill Legacy Order Actions Styles
+ * CSS for the JavaScript-injected buttons in PrestaShop 1.7.0 - 1.7.6
+ */
+
+.viabill-actions {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.viabill-actions .btn-group {
+    display: inline-flex;
+    gap: 5px;
+}
+
+.viabill-action-btn {
+    font-size: 12px;
+    padding: 5px 10px;
+    white-space: nowrap;
+}
+
+.viabill-action-btn i {
+    margin-right: 3px;
+}
+
+/* Ensure buttons don't wrap */
+td.actions {
+    white-space: nowrap;
+}
+
+/* Style for bulk action separator */
+select[name="submitBulkActions"] option[disabled] {
+    color: #999;
+    font-weight: bold;
+}

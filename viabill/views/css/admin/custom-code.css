@@ -1,0 +1,156 @@
+/**
+ * ViaBill Custom Code Admin Interface Styles
+ * Place this file in: viabill/views/css/admin/custom-code.css
+ */
+
+/* Info box styling */
+.viabill-custom-code-info {
+    background: #f0f8ff;
+    border: 1px solid #25b9d7;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.viabill-custom-code-info h3 {
+    color: #25b9d7;
+    margin-top: 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.viabill-custom-code-info p {
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.viabill-custom-code-info ul {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.viabill-custom-code-info li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.viabill-custom-code-info pre {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 15px;
+    overflow-x: auto;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.viabill-custom-code-info code {
+    background: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+}
+
+/* Warning box */
+.viabill-custom-code-warning {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.viabill-custom-code-warning h4 {
+    color: #856404;
+    margin-top: 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.viabill-custom-code-warning p {
+    color: #856404;
+    margin-bottom: 0;
+}
+
+/* Form styling */
+.panel .form-wrapper .form-group .control-label {
+    font-weight: bold;
+    font-size: 14px;
+    padding-top: 12px;
+    padding-bottom: 7px;
+}
+
+/* Code editor textarea styling */
+textarea.viabill-code-editor {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 100%;
+    resize: vertical;
+    min-height: 300px;
+}
+
+textarea.viabill-code-editor:focus {
+    background-color: #fff;
+    border-color: #25b9d7;
+    outline: none;
+    box-shadow: 0 0 5px rgba(37, 185, 215, 0.3);
+}
+
+/* Example section */
+.viabill-code-examples {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.viabill-code-examples h4 {
+    color: #495057;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.viabill-code-examples .example-item {
+    margin-bottom: 20px;
+}
+
+.viabill-code-examples .example-item h5 {
+    color: #6c757d;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.viabill-code-examples .example-item pre {
+    background: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 3px;
+    padding: 12px;
+    overflow-x: auto;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Button styling */
+.panel-footer .btn-default {
+    background-color: #25b9d7;
+    border-color: #25b9d7;
+    color: #fff;
+}
+
+.panel-footer .btn-default:hover {
+    background-color: #1a8ca8;
+    border-color: #1a8ca8;
+    color: #fff;
+}

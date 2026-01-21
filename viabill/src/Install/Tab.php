@@ -54,6 +54,13 @@ class Tab
      *
      * @var string
      */
+    private $controllerCustomCodeName = 'AdminViaBillCustomCode';
+
+    /**
+     * Defines Contact Controller Name.
+     *
+     * @var string
+     */
     private $controllerContactName = 'AdminViaBillContact';
 
     /**
@@ -119,6 +126,13 @@ class Tab
                 'name' => $this->module->l('Settings', self::FILENAME),
                 'ParentClassName' => $this->controllerInvisibleName,
                 'class_name' => $this->controllerSettingsName,
+                'visible' => true,
+                'module_tab' => true,
+            ],
+            [
+                'name' => $this->module->l('Custom CSS/JS', self::FILENAME),
+                'ParentClassName' => $this->controllerInvisibleName,
+                'class_name' => $this->controllerCustomCodeName,
                 'visible' => true,
                 'module_tab' => true,
             ],

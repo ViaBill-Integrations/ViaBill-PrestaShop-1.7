@@ -275,3 +275,11 @@
 ### Changed
 ## [8.2.5] - 2025-08-12
 - Made more robust the way the callback are handling the incoming arguments.
+
+### Changed
+## [8.2.6] - 2026-01-12
+- Added a custom CSS/JS section for fine tuning the pricetag display.
+
+### Changed
+## [9.0.0] - 2026-01-21
+- Made the module compatible with Prestashp 9.0.x.

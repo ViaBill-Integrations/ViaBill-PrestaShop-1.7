@@ -43,6 +43,61 @@ class ViaBill extends PaymentModule
     private $moduleContainer;
 
     /**
+     * Back-office tabs definition for PrestaShop 1.7, 8.x and 9.x.
+     *
+     * @var array
+     */
+    protected $tabs = [
+        // Invisible root tab under Modules
+        [
+            'name' => 'ViaBill',
+            'class_name' => 'AdminViaBillTabs',
+            'visible' => false,
+            'parent_class_name' => 'AdminParentModulesSf',
+        ],
+
+        // Hidden Ajax controller (root under Modules)
+        [
+            'name' => 'ViaBill Ajax',
+            'class_name' => 'AdminViaBillActions',
+            'visible' => false,
+            'parent_class_name' => 'AdminParentModulesSf',
+        ],
+
+        // Visible children under the invisible ViaBill root
+        [
+            'name' => 'ViaBill Authentication',
+            'class_name' => 'AdminViaBillAuthentication',
+            'visible' => true,
+            'parent_class_name' => 'AdminViaBillTabs',
+        ],
+        [
+            'name' => 'ViaBill Settings',
+            'class_name' => 'AdminViaBillSettings',
+            'visible' => true,
+            'parent_class_name' => 'AdminViaBillTabs',
+        ],
+        [
+            'name' => 'ViaBill Custom CSS/JS',
+            'class_name' => 'AdminViaBillCustomCode',
+            'visible' => true,
+            'parent_class_name' => 'AdminViaBillTabs',
+        ],
+        [
+            'name' => 'ViaBill Contact',
+            'class_name' => 'AdminViaBillContact',
+            'visible' => true,
+            'parent_class_name' => 'AdminViaBillTabs',
+        ],
+        [
+            'name' => 'ViaBill Troubleshooting',
+            'class_name' => 'AdminViaBillTroubleshoot',
+            'visible' => true,
+            'parent_class_name' => 'AdminViaBillTabs',
+        ],
+    ];
+
+    /**
      * ViaBill constructor.
      */
     public function __construct()
@@ -52,7 +107,7 @@ class ViaBill extends PaymentModule
         $this->description = 'ViaBill Official';
         $this->tab = 'payments_gateways';
         $this->displayName = $this->l('ViaBill');
-        $this->version = '8.2.5';
+        $this->version = '9.0.0';
         $this->ps_versions_compliancy = ['min' => '1.7.3.0', 'max' => _PS_VERSION_];
         $this->module_key = '026cfbb4e50aac4d9074eb7c9ddc2584';
 
@@ -60,7 +115,7 @@ class ViaBill extends PaymentModule
 
         $this->autoLoad();
         $this->compile();
-    }
+    }    
 
     /**
      * ViaBill Module Installation Method
@@ -71,24 +126,33 @@ class ViaBill extends PaymentModule
      */
     public function install()
     {
-        /**
-         * @var \ViaBill\Install\Installer $installer
-         */
+        /** @var \ViaBill\Install\Installer $installer */
         $installer = $this->getModuleContainer()->get('installer');
 
+        // Run core install + custom installer
         if (!parent::install() || !$installer->install()) {
             return false;
         }
 
-        /**
-         * This module is only for Prestashop 1.7 where SymfonyContainer is available
-         */
-        /** @var \PrestaShop\PrestaShop\Adapter\Module\Tab\ModuleTabRegister $moduleTabRegister */
-        $moduleTabRegister = SymfonyContainer::getInstance()->get('prestashop.adapter.module.tab.register');
-        /** @var \PrestaShop\PrestaShop\Core\Addon\Module\ModuleRepository $moduleRepository */
-        $moduleRepository = SymfonyContainer::getInstance()->get('prestashop.core.admin.module.repository');
+        // Legacy 1.7.x behavior: only register this hook on non-Symfony FO
+        if (!Config::isVersionAbove177()) {
+            $this->registerHook('displayBackOfficeHeader');
+        }
 
-        $moduleTabRegister->registerTabs($moduleRepository->getModule($this->name));
+        // Do NOT use SymfonyContainer / ModuleTabRegister here.
+        // Tabs are handled by the $tabs property on PrestaShop 1.7, 8.x and 9.x.
+
+        // Initialize custom CSS/JS configuration values, but never break install
+        try {
+            if (Configuration::get('VIABILL_CUSTOM_CSS') === false) {
+                Configuration::updateValue('VIABILL_CUSTOM_CSS', '');
+            }
+            if (Configuration::get('VIABILL_CUSTOM_JS') === false) {
+                Configuration::updateValue('VIABILL_CUSTOM_JS', '');
+            }
+        } catch (Exception $e) {
+            PrestaShopLogger::addLog('ViaBill config init failed: '.$e->getMessage(), 3);
+        }
 
         return true;
     }
@@ -101,11 +165,19 @@ class ViaBill extends PaymentModule
      * @throws Exception
      */
     public function uninstall()
-    {
+    {                
         /**
          * @var \ViaBill\Install\UnInstaller $unInstaller
          */
         $unInstaller = $this->getModuleContainer()->get('unInstaller');
+
+         // Initialize custom CSS/JS configuration values, but never break install
+        try {
+            Configuration::deleteByName('VIABILL_CUSTOM_CSS');
+            Configuration::deleteByName('VIABILL_CUSTOM_JS');
+        } catch (Exception $e) {
+            PrestaShopLogger::addLog('ViaBill config init failed: '.$e->getMessage(), 3);
+        }    
 
         return parent::uninstall() && $unInstaller->uninstall();
     }
@@ -122,9 +194,8 @@ class ViaBill extends PaymentModule
         /**
          * @var \ViaBill\Install\Tab $tab
          */
-        $tab = $this->getModuleContainer()->get('tab');
-
-        return $tab->getTabs();
+        
+        return $this->tabs;
     }
 
     /**
@@ -267,7 +338,7 @@ class ViaBill extends PaymentModule
      */
     public function hookModuleRoutes()
     {
-        $tabs = $this->getTabs();
+        $tabs = $this->tabs; // use property, not service
         $controllers = [];
 
         foreach ($tabs as $tab) {
@@ -452,7 +523,7 @@ class ViaBill extends PaymentModule
      *
      * @throws Exception
      */
-    public function hookDisplayBackOfficeHeader()
+    public function callConditionallyNotificationService() // previously public function hookDisplayBackOfficeHeader()
     {
         /**
          * @var \ViaBill\Config\Config $config
@@ -519,6 +590,21 @@ class ViaBill extends PaymentModule
         $tagPriceTemplate->setPrice($product['price_amount']);
 
         return $tagPriceTemplate->getHtml();
+    }
+
+    /**
+     * Display content in shopping cart (Placeholder for hook validation).
+     *
+     * @param array $params
+     *
+     * @return string|void
+     */
+    public function hookDisplayShoppingCart($params)
+    {
+        // If you want to show the same price tag as in express checkout, you could reuse it:
+        // return $this->hookDisplayExpressCheckout($params);
+
+        return;
     }
 
     /**
@@ -1174,4 +1260,76 @@ class ViaBill extends PaymentModule
 
         return $sendEmail;
     }
+
+    /**
+     * Loads assets for legacy order page (PS 1.7.3 - 1.7.6).
+     * This replaces the override approach with JavaScript injection.
+     */
+    public function hookDisplayBackOfficeHeader()
+    {
+        // check if you need to retrieve notifications from ViaBill
+        $this->callConditionallyNotificationService();
+
+        // Only execute on AdminOrders controller
+        if (Tools::getValue("controller") !== "AdminOrders") {
+            return;
+        }
+
+        // Only for legacy versions (before 1.7.7)
+        if (Config::isVersionAbove177()) {
+            return;
+        }
+
+        /** @var \ViaBill\Adapter\Media $mediaAdapter */
+        $mediaAdapter = $this->getModuleContainer()->get("adapter.media");
+
+        // Add JavaScript for injecting buttons
+        $mediaAdapter->addJsAdmin($this->context, "viabill-legacy-order-actions.js");
+
+        // Add CSS for styling the buttons
+        $mediaAdapter->addCssAdmin($this->context, "viabill-legacy-order-actions.css");
+    }
+
+    /**
+     * Hook to inject custom CSS in the front-end header.
+     */
+    public function hookHeader()
+    {
+        try {
+            $customCSS = Configuration::get("VIABILL_CUSTOM_CSS");
+            
+            if (!empty($customCSS)) {
+                return 
+                    '<style type="text/css">' . "\n" . 
+                    $customCSS . "\n" . 
+                    '</style>';
+            }
+        } catch (Exception $e) {
+            PrestaShopLogger::addLog('ViaBill Custom CSS error: ' . $e->getMessage(), 3);
+        }
+        
+        return '';
+    }
+
+    /**
+     * Hook to inject custom JavaScript in the front-end footer.
+     */
+    public function hookFooter($params)
+    {
+        try {
+            $customJS = Configuration::get("VIABILL_CUSTOM_JS");
+            
+            if (!empty($customJS)) {
+                return 
+                    '<script type="text/javascript">' . "\n" . 
+                    $customJS . "\n" . 
+                    '</script>';
+            }
+        } catch (Exception $e) {
+            PrestaShopLogger::addLog('ViaBill Custom JS error: ' . $e->getMessage(), 3);
+        }
+        
+        return '';
+    }
+
 }

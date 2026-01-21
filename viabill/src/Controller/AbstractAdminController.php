@@ -90,4 +90,38 @@ class AbstractAdminController extends \ModuleAdminController
 
         return $infoBlockTemplate->getHtml();
     }
+
+    /**
+     * Backward-compatible translation helper.
+     *
+     * Falls back to Symfony translator if parent::l() is not available.
+     *
+     * @param string $string
+     * @param string|null $class
+     * @param bool $addslashes
+     * @param bool $htmlentities
+     *
+     * @return string
+     */
+    public function l($string, $class = null, $addslashes = false, $htmlentities = true)
+    {
+        // If parent has l() (legacy ModuleAdminController), use it.
+        if (is_callable(['parent', 'l'])) {
+            return parent::l($string, $class, $addslashes, $htmlentities);
+        }
+
+        // Fallback for PrestaShop versions where l() might be removed.
+        $translator = $this->context ? $this->context->getTranslator() : null;
+
+        if ($translator) {
+            return $translator->trans(
+                $string,
+                [],
+                'Modules.Viabill.Admin'
+            );
+        }
+
+        // Last-resort: return raw string.
+        return $string;
+    }
 }
