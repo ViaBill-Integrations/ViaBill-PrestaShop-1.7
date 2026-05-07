@@ -283,3 +283,7 @@
 ### Changed
 ## [9.0.0] - 2026-01-21
 - Made the module compatible with Prestashp 9.0.x.
+
+### Changed
+## [9.1.0] - 2026-05-07
+- Revised the checkout request.

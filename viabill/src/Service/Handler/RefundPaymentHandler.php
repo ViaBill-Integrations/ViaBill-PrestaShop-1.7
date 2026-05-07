@@ -166,7 +166,7 @@ class RefundPaymentHandler
             $reference,
             $apiKey,
             $signature,
-            $amount,
+            $this->signaturesGenerator->formatAmount($amount),
             $currencyIso
         );
 

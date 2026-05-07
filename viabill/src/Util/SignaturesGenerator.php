@@ -32,7 +32,7 @@ class SignaturesGenerator
      * @var Tools
      */
     private $tools;
-
+    
     /**
      * SignaturesGenerator constructor.
      *
@@ -44,7 +44,7 @@ class SignaturesGenerator
         $this->module = $module;
         $this->tools = $tools;
     }
-
+    
     /**
      * Generates Payment Check Sum.
      *
@@ -65,18 +65,32 @@ class SignaturesGenerator
         $transaction,
         $orderNumber,
         $sucessUrl,
-        $cancelUrl
+        $cancelUrl,
+        $testMode = false
     ) {
-        return md5(
-            $user->getKey() . '#' .
-            $amount . '#' .
-            $currency . '#' .
-            $transaction . '#' .
-            $orderNumber . '#' .
-            $sucessUrl . '#' .
-            $cancelUrl . '#' .
-            $user->getSecret()
-        );
+        if ($testMode) {
+            return hash( 'sha256', 
+                $user->getKey() . '#' .
+                $this->formatAmount($amount) . '#' .
+                $currency . '#' .
+                $transaction . '#' .
+                $orderNumber . '#' .
+                $sucessUrl . '#' .
+                $cancelUrl . '#' .
+                $user->getSecret() . '#true'
+            );
+        } else {
+            return hash( 'sha256', 
+                $user->getKey() . '#' .
+                $this->formatAmount($amount) . '#' .
+                $currency . '#' .
+                $transaction . '#' .
+                $orderNumber . '#' .
+                $sucessUrl . '#' .
+                $cancelUrl . '#' .
+                $user->getSecret()
+            );
+        }        
     }
 
     /**
@@ -91,10 +105,10 @@ class SignaturesGenerator
      */
     public function generateCaptureSignature(ViaBillUser $user, $transaction, $amount, $currency)
     {
-        return md5(
+        return hash( 'sha256',
             $transaction . '#' .
             $user->getKey() . '#' .
-            $amount . '#' .
+            $this->formatAmount($amount) . '#' .
             $currency . '#' .
             $user->getSecret()
         );
@@ -110,7 +124,7 @@ class SignaturesGenerator
      */
     public function generateCancelSignature(ViaBillUser $user, $transaction)
     {
-        return md5(
+        return hash( 'sha256',
             $transaction . '#' .
             $user->getKey() . '#' .
             $user->getSecret()
@@ -129,10 +143,10 @@ class SignaturesGenerator
      */
     public function generateRefundSignature(ViaBillUser $user, $transaction, $amount, $currency)
     {
-        return md5(
+        return hash( 'sha256',
             $transaction . '#' .
             $user->getKey() . '#' .
-            $amount . '#' .
+            $this->formatAmount($amount) . '#' .
             $currency . '#' .
             $user->getSecret()
         );
@@ -170,10 +184,10 @@ class SignaturesGenerator
         $status,
         $time
     ) {
-        return md5(
+        return hash( 'sha256',
             $transaction . '#' .
             $orderNumber . '#' .
-            $amount . '#' .
+            $this->formatAmount($amount) . '#' .
             $currency . '#' .
             $status . '#' .
             $time . '#' .
@@ -191,7 +205,7 @@ class SignaturesGenerator
      */
     public function generateStatusSignature(ViaBillUser $user, $transaction)
     {
-        return md5(
+        return hash( 'sha256', 
             $transaction . '#' .
             $user->getKey() . '#' .
             $user->getSecret()
@@ -208,7 +222,7 @@ class SignaturesGenerator
      */
     public function generateRenewSignature(ViaBillUser $user, $transaction)
     {
-        return md5(
+        return hash( 'sha256', 
             $transaction . '#' .
             $user->getKey() . '#' .
             $user->getSecret()
@@ -224,9 +238,19 @@ class SignaturesGenerator
      */
     public function generateSignature(ViaBillUser $user)
     {
-        return md5(
+        return hash( 'sha256', 
             $user->getKey() . '#' .
             $user->getSecret()
         );
     }
+
+    /**
+     * Format amount to 2 decimal digits by default
+     */
+    public function formatAmount($amount, $decimals = 2, $dec_point = '.')
+    {
+        // Use empty thousands separator
+        return number_format((float)$amount, $decimals, $dec_point, '');
+    }
+
 }

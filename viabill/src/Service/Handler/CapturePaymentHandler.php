@@ -153,7 +153,7 @@ class CapturePaymentHandler
 
         $user = $this->userService->getUser();
         $reference = $order->reference;
-        $amountNegative = -1 * abs($amount);
+        $amountNegative = -1 * abs($amount);        
 
         $signature = $this->signaturesGenerator->generateCaptureSignature(
             $user,
@@ -180,7 +180,7 @@ class CapturePaymentHandler
             $reference,
             $user->getKey(),
             $signature,
-            $amountNegative,
+            $this->signaturesGenerator->formatAmount($amountNegative),
             $currency->iso_code
         );
 

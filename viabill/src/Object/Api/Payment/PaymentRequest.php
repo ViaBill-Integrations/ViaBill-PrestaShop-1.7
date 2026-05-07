@@ -23,7 +23,7 @@ class PaymentRequest implements SerializedObjectInterface
      *
      * @var string
      */
-    private $protocol = '3.0';
+    private $protocol = '3.1';
 
     /**
      * Payment Request API Key Variable Declaration.
@@ -89,11 +89,11 @@ class PaymentRequest implements SerializedObjectInterface
     private $callback_url;
 
     /**
-     * Payment Request md5Check Variable Declaration.
+     * Payment Request sha256Check Variable Declaration.
      *
      * @var string
      */
-    private $md5Check;
+    private $sha256Check;
 
     /**
      * Payment Request Customer Info
@@ -128,7 +128,7 @@ class PaymentRequest implements SerializedObjectInterface
      * @param string $cancel_url
      * @param string $callback_url
      * @param bool $test
-     * @param string $md5Check
+     * @param string $sha256Check
      * @param array $ustomer_info
      * @param array $cartParams
      * @param int $tbyb
@@ -143,7 +143,7 @@ class PaymentRequest implements SerializedObjectInterface
         $cancel_url,
         $callback_url,
         $test,
-        $md5Check,
+        $sha256Check,
         $customParams,
         $cartParams,
         $tbyb
@@ -156,7 +156,7 @@ class PaymentRequest implements SerializedObjectInterface
         $this->success_url = $success_url;
         $this->cancel_url = $cancel_url;
         $this->test = $test;
-        $this->md5Check = $md5Check;
+        $this->sha256Check = $sha256Check;
         $this->callback_url = $callback_url;
         $this->customParams = $this->cleanCustomParams($customParams);
         $this->cartParams = $this->cleanCartParams($cartParams);
@@ -310,13 +310,13 @@ class PaymentRequest implements SerializedObjectInterface
     }
 
     /**
-     * Gets Payment Request Md5Check.
+     * Gets Payment Request sha256Check.
      *
      * @return string
      */
-    public function getMd5check()
+    public function getsha256Check()
     {
-        return $this->md5Check;
+        return $this->sha256Check;
     }
 
     /**
@@ -367,7 +367,7 @@ class PaymentRequest implements SerializedObjectInterface
             'cancel_url' => $this->cancel_url,
             'callback_url' => $this->callback_url,
             'test' => (bool) $this->test,
-            'md5check' => $this->md5Check,
+            'sha256check' => $this->sha256Check,
             'customParams' => $this->customParams,
             'cartParams' => $this->cartParams,
             'tbyb' => $this->tbyb

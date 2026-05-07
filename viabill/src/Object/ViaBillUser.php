@@ -88,6 +88,6 @@ class ViaBillUser
      */
     public function getSignature()
     {
-        return md5($this->key . '#' . $this->secret);
+        return hash( 'sha256', $this->key . '#' . $this->secret);
     }
 }

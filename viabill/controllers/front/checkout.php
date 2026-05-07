@@ -202,7 +202,7 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
             ]
         );
 
-        $totalAmount = $order->total_paid_tax_incl;
+        $totalAmount = $signatureGenerator->formatAmount($order->total_paid_tax_incl);
         $currencyIso = $currency->iso_code;
         $transaction = $order->reference;
         $idOrder = $order->id;
@@ -215,15 +215,16 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
             $this->context->link,
             $order
         );
-
-        $md5Check = $signatureGenerator->generatePaymentCheckSum(
+        
+        $sha256Check = $signatureGenerator->generatePaymentCheckSum(
             $user,
             $totalAmount,
             $currencyIso,
             $transaction,
             $idOrder,
             $successUrl,
-            $cancelUrl
+            $cancelUrl,
+            $config->isTestingEnvironment()
         );
 
         $customerInfo = $this->getCustomerInfo($order);
@@ -242,7 +243,7 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
             $cancelUrl,
             $callBackUrl,
             $config->isTestingEnvironment(),
-            $md5Check,
+            $sha256Check,
             $customerInfo,
             $cartInfo,
             $tbyb
