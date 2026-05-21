@@ -13,7 +13,7 @@ $(document).ready(function () {
     updateProductVariantsEventHandler();
 
     function updateProductVariantsEventHandler() {
-        var $changeTrigger = $('#'+dynamicPriceTagTrigger);
+        var $changeTrigger = $(dynamicPriceTagTrigger);
         $changeTrigger.on('change', function () {
             // this is only the trigger which is being called by price tags after ajax calls
         });

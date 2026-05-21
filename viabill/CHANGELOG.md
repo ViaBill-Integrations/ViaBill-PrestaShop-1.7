@@ -287,3 +287,7 @@
 ### Changed
 ## [9.1.0] - 2026-05-07
 - Revised the checkout request.
+
+### Changed
+## [9.1.2] - 2026-05-07
+- Updated the product pricetag rendering.
