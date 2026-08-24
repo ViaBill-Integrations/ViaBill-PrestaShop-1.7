@@ -44,11 +44,6 @@ services:
             - '@ViaBill'
             - '@adapter.tools'
 
-    builder.template.authentication:
-        class: 'ViaBill\Builder\Template\AuthenticationTemplate'
-        arguments:
-            - '@ViaBill'
-
     builder.template.contact:
         class: 'ViaBill\Builder\Template\ContactTemplate'
         arguments:
@@ -86,11 +81,6 @@ services:
 
     builder.template.listButton:
         class: 'ViaBill\Builder\Template\ListButtonTemplate'
-        arguments:
-            - '@ViaBill'
-
-    builder.template.termsAndConditions:
-        class: 'ViaBill\Builder\Template\TermsAndConditionsTemplate'
         arguments:
             - '@ViaBill'
 
@@ -191,19 +181,6 @@ services:
         class: 'ViaBill\Service\Api\Countries\CountryService'
         arguments:
             - '@service.api.request'
-            - '@adapter.tools'
-
-    service.register:
-        class: 'ViaBill\Service\Api\Authentication\RegisterService'
-        arguments:
-            - '@service.api.request'
-            - '@adapter.tools'
-
-    service.login:
-        class: 'ViaBill\Service\Api\Authentication\LoginService'
-        arguments:
-            - '@service.api.request'
-            - '@factory.serializer'
             - '@adapter.tools'
 
     service.link:

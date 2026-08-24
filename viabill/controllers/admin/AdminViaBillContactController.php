@@ -89,20 +89,18 @@ class AdminViaBillContactController extends ModuleAdminController
         $contactTemplate = $this->module->getModuleContainer()->get('builder.template.contact');
         $contactTemplate->setSmarty($this->context->smarty);
 
-        if (!Tools::getValue('registerUser') && !Tools::getValue('loginUser')) {
-            if (Tools::getValue('ticket_info')) {
-                $this->content = $this->getContactFormOutput();
+        if (Tools::getValue('ticket_info')) {
+            $this->content = $this->getContactFormOutput();
+        } else {
+            $params = $this->getContactForm();
+            if (isset($params['error'])) {
+                $this->content = "<div class='alert alert-danger'><div class='alert-text'>
+                    <strong>" . $this->l('Error') . '</strong><br/>' .
+                    $params['error'] .
+                    '</div></div>';
             } else {
-                $params = $this->getContactForm();
-                if (isset($params['error'])) {
-                    $this->content = "<div class='alert alert-danger'><div class='alert-text'>
-                        <strong>" . $this->l('Error') . '</strong><br/>' .
-                        $params['error'] .
-                        '</div></div>';
-                } else {
-                    $contactTemplate->setSmartyParams($params);
-                    $this->content = $contactTemplate->getHtml();
-                }
+                $contactTemplate->setSmartyParams($params);
+                $this->content = $contactTemplate->getHtml();
             }
         }
 

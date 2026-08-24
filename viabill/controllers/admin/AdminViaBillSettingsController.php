@@ -166,6 +166,54 @@ class AdminViaBillSettingsController extends ModuleAdminController
             ];
         }        
 
+        $accountInfoBlockText =
+            $this->l('Enter your ViaBill API key, API secret and PriceTag script. You can find these values in your ViaBill merchant account. All three values are required for the payment gateway and the PriceTags to work.');
+
+        $hasStoredSecret = (bool) Configuration::get(Config::API_SECRET);
+
+        $secretDesc = $hasStoredSecret
+            ? $this->l('An API secret is already saved (hidden for security). Leave this field empty to keep it.')
+            : $this->l('Your ViaBill API secret.');
+
+        $this->fields_options[Config::SETTINGS_ACCOUNT_SECTION] = [
+            'title' => $this->l('ViaBill Account Credentials'),
+            'icon' => 'icon-key',
+            'fields' => [
+                Config::ACCOUNT_INFO_BLOCK_FIELD => [
+                    'type' => 'free',
+                    'desc' => $this->getInfoBlockTemplate($accountInfoBlockText),
+                    'class' => 'hidden',
+                    'form_group_class' => 'viabill-info-block',
+                ],
+                Config::API_KEY => [
+                    'title' => $this->l('API Key'),
+                    'desc' => $this->l('Your ViaBill API key.'),
+                    'type' => 'text',
+                    'class' => 'fixed-width-xxl',
+                    'autocomplete' => false,
+                    'required' => true,
+                ],
+                Config::API_SECRET => [
+                    'title' => $this->l('API Secret'),
+                    'desc' => $secretDesc,
+                    'type' => 'password',
+                    'class' => 'fixed-width-xxl',
+                    'autocomplete' => false,
+                ],
+                Config::API_TAGS_SCRIPT => [
+                    'title' => $this->l('PriceTag Script'),
+                    'desc' => $this->l('Paste the whole PriceTag script snippet provided by ViaBill. You may include the opening and closing script tags; they will be removed automatically, since the module adds its own.'),
+                    'type' => 'textarea',
+                    'cols' => 60,
+                    'rows' => 5,
+                    'required' => true,
+                ],
+            ],
+            'submit' => [
+                'title' => $this->l('Save'),
+            ],
+        ];
+
         $this->fields_options[Config::SETTINGS_PRICETAG_SETTINGS_SECTION] = [
             'title' => $this->l('Pricetag Settings'),
             'icon' => 'icon-money',
@@ -402,6 +450,82 @@ class AdminViaBillSettingsController extends ModuleAdminController
                 'title' => $this->l('Save'),
             ],
         ];
+    }
+
+    /**
+     * Custom save handler for the VB_API_KEY option (called automatically
+     * by AdminController::processUpdateOptions()).
+     *
+     * @param string $value
+     */
+    public function updateOptionVbApiKey($value)
+    {
+        $value = trim((string) $value);
+
+        if ($value === '') {
+            $this->errors[] = $this->l('The API key is required.');
+
+            return;
+        }
+
+        Configuration::updateValue(Config::API_KEY, $value);
+    }
+
+    /**
+     * Custom save handler for the VB_API_SECRET option (called automatically
+     * by AdminController::processUpdateOptions()).
+     *
+     * The API secret field is rendered as an empty password input so the
+     * secret is never printed back to the page. An empty submitted value
+     * therefore means "keep the currently stored secret".
+     *
+     * @param string $value
+     */
+    public function updateOptionVbApiSecret($value)
+    {
+        $value = trim((string) $value);
+
+        if ($value === '') {
+            if (!Configuration::get(Config::API_SECRET)) {
+                $this->errors[] = $this->l('The API secret is required.');
+            }
+
+            return;
+        }
+
+        Configuration::updateValue(Config::API_SECRET, $value);
+    }
+
+    /**
+     * Custom save handler for the VB_TAGS_SCRIPT option (called automatically
+     * by AdminController::processUpdateOptions()).
+     *
+     * A custom handler is needed because the generic option processing
+     * validates values with Validate::isCleanHtml(), which would reject the
+     * PriceTag script. The outer <script> tags (if pasted) are stripped,
+     * because the front-office template adds its own.
+     *
+     * @param string $value
+     */
+    public function updateOptionVbTagsScript($value)
+    {
+        $rawScript = trim((string) $value);
+
+        if ($rawScript === '') {
+            $this->errors[] = $this->l('The PriceTag script is required.');
+
+            return;
+        }
+
+        $tagsScript = Config::extractPricetagScriptCode($rawScript);
+
+        if ($tagsScript === '') {
+            $this->errors[] = $this->l('The PriceTag script does not contain any inline JavaScript code. Please paste the standard ViaBill PriceTag snippet.');
+
+            return;
+        }
+
+        Configuration::updateValue(Config::API_TAGS_SCRIPT, $tagsScript);
     }
 
     /**

@@ -60,6 +60,20 @@ class UnInstaller extends AbstractInstaller
     /**
      * Calls Uninstall Methods.
      *
+     * PATCH: explicitly remove all ViaBill back-office tab rows (plus their
+     * lang / authorization-role / access rows).
+     *
+     * PrestaShop's core Module::uninstall() only deletes tabs whose `module`
+     * column is exactly this module's name. Rows created by old versions
+     * with an empty or different `module` value (e.g. the raw SQL inserts in
+     * the historical upgrade scripts) survived every uninstall, and because
+     * ModuleTabRegister skips class names that already exist, they were also
+     * never repaired on reinstall - which is what produced the
+     * "Page not found" on AdminViaBillSettings for shops with leftovers.
+     *
+     * The sweep is delegated to Installer::cleanLeftoverTabs() so install
+     * and uninstall share the exact same cleanup logic.
+     *
      * @return bool
      *
      * @throws \PrestaShopDatabaseException
@@ -70,8 +84,25 @@ class UnInstaller extends AbstractInstaller
         $this->removeOrderStates();
         $this->removeConfiguration();
         $this->uninstallDb();
+        $this->removeTabs();
 
         return true;
+    }
+
+    /**
+     * Removes every ViaBill back-office tab, past or present, regardless of
+     * the value of its `module` column. Never throws.
+     */
+    private function removeTabs()
+    {
+        try {
+            Installer::cleanLeftoverTabs();
+        } catch (\Exception $exception) {
+            \PrestaShopLogger::addLog(
+                'ViaBill tab removal on uninstall failed: ' . $exception->getMessage(),
+                3
+            );
+        }
     }
 
     /**
@@ -143,22 +174,25 @@ class UnInstaller extends AbstractInstaller
         $sqlStatements = $this->getSqlStatements($uninstallSqlFileName);
 
         // Split the string into an array of individual SQL statements
-		$statementsArray = explode(';', $sqlStatements);
+        $statementsArray = explode(';', $sqlStatements);
 
-		// Removing any empty elements from the array, in case there's a trailing semicolon
-		$statementsArray = array_filter($statementsArray);
+        // Removing any empty elements from the array, in case there's a trailing semicolon
+        $statementsArray = array_filter($statementsArray);
 
         $success = true;
-		
-		foreach ($statementsArray as $statement) {
-			
-			$statement = trim($statement);
-			if (empty($statement)) continue;
 
-			$success = $this->execute($database, $statement);
-			if (!$success) break;
-		}	
-		
-		return $success;        
+        foreach ($statementsArray as $statement) {
+            $statement = trim($statement);
+            if (empty($statement)) {
+                continue;
+            }
+
+            $success = $this->execute($database, $statement);
+            if (!$success) {
+                break;
+            }
+        }
+
+        return $success;
     }
 }

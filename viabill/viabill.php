@@ -66,7 +66,7 @@ class ViaBill extends PaymentModule
 
         // Visible children under the invisible ViaBill root
         [
-            'name' => 'ViaBill Authentication',
+            'name' => 'ViaBill Account Credentials',
             'class_name' => 'AdminViaBillAuthentication',
             'visible' => true,
             'parent_class_name' => 'AdminViaBillTabs',
@@ -107,7 +107,7 @@ class ViaBill extends PaymentModule
         $this->description = 'ViaBill Official';
         $this->tab = 'payments_gateways';
         $this->displayName = $this->l('ViaBill');
-        $this->version = '9.1.0';
+        $this->version = '9.2.1';
         $this->ps_versions_compliancy = ['min' => '1.7.3.0', 'max' => _PS_VERSION_];
         $this->module_key = '026cfbb4e50aac4d9074eb7c9ddc2584';
 

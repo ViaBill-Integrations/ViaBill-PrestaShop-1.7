@@ -11,25 +11,21 @@
 
 use ViaBill\Config\Config;
 use ViaBill\Controller\AbstractAdminController as ModuleAdminController;
-use ViaBill\Object\Api\Authentication\LoginRequest;
-use ViaBill\Object\Api\Authentication\RegisterRequest;
 
 require_once dirname(__FILE__) . '/../../vendor/autoload.php';
 
 /**
- * ViaBill Authentication Controller Class.
+ * ViaBill Account Credentials Controller Class.
+ *
+ * The merchant obtains the API key, API secret and PriceTag script
+ * elsewhere (e.g. from the ViaBill merchant portal) and enters them here
+ * manually. No remote call to the ViaBill server (register/login) is
+ * performed by this controller.
  *
  * Class AdminViaBillAuthenticationController
  */
 class AdminViaBillAuthenticationController extends ModuleAdminController
 {
-    /**
-     * ViaBill Supported Countries Variable Declaration.
-     *
-     * @var
-     */
-    private $viaBillCountries;
-
     /**
      * AdminViaBillAuthenticationController constructor.
      *
@@ -43,12 +39,12 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
         $this->display = 'add';
         parent::__construct();
 
-        $this->toolbar_title = $this->l('Authentication');
+        $this->toolbar_title = $this->l('ViaBill Account Credentials');
     }
 
     /**
      * Init Error Messages From Cookies.
-     * Checks If User Is Logged In And Init Authentication Form.
+     * Checks If User Is Already Configured And Init Credentials Form.
      *
      * @throws Exception
      */
@@ -75,53 +71,18 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
         $tab = $this->module->getModuleContainer()->get('tab');
 
         if ($config->isLoggedIn()) {
+            // The credentials can be updated at any time from the top of the
+            // ViaBill Settings page.
             Tools::redirectAdmin($this->context->link->getAdminLink($tab->getControllerSettingsName()));
         }
 
-        $this->getViaBillCountries();
-        $this->initForm();
+        $this->getCredentialsForm();
 
         parent::init();
     }
 
     /**
-     * Adds Register Or Login User Value To Url If That Button Is Clicked In Authentication Form.
-     *
-     * @throws Exception
-     */
-    public function initContent()
-    {
-        /**
-         * @var \ViaBill\Builder\Template\AuthenticationTemplate $authenticationTemplate
-         */
-        $authenticationTemplate = $this->module->getModuleContainer()->get('builder.template.authentication');
-        $authenticationTemplate->setSmarty($this->context->smarty);
-        $authenticationTemplate->setNewUser(
-            $this->context->link->getAdminLink(
-                $this->controller_name,
-                true,
-                [],
-                ['registerUser' => '1']
-            )
-        );
-        $authenticationTemplate->setExistingUser(
-            $this->context->link->getAdminLink(
-                $this->controller_name,
-                true,
-                [],
-                ['loginUser' => '1']
-            )
-        );
-
-        if (!Tools::getValue('registerUser') && !Tools::getValue('loginUser')) {
-            $this->content .= $authenticationTemplate->getHtml();
-        }
-
-        return parent::initContent();
-    }
-
-    /**
-     * Adds CSS And JS Files To ViaBill Authentication Controller.
+     * Adds CSS Files To ViaBill Account Credentials Controller.
      *
      * @param bool $isNewTheme
      */
@@ -129,22 +90,12 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
     {
         parent::setMedia($isNewTheme);
 
-        /**
-         * @var \ViaBill\Adapter\Media $mediaAdapter
-         */
-        $mediaAdapter = $this->module->getModuleContainer()->get('adapter.media');
-
-        $mediaAdapter->addJsDef([
-            'termsLink' => Config::TERMS_AND_CONDITIONS_LINK,
-        ]);
-
         $this->addCSS($this->module->getLocalPath() . '/views/css/admin/authentication.css');
         $this->addCSS($this->module->getLocalPath() . '/views/css/admin/info-block.css');
-        $this->addJS($this->module->getLocalPath() . '/views/js/admin/authentication.js');
     }
 
     /**
-     * Login And Registration Forms Validation.
+     * Credentials Form Validation And Saving.
      *
      * @return bool|ObjectModel
      *
@@ -152,146 +103,52 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
      */
     public function postProcess()
     {
-        if (Tools::isSubmit('submitRegisterForm')) {
+        if (Tools::isSubmit('submitCredentialsForm')) {
             $errorsArray = [];
 
-            $regEmail = Tools::getValue('register_user_email');
-            $regCountry = Tools::getValue('register_user_country');
-            $regShopUrl = Tools::getValue('register_user_shop_url');
-            $regName = Tools::getValue('register_user_name');
-            $regPhone = Tools::getValue('register_user_phone');
-            $regTaxID = Tools::getValue('register_tax_id');
-            $termsAccepted = Tools::getValue('terms_and_conditions');
+            $apiKey = trim((string) Tools::getValue('viabill_api_key'));
+            $apiSecret = trim((string) Tools::getValue('viabill_api_secret'));
+            $rawScript = trim((string) Tools::getValue('viabill_pricetag_script'));
+            $tagsScript = Config::extractPricetagScriptCode($rawScript);
 
-            # Empty values
-            if (!$regEmail || !$regName || !$regCountry || !$regShopUrl || !$termsAccepted) {
-                if (!$regEmail) {
-                    $errorsArray[] = $this->l('Email is required to create an account');
-                }
+            // Allow the merchant to keep the already stored secret by
+            // leaving the (masked) secret field empty.
+            if ($apiSecret === '') {
+                $apiSecret = (string) Configuration::get(Config::API_SECRET);
+            }
 
-                if (!$regName) {
-                    $errorsArray[] = $this->l('Contact Name is required to create an account');
-                }
+            if ($apiKey === '') {
+                $errorsArray[] = $this->l('The API key is required.');
+            }
 
-                if (!$regCountry) {
-                    $errorsArray[] = $this->l('Country is required to create an account');
-                }
+            if ($apiSecret === '') {
+                $errorsArray[] = $this->l('The API secret is required.');
+            }
 
-                if (!$regShopUrl) {
-                    $errorsArray[] = $this->l('Shop Url is required to create an account');
-                }
+            if ($rawScript === '') {
+                $errorsArray[] = $this->l('The PriceTag script is required.');
+            } elseif ($tagsScript === '') {
+                $errorsArray[] = $this->l('The PriceTag script does not contain any inline JavaScript code. Please paste the standard ViaBill PriceTag snippet.');
+            }
 
-                if (!$termsAccepted) {
-                    $errorsArray[] = $this->l('Please read and accept Terms And Conditions');
-                }
-
+            if (!empty($errorsArray)) {
                 $this->context->cookie->authErrorMessage = json_encode($errorsArray);
 
                 Tools::redirectAdmin(
-                    $this->context->link->getAdminLink('AdminViaBillAuthentication') . '&registerUser=1'
-                );
-
-                return parent::postProcess();
-            }          
-
-            # Tax ID
-            if (empty($regTaxID)) {
-                $errorsArray[] = $this->l('Tax Id should not be empty.');
-
-                $this->context->cookie->authErrorMessage = json_encode($errorsArray);
-
-                Tools::redirectAdmin(
-                    $this->context->link->getAdminLink('AdminViaBillAuthentication') . '&registerUser=1'
+                    $this->context->link->getAdminLink('AdminViaBillAuthentication')
                 );
 
                 return parent::postProcess();
             }
 
-            if (!empty($regTaxID)) {
-                $tax_id_error_msg = '';
-                if ($regCountry == Config::ES_COUNTRY_ISO_CODE) {                    
-                    // validate tax id value, based on the ES acceptable values
-                    if (!$this->sanitizeTaxId($regTaxID, $regCountry)) {
-                        $tax_id_error_msg = $this->l('The Spanish Tax Id is invalid.');
-                    }
-                } else if ($regCountry == Config::DK_COUNTRY_ISO_CODE) {
-                    // validate tax id value, based on the DK acceptable values
-                    if (!$this->sanitizeTaxId($regTaxID, $regCountry)) {
-                        $tax_id_error_msg = $this->l('The Danish Tax Id is invalid.');
-                    }
-                }
-
-                if (!empty($tax_id_error_msg)) {
-                    $errorsArray[] = $tax_id_error_msg;
-
-                    $this->context->cookie->authErrorMessage = json_encode($errorsArray);
-    
-                    Tools::redirectAdmin(
-                        $this->context->link->getAdminLink('AdminViaBillAuthentication') . '&registerUser=1'
-                    );
-    
-                    return parent::postProcess();
-                }                
-            }
-
-            # Other validation
-            if (!Validate::isCleanHtml($regName) ||
-                !Validate::isCleanHtml($regPhone) ||
-                !Validate::isCleanHtml($regShopUrl)) {
-                if (!Validate::isCleanHtml($regShopUrl)) {
-                    $errorsArray[] = $this->l('Shop Url field is not valid');
-                }
-
-                if (!Validate::isCleanHtml($regName)) {
-                    $errorsArray[] = $this->l('Name field is not valid');
-                }
-
-                if (!Validate::isCleanHtml($regPhone)) {
-                    $errorsArray[] = $this->l('Phone field is not valid');
-                }
-
-                $this->context->cookie->authErrorMessage = json_encode($errorsArray);
-
-                Tools::redirectAdmin(
-                    $this->context->link->getAdminLink('AdminViaBillAuthentication') . '&registerUser=1'
-                );
-
-                return parent::postProcess();
-            }
-
-            $this->registerFormRequest();
-        }
-
-        if (Tools::isSubmit('submitLoginForm')) {
-            $loginEmail = Tools::getValue('login_user_email');
-            $loginPassword = Tools::getValue('login_user_password');
-
-            if (!$loginEmail || !$loginPassword) {
-                $errorsArray = [];
-                if (!$loginEmail) {
-                    $errorsArray[] = $this->l('Email is required to create an account');
-                }
-
-                if (!$loginPassword) {
-                    $errorsArray[] = $this->l('Country is required to create an account');
-                }
-
-                $this->context->cookie->authErrorMessage = json_encode($errorsArray);
-                Tools::redirectAdmin(
-                    $this->context->link->getAdminLink('AdminViaBillAuthentication') . '&loginUser=1'
-                );
-
-                return parent::postProcess();
-            }
-
-            $this->loginFormRequest();
+            $this->saveCredentials($apiKey, $apiSecret, $tagsScript);
         }
 
         return parent::postProcess();
     }
 
     /**
-     * Init Registration Form Values.
+     * Init Credentials Form Values.
      *
      * @return string
      *
@@ -299,197 +156,88 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
      */
     public function renderForm()
     {
-        $this->initRegFormValues();
+        $this->initCredentialsFormValues();
 
         return parent::renderForm();
     }
 
     /**
-     * Checks For $_GET registerUser of loginUser Values And Gets Needed Form.
-     *
-     * @return bool
+     * Account Credentials Form Formation.
      */
-    protected function initForm()
+    protected function getCredentialsForm()
     {
-        if (!Tools::getValue('registerUser') && !Tools::getValue('loginUser')) {
-            return false;
-        }
+        $credentialsInfoBlockText =
+            $this->l('Enter your ViaBill API key, API secret and PriceTag script below. You can find these values in your ViaBill merchant account. All three values are required for the payment gateway and the PriceTags to work.');
 
-        if (Tools::getValue('registerUser')) {
-            $this->getUserRegForm();
-        }
+        $hasStoredSecret = (bool) Configuration::get(Config::API_SECRET);
 
-        if (Tools::getValue('loginUser')) {
-            $this->getUserLoginForm();
-        }
-    }
-
-    /**
-     * User Registration Form Formation.
-     */
-    protected function getUserRegForm()
-    {
-        $registrationInfoBlockText =
-            $this->l('This gives you a ViaBill account and allows your webshop to handle ViaBill transactions');
+        $secretDesc = $hasStoredSecret
+            ? $this->l('An API secret is already saved (hidden for security). Leave this field empty to keep it.')
+            : $this->l('Your ViaBill API secret.');
 
         $this->fields_form = [
             'legend' => [
-                'title' => $this->l('Register'),
+                'title' => $this->l('ViaBill Account Credentials'),
             ],
             'input' => [
                 [
                     'type' => 'free',
-                    'name' => 'registration_hint',
-                    'desc' => $this->getInfoBlockTemplate($registrationInfoBlockText),
+                    'name' => 'credentials_hint',
+                    'desc' => $this->getInfoBlockTemplate($credentialsInfoBlockText),
                     'class' => 'hidden',
                     'form_group_class' => 'viabill-info-block',
                 ],
                 [
                     'type' => 'text',
-                    'label' => $this->l('Email'),
-                    'name' => 'register_user_email',
+                    'label' => $this->l('API Key'),
+                    'name' => 'viabill_api_key',
                     'class' => 'fixed-width-xxl',
                     'required' => true,
-                ],
-                [
-                    'type' => 'select',
-                    'label' => $this->l('Country'),
-                    'name' => 'register_user_country',
-                    'class' => 'fixed-width-xxl js-country-select',
-                    'options' => [
-                        'query' => $this->getRegFormCountriesOptions(),
-                        'id' => 'id',
-                        'name' => 'name',
-                    ],
-                    'required' => true,
-                ],
-                [
-                    'type' => 'text',
-                    'label' => $this->l('Live shop URL'),
-                    'name' => 'register_user_shop_url',
-                    'class' => 'fixed-width-xxl',
-                    'required' => true,
-                ],
-                [
-                    'type' => 'text',
-                    'label' => $this->l('Contact name'),
-                    'name' => 'register_user_name',
-                    'class' => 'fixed-width-xxl',
-                    'required' => true,
-                ],
-                [
-                    'type' => 'text',
-                    'label' => $this->l('Tax Id'),
-                    'name' => 'register_tax_id',
-                    'class' => 'fixed-width-xxl',
-                    'required' => true,
-                ],
-                [
-                    'type' => 'text',
-                    'label' => $this->l('Phone'),
-                    'name' => 'register_user_phone',
-                    'class' => 'fixed-width-xxl',
-                ],
-                [
-                    'type' => 'free',
-                    'name' => 'terms_and_conditions',
-                ],
-            ],
-            'submit' => [
-                'title' => $this->l('Create ViaBill user'),
-                'icon' => 'process-icon-ok',
-                'name' => 'submitRegisterForm',
-            ],
-        ];
-    }
-
-    /**
-     * User Login Form Formation.
-     */
-    protected function getUserLoginForm()
-    {
-        $this->fields_form = [
-            'legend' => [
-                'title' => $this->l('Login'),
-            ],
-            'input' => [
-                [
-                    'type' => 'text',
-                    'label' => $this->l('Email'),
-                    'name' => 'login_user_email',
-                    'required' => true,
-                    'class' => 'fixed-width-xxl',
                 ],
                 [
                     'type' => 'password',
-                    'label' => $this->l('Password'),
-                    'name' => 'login_user_password',
-                    'required' => true,
-                    'class' => 'login-password-field',
+                    'label' => $this->l('API Secret'),
+                    'name' => 'viabill_api_secret',
+                    'class' => 'fixed-width-xxl',
+                    'desc' => $secretDesc,
+                    'required' => !$hasStoredSecret,
                 ],
-            ],
-            'buttons' => [
                 [
-                    'title' => $this->l('Forgot password?'),
-                    'icon' => 'process-icon-help',
-                    'name' => 'forgotPassword',
-                    'type' => 'button',
-                    'class' => 'pull-left vd-auth-additional-button',
-                    'href' => Config::getLoginForgotPassUrl($this->context->language->iso_code),
+                    'type' => 'textarea',
+                    'label' => $this->l('PriceTag Script'),
+                    'name' => 'viabill_pricetag_script',
+                    'cols' => 60,
+                    'rows' => 5,
+                    'desc' => $this->l('Paste the whole PriceTag script snippet provided by ViaBill. You may include the opening and closing script tags; they will be removed automatically, since the module adds its own.'),
+                    'required' => true,
                 ],
             ],
             'submit' => [
-                'title' => $this->l('Connect'),
+                'title' => $this->l('Save Credentials'),
                 'icon' => 'process-icon-ok',
-                'name' => 'submitLoginForm',
+                'name' => 'submitCredentialsForm',
             ],
         ];
     }
 
     /**
-     * Gets Needed Registration Values And Perform User Registration.
+     * Saves The Manually Entered Credentials And Finishes The Setup.
+     *
+     * @param string $apiKey
+     * @param string $apiSecret
+     * @param string $tagsScript
      *
      * @return bool
      *
      * @throws Exception
      */
-    protected function registerFormRequest()
+    protected function saveCredentials($apiKey, $apiSecret, $tagsScript)
     {
-        $regEmail = Tools::getValue('register_user_email');     
-        $regName = Tools::getValue('register_user_name');   
-        $regCountryIso = Tools::getValue('register_user_country');
-        $regShopUrl = Tools::getValue('register_user_shop_url');        
-        $regPhone = Tools::getValue('register_user_phone');
-        $regTaxID = Tools::getValue('register_tax_id');
-        $regTaxID = $this->sanitizeTaxId($regTaxID, $regCountryIso);
+        Configuration::updateValue(Config::API_KEY, $apiKey);
+        Configuration::updateValue(Config::API_SECRET, $apiSecret);
+        Configuration::updateValue(Config::API_TAGS_SCRIPT, $tagsScript);
 
-        $resigterRequest = new RegisterRequest($regEmail, $regName, $regShopUrl, $regCountryIso, $regTaxID, [$regPhone]);
-
-        /** @var \ViaBill\Service\Api\Authentication\RegisterService $registerService */
-        $registerService = $this->module->getModuleContainer()->get('service.register');
-        $registerResponse = $registerService->register($resigterRequest);
-
-        if ($registerResponse->hasErrors()) {
-            $errors = $registerResponse->getErrors();
-
-            foreach ($errors as $error) {
-                $errorField = '';
-
-                if ($error->getField() != '') {
-                    $errorField = 'Field: ' . $error->getField() . '. ';
-                }
-
-                $this->context->controller->errors[] = $errorField . ' Error: ' . $error->getError();
-            }
-
-            return false;
-        }
-
-        Configuration::updateValue(Config::API_KEY, $registerResponse->getKey());
-        Configuration::updateValue(Config::API_SECRET, $registerResponse->getSecret());
-        Configuration::updateValue(Config::API_TAGS_SCRIPT, $registerResponse->getPricetagScript());
-
-        $this->context->cookie->authSuccessMessage = $this->l('Account was successfully created');
+        $this->context->cookie->authSuccessMessage = $this->l('ViaBill account credentials saved successfully');
         if (!$this->saveModuleRestrictions()) {
             return false;
         }
@@ -509,134 +257,14 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
     }
 
     /**
-     * Gets Needed Login Values And Perform User Login.
-     *
-     * @return bool
-     *
-     * @throws Exception
+     * Init Credentials Form Values.
      */
-    protected function loginFormRequest()
+    protected function initCredentialsFormValues()
     {
-        $logEmail = Tools::getValue('login_user_email');
-        $logPassword = Tools::getValue('login_user_password');
-
-        $loginRequest = new LoginRequest($logEmail, $logPassword);
-
-        /** @var \ViaBill\Service\Api\Authentication\LoginService $loginService */
-        $loginService = $this->module->getModuleContainer()->get('service.login');
-        $loginResponse = $loginService->login($loginRequest);
-
-        if ($loginResponse->hasErrors()) {
-            $errors = $loginResponse->getErrors();
-
-            foreach ($errors as $error) {
-                $errorField = '';
-
-                if ($error->getField() != '') {
-                    $errorField = sprintf($this->l('Field: %s. '), $error->getField());
-                }
-
-                $this->context->controller->errors[] =
-                    $errorField . sprintf($this->l('Error: %s '), $error->getError());
-            }
-
-            return false;
-        }
-
-        Configuration::updateValue(Config::API_KEY, $loginResponse->getKey());
-        Configuration::updateValue(Config::API_SECRET, $loginResponse->getSecret());
-        Configuration::updateValue(Config::API_TAGS_SCRIPT, $loginResponse->getPricetagScript());
-
-        $this->context->cookie->authSuccessMessage = $this->l('You successfully connected to ViaBill');
-
-        if (!$this->saveModuleRestrictions()) {
-            return false;
-        }
-
-        /**
-         * @var \ViaBill\Install\Tab $tab
-         */
-        $tab = $this->module->getModuleContainer()->get('tab');
-        $authenticationTab = Tab::getInstanceFromClassName($tab->getControllerAuthenticationName());
-        $authenticationTab->active = false;
-        $authenticationTab->id_parent = -1;
-        $authenticationTab->update();
-
-        Tools::redirectAdmin($this->context->link->getAdminLink('AdminViaBillSettings'));
-
-        return true;
-    }
-
-    /**
-     * Gets ViaBill Supported Countries.
-     *
-     * @return array|bool
-     *
-     * @throws Exception
-     */
-    protected function getRegFormCountriesOptions()
-    {
-        $countries = $this->viaBillCountries;
-
-        if (!$countries) {
-            $this->context->controller->errors = $this->l('Failed to load countries. Please reload page.');
-
-            return false;
-        }
-
-        $countriesOptions = [];
-
-        /** @var \ViaBill\Object\Api\Countries\CountryResponse $country */
-        foreach ($countries as $country) {
-            $countriesOptions[] = [
-                'id' => $country->getCode(),
-                'name' => $country->getName(),
-            ];
-        }
-
-        return $countriesOptions;
-    }
-
-    /**
-     * Init Registration Form Values.
-     */
-    protected function initRegFormValues()
-    {
-        if (Tools::getValue('registerUser')) {
-            $this->fields_value['register_user_email'] = $this->context->employee->email;
-            $this->fields_value['register_user_shop_url'] = Tools::getShopDomainSsl(true);
-            $this->fields_value['register_user_name'] =
-                $this->context->employee->firstname . ' ' . $this->context->employee->lastname;
-            $this->fields_value['register_user_phone'] = Configuration::get('PS_SHOP_PHONE');
-            $this->initTermsAndConditionsValue();
-        }
-    }
-
-    /**
-     * Init Terms And Conditions Field Value
-     *
-     * @throws SmartyException
-     */
-    public function initTermsAndConditionsValue()
-    {
-        $termsLinkCountry = '';
-
-        if ($this->viaBillCountries) {
-            /** @var \ViaBill\Object\Api\Countries\CountryResponse $viaBillCountry */
-            foreach ($this->viaBillCountries as $viaBillCountry) {
-                $termsLinkCountry = Config::formatCountryCodeForTCLink($viaBillCountry->getCode());
-                break;
-            }
-        }
-
-        /**
-         * @var \ViaBill\Builder\Template\TermsAndConditionsTemplate $termsAndConditionsTemplate
-         */
-        $termsAndConditionsTemplate = $this->module->getModuleContainer()->get('builder.template.termsAndConditions');
-        $termsAndConditionsTemplate->setSmarty($this->context->smarty);
-        $termsAndConditionsTemplate->setTermsLinkCountry($termsLinkCountry);
-
-        $this->fields_value['terms_and_conditions'] = $termsAndConditionsTemplate->getHtml();
+        $this->fields_value['viabill_api_key'] = Configuration::get(Config::API_KEY) ?: '';
+        // The API secret is never printed back to the page.
+        $this->fields_value['viabill_api_secret'] = '';
+        $this->fields_value['viabill_pricetag_script'] = Configuration::get(Config::API_TAGS_SCRIPT) ?: '';
     }
 
     /**
@@ -673,48 +301,5 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
         }
 
         return $result;
-    }
-
-    /**
-     * Gets Country List From ViaBill API
-     *
-     * @throws Exception
-     */
-    private function getViaBillCountries()
-    {
-        $locale = $this->context->language->iso_code;
-
-        /** @var \ViaBill\Service\Api\Countries\CountryService $countryService */
-        $countryService = $this->module->getModuleContainer()->get('service.country');
-        $countries = $countryService->getCountries($locale);
-
-        $this->viaBillCountries = $countries;
-    }
-
-    /**
-    * Sanitize and format the Tax ID (if given)
-    */
-    private function sanitizeTaxId($tax_id, $country) {
-        $tax_id = str_replace(array(' ','-'), '', trim($tax_id));
-        if ($country == Config::ES_COUNTRY_ISO_CODE) {
-            $regex_with_prefix = '/^ES[0-9A-Z]*/';
-            if (preg_match($regex_with_prefix, $tax_id)) {
-                return $tax_id;
-            }
-            $regex_without_prefix = '/^[0-9A-Z]+/';
-            if (preg_match($regex_without_prefix, $tax_id)) {
-                return 'ES'.$tax_id;
-            }
-        } else if ($country == Config::DK_COUNTRY_ISO_CODE) {
-            $regex_with_prefix = '/^DK[0-9]{8}$/';
-            if (preg_match($regex_with_prefix, $tax_id)) {
-                return $tax_id;
-            }
-            $regex_without_prefix = '/^[0-9]{8}$/';
-            if (preg_match($regex_without_prefix, $tax_id)) {
-                return 'DK'.$tax_id;
-            }
-        }
-        return '';
     }
 }

@@ -116,7 +116,7 @@ class Tab
                 'module_tab' => true,
             ],
             [
-                'name' => $this->module->l('Authentication', self::FILENAME),
+                'name' => $this->module->l('Account Credentials', self::FILENAME),
                 'ParentClassName' => $this->controllerInvisibleName,
                 'class_name' => $this->controllerAuthenticationName,
                 'visible' => true,

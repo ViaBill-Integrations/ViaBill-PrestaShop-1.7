@@ -9,6 +9,7 @@
 * @see       /LICENSE
 */
 
+use ViaBill\Config\Config;
 use ViaBill\Util\DebugLog;
 
 /**
@@ -90,9 +91,9 @@ class ViaBillCancelModuleFrontController extends ModuleFrontController
             Tools::redirect($redirectLink . (Tools::isSubmit('slowvalidation') ? '&slowvalidation' : ''));
         }
 
-        if ((string) $this->secure_key !== (string) $order->secure_key ||
-            (int) $order->id_customer !== (int) $this->context->customer->id ||
-            !Validate::isLoadedObject($order)
+        if (!Validate::isLoadedObject($order) ||
+            (string) $this->secure_key !== (string) $order->secure_key ||
+            (int) $order->id_customer !== (int) $this->context->customer->id
         ) {
             Tools::redirect($redirectLink);
         }
@@ -100,7 +101,91 @@ class ViaBillCancelModuleFrontController extends ModuleFrontController
         if ($order->module !== $this->module->name) {
             Tools::redirect($redirectLink);
         }
+
+        /*
+         * PATCH: actually mark the order as cancelled.
+         *
+         * Previously this controller only updated the transaction history and
+         * displayed the cancel template, leaving the order in the
+         * "Payment pending by ViaBill" state forever if ViaBill did not send
+         * (or the shop did not receive) the CANCELLED server-to-server
+         * callback. Any later merchant workflow could then treat a
+         * never-paid order as a live one.
+         *
+         * We only transition orders that are still in the ViaBill pending
+         * state, and as a safety net we ask the ViaBill status API first:
+         * if the transaction turns out to be APPROVED (e.g. the customer
+         * paid and then hit the cancel URL manually, or callbacks raced),
+         * we leave the order alone and let the callback/return flow handle it.
+         */
+        $this->cancelPendingOrder($order);
+
         $this->order_presenter = new \PrestaShop\PrestaShop\Adapter\Order\OrderPresenter();
+    }
+
+    /**
+     * Sets the order state to "Payment canceled by ViaBill" when it is safe to do so.
+     *
+     * @param Order $order
+     */
+    private function cancelPendingOrder(Order $order)
+    {
+        try {
+            $pendingStateId = (int) Configuration::get(Config::PAYMENT_PENDING);
+            $canceledStateId = (int) Configuration::get(Config::PAYMENT_CANCELED);
+            $currentStateId = (int) $order->getCurrentState();
+
+            // Only ever transition orders that are still awaiting ViaBill approval.
+            if (!$pendingStateId || !$canceledStateId || $currentStateId !== $pendingStateId) {
+                DebugLog::msg(
+                    'Cancel cancelPendingOrder / skipped. ' .
+                    '[current state: ' . $currentStateId . ']' .
+                    '[pending state: ' . $pendingStateId . ']' .
+                    '[canceled state: ' . $canceledStateId . ']'
+                );
+
+                return;
+            }
+
+            // Best-effort verification against the ViaBill status API. If the
+            // transaction was actually approved, do NOT cancel the order.
+            $isApproved = false;
+            try {
+                /**
+                 * @var \ViaBill\Service\Provider\OrderStatusProvider $orderStatusProvider
+                 */
+                $orderStatusProvider = $this->module->getModuleContainer()
+                    ->get('service.provider.orderStatus');
+                $isApproved = $orderStatusProvider->isApproved($order);
+            } catch (Exception $statusException) {
+                // The status API being unreachable must not block a
+                // customer-initiated (secure-key validated) cancellation of a
+                // pending order. Log and proceed.
+                DebugLog::msg(
+                    'Cancel cancelPendingOrder / status API check failed: ' .
+                    $statusException->getMessage()
+                );
+            }
+
+            if ($isApproved) {
+                DebugLog::msg(
+                    'Cancel cancelPendingOrder / order #' . (int) $order->id .
+                    ' is APPROVED at ViaBill, refusing to cancel.'
+                );
+
+                return;
+            }
+
+            $order->setCurrentState($canceledStateId);
+
+            DebugLog::msg(
+                'Cancel cancelPendingOrder / order #' . (int) $order->id .
+                ' moved to "Payment canceled by ViaBill" (state ' . $canceledStateId . ').'
+            );
+        } catch (Exception $exception) {
+            // Never break the cancel page rendering because of this.
+            DebugLog::msg('Cancel cancelPendingOrder / exception: ' . $exception->getMessage());
+        }
     }
 
     /**

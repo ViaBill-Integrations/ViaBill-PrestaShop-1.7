@@ -80,6 +80,9 @@ class Config
     const PRICETAG_SETTINGS_INFO_BLOCK_FIELD = 'VB_PRICE_TAG_INFO_BLOCK';
     const MY_VIABILL_INFO_BLOCK_FIELD = 'VB_MY_VIABILL_INFO_BLOCK';
 
+    const SETTINGS_ACCOUNT_SECTION = 'VB_ACCOUNT_CREDENTIALS';
+    const ACCOUNT_INFO_BLOCK_FIELD = 'VB_ACCOUNT_INFO_BLOCK';
+
     const ENABLE_DEBUG = 'VB_ENABLE_DEBUG';
     const MODULE_INFO_FIELD = 'VB_MODULE_INFO_BLOCK';
 
@@ -416,6 +419,46 @@ class Config
         return \Configuration::get(self::API_KEY) &&
             \Configuration::get(self::API_SECRET) &&
             \Configuration::get(self::API_TAGS_SCRIPT);
+    }
+
+    /**
+     * Normalizes a manually entered PriceTag script snippet.
+     *
+     * The module stores only the inner JavaScript code (without the
+     * surrounding <script> tags), because the front-office template
+     * (views/templates/front/tag-script.tpl) wraps the stored value in its
+     * own <script> tags. Merchants, however, usually copy the whole snippet
+     * from their ViaBill account, including the tags, so this helper strips
+     * the outer <script ...> and </script> wrappers if they are present.
+     *
+     * Returns the inner JavaScript code, or an empty string if nothing
+     * usable is left (e.g. the snippet only referenced an external script
+     * file and had no inline code).
+     *
+     * @param string $rawScript
+     *
+     * @return string
+     */
+    public static function extractPricetagScriptCode($rawScript)
+    {
+        $rawScript = trim((string) $rawScript);
+
+        if ($rawScript === '') {
+            return '';
+        }
+
+        if (stripos($rawScript, '<script') === false) {
+            // No tags present, assume it is already the inner code.
+            return $rawScript;
+        }
+
+        // Extract the inline contents of all <script>...</script> pairs.
+        $innerCode = '';
+        if (preg_match_all('/<script\b[^>]*>(.*?)<\/script>/is', $rawScript, $matches)) {
+            $innerCode = trim(implode("\n", array_map('trim', $matches[1])));
+        }
+
+        return $innerCode;
     }
 
     /**

@@ -59,6 +59,24 @@ class OrderStatusService
     /**
      * Changes Order Status By Callback.
      *
+     * PATCH: this method now implements a small state machine instead of
+     * blindly applying whatever the callback says:
+     *
+     *  - APPROVED never overrides an order that is already cancelled or
+     *    refunded (late / duplicated / replayed callbacks used to flip a
+     *    cancelled order back to "Payment accepted").
+     *  - APPROVED is idempotent: an order already accepted or completed is
+     *    left untouched.
+     *  - CANCELLED / REJECTED never downgrade an order that has already been
+     *    accepted, completed or refunded; such conflicts are logged for
+     *    manual review instead.
+     *  - Status comparison is trimmed and case-insensitive.
+     *  - The default (unknown status) branch now resolves the error state id
+     *    through Configuration::get() - previously the raw constant string
+     *    'PS_OS_ERROR' was passed to setCurrentState(), which casts to state
+     *    id 0 and corrupted the order history. It also only applies the error
+     *    state to orders still pending.
+     *
      * @param CallBackResponse $response
      *
      * @throws \PrestaShopDatabaseException
@@ -70,42 +88,115 @@ class OrderStatusService
 
         $logger = $this->loggerFactory->create();
 
-        switch ($response->getStatus()) {
-            case Config::CALLBACK_STATUS_SUCCESS:
-                $acceptedState = $this->configuration->get(Config::PAYMENT_ACCEPTED);
+        $status = strtoupper(trim((string) $response->getStatus()));
 
-                $viaBillOrder = new \ViaBillOrder();
-                $viaBillOrder->id_order = (int) $response->getOrderNumber();
-                $viaBillOrder->id_currency = (int) $order->id_currency;
-                try {
-                    $viaBillOrder->save();
-                } catch (\Exception $exception) {
+        $currentState = (int) $order->getCurrentState();
+        $pendingState = (int) $this->configuration->get(Config::PAYMENT_PENDING);
+        $acceptedState = (int) $this->configuration->get(Config::PAYMENT_ACCEPTED);
+        $completedState = (int) $this->configuration->get(Config::PAYMENT_COMPLETED);
+        $canceledState = (int) $this->configuration->get(Config::PAYMENT_CANCELED);
+        $refundedState = (int) $this->configuration->get(Config::PAYMENT_REFUNDED);
+
+        switch ($status) {
+            case Config::CALLBACK_STATUS_SUCCESS:
+                // Never re-open an order the shop already considers
+                // cancelled or refunded.
+                if (in_array($currentState, [$canceledState, $refundedState], true)) {
                     $logger->error(
-                        'successful request but order marking failed',
+                        'Ignoring APPROVED callback: order is already cancelled or refunded on the shop side',
                         [
-                            'exceptionMessage' => $exception->getMessage(),
+                            'order' => (int) $order->id,
+                            'currentState' => $currentState,
                             'callback' => $response,
                         ]
                     );
+
+                    break;
                 }
 
-                if ($order->getCurrentState() != $acceptedState) {
-                    $order->setCurrentState($acceptedState);
+                // Idempotency: nothing to do if the order is already
+                // accepted or completed.
+                if (in_array($currentState, [$acceptedState, $completedState], true)) {
+                    break;
                 }
+
+                $this->markOrderAsViaBillOrder($order, $response, $logger);
+
+                $order->setCurrentState($acceptedState);
 
                 break;
             case Config::CALLBACK_STATUS_CANCEL:
-                $order->setCurrentState($this->configuration->get(Config::PAYMENT_CANCELED));
-                break;
             case Config::CALLBACK_STATUS_REJECTED:
-                $order->setCurrentState($this->configuration->get(Config::PAYMENT_CANCELED));
+                // Idempotency: already cancelled.
+                if ($currentState === $canceledState) {
+                    break;
+                }
+
+                // Never downgrade an order that has already been accepted,
+                // completed or refunded. Log for manual review instead.
+                if (in_array($currentState, [$acceptedState, $completedState, $refundedState], true)) {
+                    $logger->error(
+                        'Ignoring CANCELLED/REJECTED callback: order has already been approved on the shop side',
+                        [
+                            'order' => (int) $order->id,
+                            'currentState' => $currentState,
+                            'callback' => $response,
+                        ]
+                    );
+
+                    break;
+                }
+
+                $order->setCurrentState($canceledState);
+
                 break;
             default:
                 $logger->error(
                     'Unexpected state detected',
                     ['callback' => $response]
                 );
-                $order->setCurrentState(Config::PAYMENT_ERROR);
+
+                // Only move orders that are still pending into the error
+                // state; never touch orders in any other state because of an
+                // unrecognized callback payload.
+                if ($currentState === $pendingState) {
+                    $errorState = (int) $this->configuration->get(Config::PAYMENT_ERROR);
+
+                    if ($errorState) {
+                        $order->setCurrentState($errorState);
+                    }
+                }
+        }
+    }
+
+    /**
+     * Persists the ViaBill order marker (used by capture/refund tooling),
+     * avoiding duplicate rows when callbacks are retried.
+     *
+     * @param \Order $order
+     * @param CallBackResponse $response
+     * @param mixed $logger
+     */
+    private function markOrderAsViaBillOrder(\Order $order, CallBackResponse $response, $logger)
+    {
+        try {
+            $existingId = \ViaBillOrder::getPrimaryKey((int) $order->id);
+            if ($existingId) {
+                return;
+            }
+
+            $viaBillOrder = new \ViaBillOrder();
+            $viaBillOrder->id_order = (int) $order->id;
+            $viaBillOrder->id_currency = (int) $order->id_currency;
+            $viaBillOrder->save();
+        } catch (\Exception $exception) {
+            $logger->error(
+                'successful request but order marking failed',
+                [
+                    'exceptionMessage' => $exception->getMessage(),
+                    'callback' => $response,
+                ]
+            );
         }
     }
 

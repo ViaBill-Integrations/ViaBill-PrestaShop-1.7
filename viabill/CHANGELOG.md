@@ -291,3 +291,14 @@
 ### Changed
 ## [9.1.2] - 2026-05-07
 - Updated the product pricetag rendering.
+
+### Changed
+## [9.2.1] - 2026-08-20
+- Replaced login and registration with an account details form.
+
+### Changed
+- Merchants no longer register or log in through the ViaBill server to retrieve their credentials. The API key, API secret and PriceTag script are now entered manually, either on the "ViaBill Account Credentials" page (former Authentication page) or in the new "ViaBill Account Credentials" section at the top of the ViaBill Settings page.
+- The API secret is rendered as a masked password field and is never printed back to the page; leaving it empty keeps the currently stored secret.
+
+### Removed
+- The register and login forms, the corresponding ViaBill API calls (/register, /login) and their supporting classes and services.
