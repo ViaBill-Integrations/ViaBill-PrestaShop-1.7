@@ -7,11 +7,11 @@ ViaBill is changing the way people shop online. We offer a payment solution that
 For more information about ViaBill, please visit our [ViaBill](https://viabill.com) site.
 
 ## Pre-Requisites
-* PrestaShop 1.7.3 or newer, Prestashop 8.0.0 or newer.
+* PrestaShop 1.7.3 or newer, Prestashop 8.x
 
 ## Installation and Configuration
 
-Please follow the instructions in [INSTALL.md](INSTALL.md)
+Please follow the instructions in [ViaBill-PrestaShop-Installation-Guide-EN.pdf](ViaBill-PrestaShop-Installation-Guide-EN.pdf)
 
 # PrestaShop
 
