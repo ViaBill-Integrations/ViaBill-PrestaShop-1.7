@@ -183,10 +183,11 @@ $_MODULE['<{viabill}prestashop>adminviabillactionscontroller_a994e746ff65a5db688
 $_MODULE['<{viabill}prestashop>adminviabillactionscontroller_350e5fad0f81d3ad7aa549335b3d0ae4'] = 'Error de confirmación del formulario. No se ha encontrado el pedido.';
 $_MODULE['<{viabill}prestashop>adminviabillactionscontroller_255774a3400c191602a4604290538f3d'] = '¿Está seguro de que desea capturar %s?';
 $_MODULE['<{viabill}prestashop>adminviabillactionscontroller_bcb6eb5bb4429d025a2f83c0310f2972'] = '¿Está seguro de que desea reembolsar %s?';
-$_MODULE['<{viabill}prestashop>adminviabillconflictcontroller_a994e746ff65a5db688aefdf496bf0f0'] = 'Form token mismatch detected.';
+$_MODULE['<{viabill}prestashop>adminviabillconflictcontroller_a994e746ff65a5db688aefdf496bf0f0'] = 'El token del formulario no coincide.';
 $_MODULE['<{viabill}prestashop>adminviabillconflictcontroller_3c1ea4fcfcd11b794cbc43a338a99322'] = '¡El método de pago de terceros desactivado! ';
 $_MODULE['<{viabill}prestashop>adminviabillconflictcontroller_13dc262f11d0aa5d3a4b31ad225fed3c'] = '¡No se pudo encontrar el método de pago de terceros! ';
 $_MODULE['<{viabill}prestashop>adminviabillcontactcontroller_902b0d55fddef6f8d651fe1035b7d4bd'] = 'Error';
+$_MODULE['<{viabill}prestashop>adminviabillcontactcontroller_a994e746ff65a5db688aefdf496bf0f0'] = 'El token del formulario no coincide.';
 $_MODULE['<{viabill}prestashop>adminviabillcontactcontroller_64cc975bdc209bdd7361783936b9c6c5'] = '¡Su solicitud ha sido recibida con éxito!';
 $_MODULE['<{viabill}prestashop>adminviabillcontactcontroller_9a00047065c40abdc217463672124c83'] = 'Nos comunicaremos con usted pronto en ';
 $_MODULE['<{viabill}prestashop>adminviabillcontactcontroller_7b1f2cad09e042db223950d4dc94cf1e'] = 'También puede contactarnos en ';

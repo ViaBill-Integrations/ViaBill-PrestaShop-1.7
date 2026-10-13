@@ -90,6 +90,23 @@ class AdminViaBillContactController extends ModuleAdminController
         $contactTemplate->setSmarty($this->context->smarty);
 
         if (Tools::getValue('ticket_info')) {
+            // Sending the support request emails shop data: only accept POST
+            // requests with a valid back office token. The core check is used
+            // because, depending on the PrestaShop version and the "token in
+            // URLs" setting, the token is the legacy 'token' parameter or absent.
+            if (
+                !isset($_SERVER['REQUEST_METHOD']) ||
+                strtoupper($_SERVER['REQUEST_METHOD']) !== 'POST' ||
+                !$this->checkToken()
+            ) {
+                $this->content = "<div class='alert alert-danger'><div class='alert-text'>
+                    <strong>" . $this->l('Error') . '</strong><br/>' .
+                    $this->l('Form token mismatch detected.') .
+                    '</div></div>';
+
+                return parent::initContent();
+            }
+
             $this->content = $this->getContactFormOutput();
         } else {
             $params = $this->getContactForm();

@@ -179,14 +179,15 @@ $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_24d88e1a42d4
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_9854e7c43045805d99c4b37541e8a1b4'] = 'Kunne ikke indlæse lande. Venligst genindlæs siden.';
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_f12990e8f6e1f6fb8eb2e266ad38cc5b'] = 'Det er ikke muligt at gemme landerestriktioner i modulet. Dette kan dog gøres manuelt under fanen \"Landerestriktioner\" i payment preferences.';
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_101acc4437c9a1e477b59608e9951d25'] = 'Det er ikke muligt at gemme valutarestriktioner i modulet. Dette kan dog gøres manuelt under fanen “Valutarestriktioner” i payment preferences.';
-$_MODULE['<{viabill}prestashop>adminviabillactionscontroller_a994e746ff65a5db688aefdf496bf0f0'] = 'Form token mismatch fundet.';
+$_MODULE['<{viabill}prestashop>adminviabillactionscontroller_a994e746ff65a5db688aefdf496bf0f0'] = 'Formularens sikkerhedstoken stemmer ikke overens.';
 $_MODULE['<{viabill}prestashop>adminviabillactionscontroller_350e5fad0f81d3ad7aa549335b3d0ae4'] = 'Form confirmation error. Ordren kunne ikke findes.';
 $_MODULE['<{viabill}prestashop>adminviabillactionscontroller_255774a3400c191602a4604290538f3d'] = 'Er du sikker på, at du vil hæve %s ?';
 $_MODULE['<{viabill}prestashop>adminviabillactionscontroller_bcb6eb5bb4429d025a2f83c0310f2972'] = 'Er du sikker på, at du vil kreditere %s ?';
-$_MODULE['<{viabill}prestashop>adminviabillconflictcontroller_a994e746ff65a5db688aefdf496bf0f0'] = 'Formtoken misforhold registreret.';
+$_MODULE['<{viabill}prestashop>adminviabillconflictcontroller_a994e746ff65a5db688aefdf496bf0f0'] = 'Formularens sikkerhedstoken stemmer ikke overens.';
 $_MODULE['<{viabill}prestashop>adminviabillconflictcontroller_3c1ea4fcfcd11b794cbc43a338a99322'] = 'Tredjeparts betalingsmetode deaktiveret!';
 $_MODULE['<{viabill}prestashop>adminviabillconflictcontroller_13dc262f11d0aa5d3a4b31ad225fed3c'] = 'Tredjeparts betalingsmetode kunne ikke findes!';
 $_MODULE['<{viabill}prestashop>adminviabillcontactcontroller_902b0d55fddef6f8d651fe1035b7d4bd'] = 'Fejl';
+$_MODULE['<{viabill}prestashop>adminviabillcontactcontroller_a994e746ff65a5db688aefdf496bf0f0'] = 'Formularens sikkerhedstoken stemmer ikke overens.';
 $_MODULE['<{viabill}prestashop>adminviabillcontactcontroller_64cc975bdc209bdd7361783936b9c6c5'] = 'Din anmodning er modtaget med succes! ';
 $_MODULE['<{viabill}prestashop>adminviabillcontactcontroller_9a00047065c40abdc217463672124c83'] = 'Vi vender snart tilbage til dig på ';
 $_MODULE['<{viabill}prestashop>adminviabillcontactcontroller_7b1f2cad09e042db223950d4dc94cf1e'] = 'Du kan også kontakte os på ';

@@ -32,10 +32,12 @@ $(document).ready(function() {
         $("#DisableThirdPartyPaymentBtn").click(function() {
             var disable_third_party_gateway_url = $('#thirdparty_disable_url').val();
             console.log(disable_third_party_gateway_url);
+            // POST with a body: the controller only accepts POST requests
+            // that carry a valid back office token (sent in the URL).
             $.ajax({
-                method: 'get',
+                type: 'post',
                 url: disable_third_party_gateway_url,
-                data: null,
+                data: { disableThirdPartyPayment: 1 },
                 dataType: "text",
                 success: function(data) {
                     alert(data); 

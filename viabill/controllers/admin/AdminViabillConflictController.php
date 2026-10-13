@@ -55,7 +55,16 @@ class AdminViaBillConflictController extends ModuleAdminController
      */
     private function disableThirdPartyPaymentMethod()
     {
-        if ($this->token !== Tools::getValue('token')) {
+        // Changes the payment configuration: only accept POST requests with a
+        // valid back office token. The core check is used because, depending
+        // on the PrestaShop version and the "token in URLs" setting, the token
+        // is the legacy 'token' parameter or absent. POST is required because
+        // the core check accepts a GET request without any token.
+        if (
+            !isset($_SERVER['REQUEST_METHOD']) ||
+            strtoupper($_SERVER['REQUEST_METHOD']) !== 'POST' ||
+            !$this->checkToken()
+        ) {
             $this->ajaxDie($this->l('Form token mismatch detected.'));
         }
 

@@ -59,11 +59,14 @@ class AdminViaBillActionsController extends ModuleAdminController
             Tools::isSubmit('renewPayment');
 
         // Payment actions change money flows: only accept them as POST
-        // requests carrying this controller's token.
+        // requests carrying a valid back office token. The core check is
+        // used because, depending on the PrestaShop version and the
+        // "token in URLs" setting, the token is the legacy 'token' parameter,
+        // the Symfony '_token' parameter or absent.
         if ($isAction && (
             !isset($_SERVER['REQUEST_METHOD']) ||
             strtoupper($_SERVER['REQUEST_METHOD']) !== 'POST' ||
-            !Config::hashEquals((string) $this->token, (string) Tools::getValue('token'))
+            !$this->checkToken()
         )) {
             $this->errors[] = $this->l('Form token mismatch detected.');
 
@@ -118,7 +121,7 @@ class AdminViaBillActionsController extends ModuleAdminController
      */
     private function captureAjaxConfirmationMessageProcess()
     {
-        if ($this->token !== Tools::getValue('token')) {
+        if (!$this->checkToken()) {
             $this->ajaxDie($this->l('Form token mismatch detected.'));
         }
 
