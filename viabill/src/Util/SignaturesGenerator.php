@@ -12,6 +12,7 @@
 namespace ViaBill\Util;
 
 use ViaBill\Adapter\Tools;
+use ViaBill\Config\Config;
 use ViaBill\Object\ViaBillUser;
 
 /**
@@ -158,6 +159,35 @@ class SignaturesGenerator
      * @return string
      */
     public function generateCallBackSecurityKey()
+    {
+        // Remember when callback URLs started to carry this key, so the legacy
+        // key is only accepted for orders created before that moment.
+        if (!\Configuration::getGlobalValue(Config::CALLBACK_KEY_V2_SINCE)) {
+            \Configuration::updateGlobalValue(Config::CALLBACK_KEY_V2_SINCE, date('Y-m-d H:i:s'));
+        }
+
+        return $this->getCallBackSecurityKey();
+    }
+
+    /**
+     * Gets The Call Back Security Key (HMAC-SHA256, Keyed With The Shop Secret).
+     *
+     * @return string
+     */
+    public function getCallBackSecurityKey()
+    {
+        return hash_hmac('sha256', $this->module->name . '#callback', _COOKIE_KEY_);
+    }
+
+    /**
+     * Generates The Legacy (MD5 Based) Call Back Security Key.
+     *
+     * Only used to accept callbacks for orders created before the switch to
+     * the HMAC-SHA256 key.
+     *
+     * @return string
+     */
+    public function generateLegacyCallBackSecurityKey()
     {
         return $this->tools->encrypt($this->module->name);
     }

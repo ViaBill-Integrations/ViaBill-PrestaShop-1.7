@@ -129,6 +129,11 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
                 $errorsArray[] = $this->l('The PriceTag script is required.');
             } elseif ($tagsScript === '') {
                 $errorsArray[] = $this->l('The PriceTag script does not contain any inline JavaScript code. Please paste the standard ViaBill PriceTag snippet.');
+            } elseif ($tagsScript !== (string) Configuration::get(Config::API_TAGS_SCRIPT) &&
+                !Config::isSuperAdmin($this->context->employee)
+            ) {
+                // The script is printed unescaped on every storefront page.
+                $errorsArray[] = $this->l('Only employees with the SuperAdmin profile can change the PriceTag script.');
             }
 
             if (!empty($errorsArray)) {
@@ -211,6 +216,13 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
                     'desc' => $this->l('Paste the whole PriceTag script snippet provided by ViaBill. You may include the opening and closing script tags; they will be removed automatically, since the module adds its own.'),
                     'required' => true,
                 ],
+                [
+                    'type' => 'free',
+                    'name' => 'signup_note',
+                    'desc' => $this->getSignupNoteTemplate(),
+                    'class' => 'hidden',
+                    'form_group_class' => 'viabill-info-block',
+                ],
             ],
             'submit' => [
                 'title' => $this->l('Save Credentials'),
@@ -218,6 +230,46 @@ class AdminViaBillAuthenticationController extends ModuleAdminController
                 'name' => 'submitCredentialsForm',
             ],
         ];
+    }
+
+    /**
+     * Gets The Note Pointing Merchants Without Credentials To The ViaBill Online Signup Form.
+     *
+     * @return string
+     *
+     * @throws SmartyException
+     */
+    protected function getSignupNoteTemplate()
+    {
+        $this->context->smarty->assign([
+            'signupNoteTitle' => $this->l('No ViaBill account credentials yet?'),
+            'signupNoteText' => $this->l('Fill in the ViaBill online signup form to get your API key, API secret and PriceTag script.'),
+            'signupLinkText' => $this->l('Go to the ViaBill signup form'),
+            'signupUrl' => $this->getSignupUrl(),
+        ]);
+
+        return $this->context->smarty->fetch(
+            $this->module->getLocalPath() . 'views/templates/admin/signup-note.tpl'
+        );
+    }
+
+    /**
+     * Builds The ViaBill Online Signup Form URL For This Shop And Module Version.
+     *
+     * @return string
+     */
+    protected function getSignupUrl()
+    {
+        $params = [
+            'utm_source' => 'prestashop',
+            'utm_medium' => 'ecommerce_extension',
+            'utm_campaign' => 'merchant_signup',
+            'utm_content' => 'settings_page',
+            'shop_url' => rtrim($this->context->shop->getBaseURL(true), '/'),
+            'integration_version' => $this->module->version,
+        ];
+
+        return 'https://portal.viabill.com/signup?' . http_build_query($params, '', '&', PHP_QUERY_RFC3986);
     }
 
     /**

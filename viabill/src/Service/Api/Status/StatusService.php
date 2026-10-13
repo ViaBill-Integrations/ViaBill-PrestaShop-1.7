@@ -79,14 +79,14 @@ class StatusService
             );
 
         // debug info
-        $debug_str = 'Status API Request/ [URL: ' . var_export($requestUrl, true) . ']';
+        $debug_str = 'Status API Request/ [URL: ' . DebugLog::export($requestUrl) . ']';
         DebugLog::msg($debug_str, 'debug');
 
         $response = $this->apiRequest->get($requestUrl);
         $body = json_decode($response->getBody(), true);
 
         // debug info
-        $debug_str = 'Status API Request/ [Response: ' . var_export($response, true) . ']';
+        $debug_str = 'Status API Request/ [Response: ' . DebugLog::export($response) . ']';
         DebugLog::msg($debug_str, 'debug');
 
         return new StatusResponse($body['state'], $response->getErrors());

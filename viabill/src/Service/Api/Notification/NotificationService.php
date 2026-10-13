@@ -76,13 +76,13 @@ class NotificationService
             );
 
         // debug info
-        $debug_str = 'Notifications API Request/ [url: ' . var_export($requestUrl, true) . ']';
+        $debug_str = 'Notifications API Request/ [url: ' . DebugLog::export($requestUrl) . ']';
         DebugLog::msg($debug_str, 'debug');
 
         $apiResponse = $this->apiRequest->get($requestUrl);
 
         // debug info
-        $debug_str = 'Notifications API Request/ [response: ' . var_export($apiResponse, true) . ']';
+        $debug_str = 'Notifications API Request/ [response: ' . DebugLog::export($apiResponse) . ']';
         DebugLog::msg($debug_str, 'debug');
 
         if ($apiResponse->getStatusCode() !== 200) {

@@ -12,6 +12,7 @@
 namespace ViaBill\Service\Api;
 
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\TransferStats;
 use ViaBill\Adapter\Tools;
@@ -101,6 +102,13 @@ class ApiRequest
 
             $statusCode = $clientException->getCode();
             $errors = $this->getResponseErrors($errorBody, $clientException->getMessage());
+        } catch (ConnectException $connectException) {
+            // Connection failures and timeouts (not a RequestException in Guzzle 7).
+            $statusCode = $connectException->getCode();
+            $errors = $this->getResponseErrors(
+                '',
+                $this->module->l('ViaBill service is down at the moment. Please wait and refresh the page or contact ViaBill support at merchants@viabill.com')
+            );
         } catch (RequestException $requestException) {
             $statusCode = $requestException->getCode();
             $errors = $this->getResponseErrors(
@@ -144,6 +152,13 @@ class ApiRequest
 
             $statusCode = $clientException->getCode();
             $errors = $this->getResponseErrors($errorBody, $clientException->getMessage());
+        } catch (ConnectException $connectException) {
+            // Connection failures and timeouts (not a RequestException in Guzzle 7).
+            $statusCode = $connectException->getCode();
+            $errors = $this->getResponseErrors(
+                '',
+                $this->module->l('ViaBill service is down at the moment. Please wait and refresh the page or contact ViaBill support at merchants@viabill.com')
+            );
         } catch (RequestException $requestException) {
             $statusCode = $requestException->getCode();
             $errors = $this->getResponseErrors(

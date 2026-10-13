@@ -71,7 +71,7 @@ class PaymentService
     public function createPayment(PaymentRequest $paymentRequest)
     {
         // debug info
-        $debug_str = 'Payment API Request/ [body: ' . var_export($paymentRequest, true) . ']';
+        $debug_str = 'Payment API Request/ [body: ' . DebugLog::export($paymentRequest) . ']';
         DebugLog::msg($debug_str, 'debug');                        
 
         $apiResponse = $this->apiRequest->post(
@@ -82,7 +82,7 @@ class PaymentService
         );
 
         // debug info
-        $debug_str = 'Payment API Request/ [response: ' . var_export($apiResponse, true) . ']';
+        $debug_str = 'Payment API Request/ [response: ' . DebugLog::export($apiResponse) . ']';
         DebugLog::msg($debug_str, 'debug');
 
         // transaction history info
@@ -99,7 +99,7 @@ class PaymentService
             }
 
             if (!empty($errorsArray)) {
-                $debug_str = 'Payment API Request/ [errors: ' . var_export($errorsArray, true) . ']';
+                $debug_str = 'Payment API Request/ [errors: ' . DebugLog::export($errorsArray) . ']';
                 DebugLog::msg($debug_str, 'error');
             }
 

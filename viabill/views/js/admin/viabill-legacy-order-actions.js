@@ -16,60 +16,88 @@ $(document).ready(function() {
     /**
      * Add row actions (single order buttons) to ViaBill orders
      */
+    function getActionsToken() {
+        // Token of the AdminViaBillActions controller (set by the module).
+        if (typeof viabillActionsToken !== 'undefined') {
+            return viabillActionsToken;
+        }
+
+        return prestashop.token || '';
+    }
+
     function addViaBillRowActions() {
         $('.table-orders tbody tr').each(function() {
             var $row = $(this);
-            var orderId = $row.find('td:first').text().trim();
+            var orderId = parseInt($row.find('td:first').text().trim(), 10);
             var paymentMethod = $row.find('td.payment').text().trim().toLowerCase();
-            
+
             // Only add buttons for ViaBill orders
-            if (paymentMethod !== 'viabill') {
+            if (paymentMethod !== 'viabill' || !orderId) {
                 return;
             }
-            
+
             // Find the actions column
             var $actionsCell = $row.find('td.actions');
             if (!$actionsCell.length) {
                 $actionsCell = $row.find('td:last');
             }
-            
+
             // Check if buttons already exist
             if ($actionsCell.find('.viabill-action-btn').length > 0) {
                 return;
             }
-            
-            // Get the admin token
-            var token = prestashop.token || '';
-            
-            // Build action URLs
-            var captureUrl = 'index.php?controller=AdminViaBillActions&id_order=' + orderId + 
-                           '&capturePayment=1&token=' + token;
-            var cancelUrl = 'index.php?controller=AdminViaBillActions&id_order=' + orderId + 
-                          '&cancelPayment=1&token=' + token;
-            var refundUrl = 'index.php?controller=AdminViaBillActions&id_order=' + orderId + 
-                          '&refundPayment=1&token=' + token;
-            
-            // Create button HTML
-            var buttonsHtml = 
+
+            // Create button HTML. The actions are submitted as POST requests
+            // (see the click handler below), never as plain links.
+            var buttonsHtml =
                 '<div class="btn-group-action viabill-actions">' +
                 '  <div class="btn-group">' +
-                '    <a class="btn btn-default viabill-action-btn" href="' + captureUrl + '" ' +
+                '    <a class="btn btn-default viabill-action-btn" href="#" ' +
+                '       data-order-id="' + orderId + '" data-action="capturePayment" ' +
                 '       title="Capture ViaBill payment">' +
                 '      <i class="icon-money"></i> Capture' +
                 '    </a>' +
-                '    <a class="btn btn-default viabill-action-btn" href="' + cancelUrl + '" ' +
+                '    <a class="btn btn-default viabill-action-btn" href="#" ' +
+                '       data-order-id="' + orderId + '" data-action="cancelPayment" ' +
                 '       title="Cancel ViaBill payment">' +
                 '      <i class="icon-remove"></i> Cancel' +
                 '    </a>' +
-                '    <a class="btn btn-default viabill-action-btn" href="' + refundUrl + '" ' +
+                '    <a class="btn btn-default viabill-action-btn" href="#" ' +
+                '       data-order-id="' + orderId + '" data-action="refundPayment" ' +
                 '       title="Refund ViaBill payment">' +
                 '      <i class="icon-undo"></i> Refund' +
                 '    </a>' +
                 '  </div>' +
                 '</div>';
-            
+
             // Append buttons to actions cell
             $actionsCell.append(buttonsHtml);
+        });
+    }
+
+    /**
+     * Submit a row action as a POST request with the controller token.
+     */
+    function handleRowActionClick() {
+        $(document).on('click', '.viabill-action-btn', function(e) {
+            e.preventDefault();
+
+            var action = $(this).data('action');
+            var orderId = parseInt($(this).data('order-id'), 10);
+
+            if (['capturePayment', 'cancelPayment', 'refundPayment'].indexOf(action) === -1 || !orderId) {
+                return;
+            }
+
+            var $form = $('<form method="post"></form>')
+                .attr('action', 'index.php?controller=AdminViaBillActions&token=' + encodeURIComponent(getActionsToken()));
+
+            $form.append($('<input type="hidden" name="id_order">').val(orderId));
+            $form.append($('<input type="hidden">').attr('name', action).val(1));
+            $form.append($('<input type="hidden" name="token">').val(getActionsToken()));
+
+            $('body').append($form);
+            $form.trigger('submit');
         });
     }
     
@@ -141,7 +169,7 @@ $(document).ready(function() {
                 }
                 
                 // Change form action to submit to ViaBill controller
-                var token = prestashop.token || '';
+                var token = getActionsToken();
                 var actionUrl = 'index.php?controller=AdminViaBillActions&' + 
                               selectedAction + '=1&token=' + token;
                 
@@ -159,6 +187,7 @@ $(document).ready(function() {
     addViaBillRowActions();
     addViaBillBulkActions();
     handleBulkActionSubmit();
+    handleRowActionClick();
     
     // Re-run when table is updated (for AJAX pagination, etc.)
     if (typeof MutationObserver !== 'undefined') {

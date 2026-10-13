@@ -107,7 +107,7 @@ class ViaBill extends PaymentModule
         $this->description = 'ViaBill Official';
         $this->tab = 'payments_gateways';
         $this->displayName = $this->l('ViaBill');
-        $this->version = '9.2.1';
+        $this->version = '9.2.2';
         $this->ps_versions_compliancy = ['min' => '1.7.3.0', 'max' => _PS_VERSION_];
         $this->module_key = '026cfbb4e50aac4d9074eb7c9ddc2584';
 
@@ -710,7 +710,7 @@ class ViaBill extends PaymentModule
             return false;
         }
 
-        $debug_str = var_export($order, true);
+        $debug_str = DebugLog::export($order);
         DebugLog::msg('hookActionOrderHistoryAddAfter / validation accepted for order: ' . $debug_str);
 
         $newOrderStatusId = (int) $orderHistory->id_order_state;
@@ -1005,7 +1005,7 @@ class ViaBill extends PaymentModule
 
         if (!$orderStatus->canBeCaptured($order)) {
             DebugLog::msg('capturePayment / Order cannot be captured:');
-            $debug_str = var_export($order, true);
+            $debug_str = DebugLog::export($order);
             DebugLog::msg($debug_str);
 
             return false;
@@ -1255,7 +1255,7 @@ class ViaBill extends PaymentModule
             DebugLog::msg($debug_str);
         }
 
-        $debug_str = print_r($params, true);
+        $debug_str = DebugLog::export($params);
         DebugLog::msg($debug_str);
 
         return $sendEmail;
@@ -1282,6 +1282,11 @@ class ViaBill extends PaymentModule
 
         /** @var \ViaBill\Adapter\Media $mediaAdapter */
         $mediaAdapter = $this->getModuleContainer()->get("adapter.media");
+
+        // The payment actions require this controller's own admin token.
+        \Media::addJsDef([
+            'viabillActionsToken' => \Tools::getAdminTokenLite('AdminViaBillActions'),
+        ]);
 
         // Add JavaScript for injecting buttons
         $mediaAdapter->addJsAdmin($this->context, "viabill-legacy-order-actions.js");

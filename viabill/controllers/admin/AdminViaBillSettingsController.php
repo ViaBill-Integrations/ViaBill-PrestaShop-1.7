@@ -525,6 +525,17 @@ class AdminViaBillSettingsController extends ModuleAdminController
             return;
         }
 
+        // The script is printed unescaped on every storefront page, so only
+        // SuperAdmin may change it. Other employees can still save the rest of
+        // the settings as long as they leave the script unchanged.
+        if ($tagsScript !== (string) Configuration::get(Config::API_TAGS_SCRIPT) &&
+            !Config::isSuperAdmin($this->context->employee)
+        ) {
+            $this->errors[] = $this->l('Only employees with the SuperAdmin profile can change the PriceTag script.');
+
+            return;
+        }
+
         Configuration::updateValue(Config::API_TAGS_SCRIPT, $tagsScript);
     }
 

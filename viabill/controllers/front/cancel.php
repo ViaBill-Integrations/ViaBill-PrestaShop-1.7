@@ -65,34 +65,16 @@ class ViaBillCancelModuleFrontController extends ModuleFrontController
         $this->secure_key = Tools::getValue('key', false);
         $order = new Order((int) $this->id_order);
 
-        // update transaction history
-        $idOrder = $this->id_order;
-        if ($idOrder) {
-            $transactionHistory = new \ViaBillTransactionHistory();
-            $idTransactionHistory = \ViaBillTransactionHistory::getPrimaryKeyByOrder($idOrder);
-            if ($idTransactionHistory) {
-                $transactionHistory = new \ViaBillTransactionHistory($idTransactionHistory);
-                $cancelResponse = array(
-                    'cart' => $this->id_cart,
-                    'order_id' => $this->id_order,
-                    'secure_key' => $this->secure_key
-                );
-                $transactionHistory->updateAfterCancel($cancelResponse);
-            }
-        }
-
-        // Debug info
-        $debug_str = '[Cart id: ' . $this->id_cart . '][Order id: ' . $this->id_order . '][Secure key: ' . $this->secure_key . ']';
-        $order_str = (empty($order)) ? 'empty' : var_export($order, true);
-        $debug_str .= "[order: {$order_str}]";
+        // Debug info (the secure key is never logged)
+        $debug_str = '[Cart id: ' . $this->id_cart . '][Order id: ' . $this->id_order . ']';
         DebugLog::msg('Cancel init / ' . $debug_str);
 
-        if (!$this->id_order || !$this->module->id || !$this->secure_key || empty($this->secure_key)) {
+        if (!$this->id_order || !$this->module->id || !is_string($this->secure_key) || $this->secure_key === '') {
             Tools::redirect($redirectLink . (Tools::isSubmit('slowvalidation') ? '&slowvalidation' : ''));
         }
 
         if (!Validate::isLoadedObject($order) ||
-            (string) $this->secure_key !== (string) $order->secure_key ||
+            !Config::hashEquals((string) $order->secure_key, (string) $this->secure_key) ||
             (int) $order->id_customer !== (int) $this->context->customer->id
         ) {
             Tools::redirect($redirectLink);
@@ -100,6 +82,18 @@ class ViaBillCancelModuleFrontController extends ModuleFrontController
 
         if ($order->module !== $this->module->name) {
             Tools::redirect($redirectLink);
+        }
+
+        // Update the transaction history only once the request has been
+        // verified to come from the order's owner.
+        $idTransactionHistory = \ViaBillTransactionHistory::getPrimaryKeyByOrder((int) $order->id);
+        if ($idTransactionHistory) {
+            $transactionHistory = new \ViaBillTransactionHistory($idTransactionHistory);
+            $cancelResponse = array(
+                'cart' => $this->id_cart,
+                'order_id' => $this->id_order,
+            );
+            $transactionHistory->updateAfterCancel($cancelResponse);
         }
 
         /*

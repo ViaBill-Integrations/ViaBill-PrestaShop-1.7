@@ -13,6 +13,7 @@ namespace ViaBill\Service\Validator\CallBack;
 
 use ViaBill\Adapter\Tools;
 use ViaBill\Adapter\Validate;
+use ViaBill\Config\Config;
 use ViaBill\Factory\LoggerFactory;
 use ViaBill\Object\Api\CallBack\CallBackResponse;
 use ViaBill\Service\UserService;
@@ -94,15 +95,16 @@ class OrderCallBackValidator
     public function validate(CallBackResponse $response)
     {
         $errors = [];
-        if (!$this->isSignatureMatches()) {
-            $errors[] = 'Signature did not matched';
-        }
+
+        $order = new \Order((int) $response->getOrderNumber());
 
         if (!$this->isOrderObjectLoaded($response)) {
             $errors[] = sprintf('Order number %s was not found', (int) $response->getOrderNumber());
         }
 
-        $order = new \Order((int) $response->getOrderNumber());
+        if (!$this->isSignatureMatches($order)) {
+            $errors[] = 'Signature did not matched';
+        }
 
         if (!$this->isReferenceMatches($response, $order)) {
             $errors[] = sprintf(
@@ -114,6 +116,14 @@ class OrderCallBackValidator
 
         if (!$this->isResponseSignatureMatches($order, $response)) {
             $errors[] = 'Response signature does not match';
+        }
+
+        if (!$this->isAmountMatches($order, $response)) {
+            $errors[] = sprintf(
+                'Amount or currency did not match the order. Got %s %s',
+                $response->getAmount(),
+                $response->getCurrency()
+            );
         }
 
         if (!empty($errors)) {
@@ -134,19 +144,78 @@ class OrderCallBackValidator
     }
 
     /**
-     * Checks If Signature Matches.
+     * Checks If The Callback Security Key Matches.
+     *
+     * The legacy (MD5 based) key is only accepted for orders created before
+     * callback URLs started to carry the HMAC-SHA256 key, so payments that
+     * were in progress during the upgrade still complete.
+     *
+     * @param \Order $order
      *
      * @return bool
      */
-    public function isSignatureMatches()
+    public function isSignatureMatches(\Order $order)
     {
         $signature = $this->tools->getValue('key');
 
-        if ($signature == $this->signaturesGenerator->generateCallBackSecurityKey()) {
+        if (!is_string($signature) || $signature === '') {
+            return false;
+        }
+
+        if (Config::hashEquals($this->signaturesGenerator->getCallBackSecurityKey(), $signature)) {
             return true;
         }
 
-        return false;
+        if (!Config::hashEquals($this->signaturesGenerator->generateLegacyCallBackSecurityKey(), $signature)) {
+            return false;
+        }
+
+        $newKeySince = \Configuration::getGlobalValue(Config::CALLBACK_KEY_V2_SINCE);
+
+        // No order has been sent with the new key yet, so every order still
+        // carries the legacy key.
+        if (!$newKeySince) {
+            return true;
+        }
+
+        return $this->validate->isLoadedObject($order) &&
+            strtotime($order->date_add) <= strtotime($newKeySince);
+    }
+
+    /**
+     * Checks That The Callback Amount And Currency Match The Order.
+     *
+     * The amount is covered by the response signature; this is an additional
+     * check that the approved amount is the one the order was placed for.
+     *
+     * @param \Order $order
+     * @param CallBackResponse $response
+     *
+     * @return bool
+     */
+    public function isAmountMatches(\Order $order, CallBackResponse $response)
+    {
+        if (!$this->validate->isLoadedObject($order)) {
+            return false;
+        }
+
+        $expectedAmount = $this->signaturesGenerator->formatAmount($order->total_paid_tax_incl);
+        $actualAmount = $this->signaturesGenerator->formatAmount($response->getAmount());
+
+        if ($expectedAmount !== $actualAmount) {
+            return false;
+        }
+
+        $responseCurrency = trim((string) $response->getCurrency());
+
+        // Only compare the currency when the callback provides one.
+        if ($responseCurrency === '') {
+            return true;
+        }
+
+        $currency = new \Currency($order->id_currency);
+
+        return strtoupper($responseCurrency) === strtoupper($currency->iso_code);
     }
 
     /**
@@ -209,6 +278,6 @@ class OrderCallBackValidator
             $response->getTime()
         );
 
-        return $responseSignature === $expectedSignature;
+        return is_string($responseSignature) && Config::hashEquals($expectedSignature, $responseSignature);
     }
 }

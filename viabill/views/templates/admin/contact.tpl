@@ -15,7 +15,7 @@
         <em>{l s='Send Support Request' mod='viabill'}</em> 
         {l s='button to send your request.' mod='viabill'}
     </div>
-    <form id="tech_support_form" action="{$action_url}" method="post">
+    <form id="tech_support_form" action="{$action_url|escape:'html':'UTF-8'}" method="post">
     <fieldset>
         <legend class="w-auto text-primary">{l s='Issue Description' mod='viabill'}</legend>
         <div class="form-group">
@@ -39,68 +39,68 @@
         <div class="form-group">
             <label>{l s='Store Name' mod='viabill'}</label>
             <input class="form-control" type="text" required="true"
-                 value="{$storeName}" name="shop_info[name]" />
+                 value="{$storeName|escape:'html':'UTF-8'}" name="shop_info[name]" />
         </div>                
         <div class="form-group">
             <label>{l s='Store URL' mod='viabill'}</label>
             <input class="form-control" type="text" required="true"
-             value="{$storeURL}" name="shop_info[url]" />
+             value="{$storeURL|escape:'html':'UTF-8'}" name="shop_info[url]" />
         </div>
         <div class="form-group">
             <label>{l s='Store Email' mod='viabill'}</label>
             <input class="form-control" type="text" required="true"
-             value="{$storeEmail}" name="shop_info[email]" />
+             value="{$storeEmail|escape:'html':'UTF-8'}" name="shop_info[email]" />
         </div>
         <div class="form-group">
             <label>{l s='Eshop Country' mod='viabill'}</label>
             <input class="form-control" type="text" required="true"
-             value="{$storeCountry}" name="shop_info[country]" />
+             value="{$storeCountry|escape:'html':'UTF-8'}" name="shop_info[country]" />
         </div>
         <div class="form-group">
             <label>{l s='Eshop Language' mod='viabill'}</label>
             <input class="form-control" type="text" required="true"
-             value="{$langCode}" name="shop_info[language]" />
+             value="{$langCode|escape:'html':'UTF-8'}" name="shop_info[language]" />
         </div>
         <div class="form-group">
             <label>{l s='Eshop Currency' mod='viabill'}</label>
             <input class="form-control" type="text" required="true"
-             value="{$currencyCode}" name="shop_info[currency]" />
+             value="{$currencyCode|escape:'html':'UTF-8'}" name="shop_info[currency]" />
         </div>
         <div class="form-group">
             <label>{l s='API Key' mod='viabill'}</label>
             <input class="form-control" type="text" required="true"
-             value="{$apiKey}" name="shop_info[apiKey]" />
+             value="{$apiKey|escape:'html':'UTF-8'}" name="shop_info[apiKey]" />
         </div>
         <div class="form-group">
             <label>{l s='Module Version' mod='viabill'}</label>
             <input class="form-control" type="text"
-             value="{$module_version}" name="shop_info[addon_version]" />
+             value="{$module_version|escape:'html':'UTF-8'}" name="shop_info[addon_version]" />
         </div>
         <div class="form-group">
             <label>{l s='PrestaShop Version' mod='viabill'}</label>
             <input type="hidden" value="prestashop" name="shop_info[platform]" />
             <input class="form-control" type="text"
-             value="{$prestashop_version}" name="shop_info[platform_version]" />
+             value="{$prestashop_version|escape:'html':'UTF-8'}" name="shop_info[platform_version]" />
         </div>
         <div class="form-group">
             <label>{l s='PHP Version' mod='viabill'}</label>
             <input class="form-control" type="text"
-             value="{$php_version}" name="shop_info[php_version]" />
+             value="{$php_version|escape:'html':'UTF-8'}" name="shop_info[php_version]" />
         </div>
         <div class="form-group">
             <label>{l s='Memory Limit' mod='viabill'}</label>
             <input class="form-control" type="text"
-             value="{$memory_limit}" name="shop_info[memory_limit]" />
+             value="{$memory_limit|escape:'html':'UTF-8'}" name="shop_info[memory_limit]" />
         </div>
         <div class="form-group">
             <label>{l s='O/S' mod='viabill'}</label>
             <input class="form-control" type="text"
-             value="{$os}" name="shop_info[os]" />
+             value="{$os|escape:'html':'UTF-8'}" name="shop_info[os]" />
         </div>
         <div class="form-group">
             <label>{l s='Debug File' mod='viabill'}</label>
             <input class="form-control" type="text"
-             value="{$debug_file}" name="shop_info[debug_file]" />
+             value="{$debug_file|escape:'html':'UTF-8'}" name="shop_info[debug_file]" />
         </div>
         <div class="form-group">
             <label>{l s='Debug Data' mod='viabill'}</label>
@@ -112,9 +112,9 @@
         <input type="checkbox" value="accepted" required="true"
          class="form-check-input" name="terms_of_use" id="terms_of_use"/>
           <label class="form-check-label">I have read and accept the
-           <a href="{$terms_of_use_url}">Terms and Conditions</a></label>
+           <a href="{$terms_of_use_url|escape:'html':'UTF-8'}">Terms and Conditions</a></label>
     </div>       
-    <input type="hidden" name="token" value="{$token}" />     
+    <input type="hidden" name="token" value="{$token|escape:'html':'UTF-8'}" />     
     <button type="button" onclick="validateAndSubmit()" class="btn btn-primary">
         {l s='Send Support Request' mod='viabill'}</button>    
     </form>

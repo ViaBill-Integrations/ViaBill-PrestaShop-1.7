@@ -104,9 +104,9 @@ class ViaBillCallBackModuleFrontController extends ModuleFrontController
             // 5) As a last resort, log & short-circuit to avoid deserializing an empty string
             if ($normalizedJson === '' || $normalizedJson === false) {
                 DebugLog::msg('Callback requestContent empty after normalization. ' .
-                    'CT=' . var_export($ct, true) .
-                    ' $_POST=' . var_export($_POST, true) .
-                    ' $_GET='  . var_export($_GET, true)
+                    'CT=' . DebugLog::export($ct) .
+                    ' $_POST=' . DebugLog::export($_POST) .
+                    ' $_GET='  . DebugLog::export($_GET)
                 );
                 $this->ajaxDie('ERROR'); // or keep your current behavior
             }
@@ -117,20 +117,10 @@ class ViaBillCallBackModuleFrontController extends ModuleFrontController
                 $normalizedJson,
                 'ViaBill\Object\Api\CallBack\CallBackResponse',
                 'json'
-            );            
-
-            // update transaction history
-            $idTransaction = $callBackResponse->getTransaction();            
-            if ($idTransaction) {
-                $idTransactionHistory = \ViaBillTransactionHistory::getPrimaryKeyByTransaction($idTransaction);                
-                if ($idTransactionHistory) {
-                    $transactionHistory = new \ViaBillTransactionHistory($idTransactionHistory);                    
-                    $transactionHistory->updateAfterCallback($callBackResponse);
-                }
-            }                        
+            );
 
             // add a log entry
-            $debug_str = var_export($requestContent, true);
+            $debug_str = DebugLog::export($requestContent);
             DebugLog::msg('Callback postProcess / content success: ' . $debug_str);
         } catch (Exception $exception) {
             $logger->error(
@@ -142,10 +132,9 @@ class ViaBillCallBackModuleFrontController extends ModuleFrontController
             );            
 
             $er = $exception->getMessage();
-            $exc_msg = var_export($er, true);
-            $debug_str = var_export($requestContent, true);
-            $raw_request = print_r($_REQUEST, true);
-            DebugLog::msg('Callback postProcess / [error msg: '.$exc_msg.'][content: '.$debug_str.'][raw request: '.$raw_request.']');
+            $exc_msg = DebugLog::export($er);
+            $debug_str = DebugLog::export($requestContent);
+            DebugLog::msg('Callback postProcess / [error msg: '.$exc_msg.'][content: '.$debug_str.']');
 
             $this->ajaxDie('ERROR');
         }        
@@ -157,6 +146,17 @@ class ViaBillCallBackModuleFrontController extends ModuleFrontController
 
         if (!$orderValidator->validate($callBackResponse)) {
             $this->ajaxDie('NOT VALID ORDER');
+        }
+
+        // Update the transaction history only once the callback has been
+        // authenticated, so unauthenticated requests cannot alter it.
+        $idTransaction = $callBackResponse->getTransaction();
+        if ($idTransaction) {
+            $idTransactionHistory = \ViaBillTransactionHistory::getPrimaryKeyByTransaction($idTransaction);
+            if ($idTransactionHistory) {
+                $transactionHistory = new \ViaBillTransactionHistory($idTransactionHistory);
+                $transactionHistory->updateAfterCallback($callBackResponse);
+            }
         }
 
         /**

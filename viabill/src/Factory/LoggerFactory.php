@@ -11,11 +11,11 @@
 
 namespace ViaBill\Factory;
 
-use Monolog\Handler\FirePHPHandler;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use ViaBill\Config\Config;
+use ViaBill\Util\DebugLog;
 
 /**
  * Class LoggerFactory
@@ -61,11 +61,11 @@ class LoggerFactory
 
         $isDebugLogEnabled = $this->config->isDebug();
 
-        $fileName = $this->module->getLocalPath() . 'var/log/' . $this->module->name . '.log';
+        // Outside the web accessible module directory (see DebugLog::getLogDir()).
+        $fileName = DebugLog::getLogDir() . $this->module->name . '.log';
 
         $logger->pushHandler(new StreamHandler($fileName));
         $logger->pushHandler(new RotatingFileHandler($fileName));
-        $logger->pushHandler(new FirePHPHandler());
 
         return $logger;
     }

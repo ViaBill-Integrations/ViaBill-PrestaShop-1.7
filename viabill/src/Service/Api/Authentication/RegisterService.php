@@ -58,7 +58,7 @@ class RegisterService
     public function register(RegisterRequest $registerRequest)
     {
         // debug info
-        $debug_str = 'Register API Request/ [body: ' . var_export($registerRequest, true) . ']';
+        $debug_str = 'Register API Request/ [body: ' . DebugLog::export($registerRequest) . ']';
         DebugLog::msg($debug_str, 'debug');
 
         $response = $this->apiRequest->post(
@@ -70,7 +70,7 @@ class RegisterService
 
         if ($response->getStatusCode() !== 200) {
             $er = $response->getErrors();
-            $debug_str = 'Register API Response/[Status code: ' . $response->getStatusCode() . '][Errors: ' . var_export($er, true) . ']';
+            $debug_str = 'Register API Response/[Status code: ' . $response->getStatusCode() . '][Errors: ' . DebugLog::export($er) . ']';
             DebugLog::msg($debug_str, 'error');
 
             return new RegisterResponse(
@@ -83,7 +83,7 @@ class RegisterService
 
         $decodedBody = json_decode($response->getBody(), true);
 
-        $debug_str = 'Register API Response/ [Status code: ' . $response->getStatusCode() . '][Body: ' . var_export($decodedBody, true) . ']';
+        $debug_str = 'Register API Response/ [Status code: ' . $response->getStatusCode() . '][Body: ' . DebugLog::export($decodedBody) . ']';
         DebugLog::msg($debug_str, 'debug');
 
         return new RegisterResponse(

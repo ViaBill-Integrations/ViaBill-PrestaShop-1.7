@@ -84,6 +84,13 @@ class Config
     const ACCOUNT_INFO_BLOCK_FIELD = 'VB_ACCOUNT_INFO_BLOCK';
 
     const ENABLE_DEBUG = 'VB_ENABLE_DEBUG';
+
+    /**
+     * Date/time from which payment callback URLs carry the HMAC-SHA256
+     * callback key. Callbacks for orders created before it may still use the
+     * legacy key.
+     */
+    const CALLBACK_KEY_V2_SINCE = 'VB_CALLBACK_KEY_V2_SINCE';
     const MODULE_INFO_FIELD = 'VB_MODULE_INFO_BLOCK';
 
     // Module Conflict
@@ -419,6 +426,58 @@ class Config
         return \Configuration::get(self::API_KEY) &&
             \Configuration::get(self::API_SECRET) &&
             \Configuration::get(self::API_TAGS_SCRIPT);
+    }
+
+    /**
+     * Timing-safe string comparison.
+     *
+     * Uses hash_equals() when available (PHP 5.6+) and an equivalent
+     * constant-time comparison otherwise, so PrestaShop 1.7 shops on older PHP
+     * versions keep working.
+     *
+     * @param string $known
+     * @param string $user
+     *
+     * @return bool
+     */
+    public static function hashEquals($known, $user)
+    {
+        if (!is_string($known) || !is_string($user)) {
+            return false;
+        }
+
+        if (function_exists('hash_equals')) {
+            return hash_equals($known, $user);
+        }
+
+        $knownLength = strlen($known);
+
+        if ($knownLength !== strlen($user)) {
+            return false;
+        }
+
+        $result = 0;
+        for ($i = 0; $i < $knownLength; ++$i) {
+            $result |= ord($known[$i]) ^ ord($user[$i]);
+        }
+
+        return $result === 0;
+    }
+
+    /**
+     * Checks whether the employee belongs to the SuperAdmin profile.
+     *
+     * Settings whose value is printed unescaped on every storefront page
+     * (custom CSS/JS, the PriceTag script) may only be changed by SuperAdmin.
+     *
+     * @param \Employee|null $employee
+     *
+     * @return bool
+     */
+    public static function isSuperAdmin($employee)
+    {
+        return $employee instanceof \Employee &&
+            (int) $employee->id_profile === (int) _PS_ADMIN_PROFILE_;
     }
 
     /**

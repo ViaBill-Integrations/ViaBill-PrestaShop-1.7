@@ -73,7 +73,7 @@ class RenewService extends OrderStatusApiService
         $serializer = $this->serializerFactory->getSerializer();
 
         // debug info
-        $debug_str = 'Renew Payment API Request/ [body: ' . var_export($renewRequest, true) . ']';
+        $debug_str = 'Renew Payment API Request/ [body: ' . DebugLog::export($renewRequest) . ']';
         DebugLog::msg($debug_str, 'debug');
 
         $apiResponse = $this->apiRequest->post(
@@ -84,7 +84,7 @@ class RenewService extends OrderStatusApiService
         );
 
         // debug info
-        $debug_str = 'Renew Payment API Request/ [response: ' . var_export($apiResponse, true) . ']';
+        $debug_str = 'Renew Payment API Request/ [response: ' . DebugLog::export($apiResponse) . ']';
         DebugLog::msg($debug_str, 'debug');
 
         if (in_array($apiResponse->getStatusCode(), [400, 403, 500])) {

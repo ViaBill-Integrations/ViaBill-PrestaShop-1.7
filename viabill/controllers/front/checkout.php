@@ -63,7 +63,7 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
         $order = $this->getOrder();
 
         // Debug info
-        $order_str = (empty($order)) ? 'empty' : var_export($order, true);
+        $order_str = (empty($order)) ? 'empty' : DebugLog::export($order);
         $debug_str = "[order: {$order_str}]";
         DebugLog::msg('Checkout postProcess / ' . $debug_str);
 
@@ -80,7 +80,7 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
         $paymentRequest = $this->createPaymentRequest($order, $linkGenerator);
 
         // Debug info
-        $request_str = (empty($paymentRequest)) ? 'empty' : var_export($paymentRequest, true);
+        $request_str = (empty($paymentRequest)) ? 'empty' : DebugLog::export($paymentRequest);
         $debug_str = "[payment request: {$request_str}]";
         DebugLog::msg('Checkout postProcess / ' . $debug_str);
 
@@ -94,7 +94,7 @@ class ViaBillCheckoutModuleFrontController extends ModuleFrontController
                 $this->errors[] = $errorMessage;
 
                 // Debug info
-                $debug_str = var_export($errors, true);
+                $debug_str = DebugLog::export($errors);
                 DebugLog::msg('Checkout postProcess / errors: ' . $debug_str);
             } else {
                 // Debug info

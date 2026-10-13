@@ -220,25 +220,35 @@ class AdminViaBillContactController extends ModuleAdminController
     {
         $request = $_REQUEST;
 
-        $ticket_info = $request['ticket_info'];
-        $shop_info = $request['shop_info'];
-        $platform = $shop_info['platform'];
+        $ticket_info = (isset($request['ticket_info']) && is_array($request['ticket_info'])) ? $request['ticket_info'] : [];
+        $shop_info = (isset($request['shop_info']) && is_array($request['shop_info'])) ? $request['shop_info'] : [];
 
-        $platform = $shop_info['platform'];
-        $merchant_email = filter_var(trim($ticket_info['email']), FILTER_VALIDATE_EMAIL);
-        $shop_url = $shop_info['url'];
+        $platform = $this->getRequestString($shop_info, 'platform');
+        $shop_url = $this->getRequestString($shop_info, 'url');
+
+        // Only a valid address is ever used; it ends up in a mail header.
+        $merchant_email = filter_var(trim($this->getRequestString($ticket_info, 'email')), FILTER_VALIDATE_EMAIL);
+        $support_email = self::VIABILL_TECH_SUPPORT_EMAIL;
+
+        if (!$merchant_email) {
+            return "<div class='alert alert-danger'><div class='alert-text'>
+                <strong>" . $this->l('Error') . '</strong><br/>' .
+                $this->l('Please enter a valid email address.') .
+                '</div></div>';
+        }
 
         $shop_info_html = '<ul>';
         foreach ($shop_info as $key => $value) {
-            $label = Tools::strtoupper(str_replace('_', ' ', $key));
+            $label = $this->escapeHtml(Tools::strtoupper(str_replace('_', ' ', (string) $key)));
+            $value = $this->escapeHtml(is_scalar($value) ? (string) $value : '');
             if ($key == 'debug_data') {
                 $shop_info_html .= '<li><strong>' . $label . '</strong><br/>
                 <div style="background-color: #FFFFCC;">' .
-                    htmlentities($value, ENT_QUOTES, 'UTF-8') . '</div></li>';
+                    $value . '</div></li>';
             } elseif ($key == 'error_data') {
                 $shop_info_html .= '<li><strong>' . $label . '</strong><br/>
                 <div style="background-color: #FFCCCC;">' .
-                    htmlentities($value, ENT_QUOTES, 'UTF-8') . '</div>
+                    $value . '</div>
                 </li>';
             } else {
                 $shop_info_html .= '<li><strong>' . $label . '</strong>: ' . $value . '</li>';
@@ -246,36 +256,38 @@ class AdminViaBillContactController extends ModuleAdminController
         }
         $shop_info_html .= '</ul>';
 
-        $email_subject = 'New ' . Tools::ucfirst($platform) . ' Support Request from ' . $shop_url;
+        $email_subject = $this->stripLineBreaks(
+            'New ' . Tools::ucfirst($platform) . ' Support Request from ' . $shop_url
+        );
         $email_body = "Dear support,\n<br/>You have received a new support request with " .
                        "the following details:\n";
         $email_body .= '<h3>Ticket</h3>';
         $email_body .= '<table>';
         $email_body .= "<tr><td style='background: #eee;'><strong>Name:</strong></td><td>" .
-            $ticket_info['name'] . '</td></tr>';
+            $this->escapeHtml($this->getRequestString($ticket_info, 'name')) . '</td></tr>';
         $email_body .= "<tr><td style='background: #eee;'><strong>Email:</strong></td><td>" .
-            $ticket_info['email'] . '</td></tr>';
+            $this->escapeHtml($merchant_email) . '</td></tr>';
         $email_body .= "<tr><td style='background: #eee;'><strong>Issue:</strong></td><td>" .
-            $ticket_info['issue'] . '</td></tr>';
+            nl2br($this->escapeHtml($this->getRequestString($ticket_info, 'issue'))) . '</td></tr>';
         $email_body .= '</table>';
         $email_body .= '<h3>Shop Info</h3>';
         $email_body .= $shop_info_html;
 
+        // Send from an address of the shop's own domain and let support reply
+        // to the merchant, instead of spoofing the merchant's address.
         $sender_email = $this->getSenderEmail($request);
-        $to = self::VIABILL_TECH_SUPPORT_EMAIL;
-        $merchant_email = $ticket_info['email'];
-        $support_email = self::VIABILL_TECH_SUPPORT_EMAIL;
+        $to = $support_email;
 
-        $success = $this->sendMail($to, $merchant_email, $email_subject, $email_body);
+        $success = $this->sendMail($to, $sender_email, $merchant_email, $email_subject, $email_body);
         if (!$success) {
             // use another method
-            $success = $this->sendMail($to, $merchant_email, $email_subject, $email_body, true);
+            $success = $this->sendMail($to, $sender_email, $merchant_email, $email_subject, $email_body, true);
         }
 
         if ($success) {
             $success_msg = '';
             $success_msg = $this->l('Your request has been received successfully!') .
-                $this->l('We will get back to you soon at ') . "<strong>{$merchant_email}</strong>. " .
+                $this->l('We will get back to you soon at ') . '<strong>' . $this->escapeHtml($merchant_email) . '</strong>. ' .
                 $this->l('You may also contact us at ') . "<strong>{$support_email}</strong>.";
             $body = "<div class='alert alert-success'><div class='alert-text'>
                 <strong>" . $this->l('Success!') . '</strong><br/>' .
@@ -295,9 +307,18 @@ class AdminViaBillContactController extends ModuleAdminController
         return $html;
     }
 
-    protected function sendMail($to, $from, $email_subject, $email_body, $usePrestashopAPI = false)
+    protected function sendMail($to, $from, $replyTo, $email_subject, $email_body, $usePrestashopAPI = false)
     {
         $success = false;
+
+        // Header values must never contain line breaks (header injection).
+        $from = $this->stripLineBreaks($from);
+        $replyTo = $this->stripLineBreaks($replyTo);
+        $email_subject = $this->stripLineBreaks($email_subject);
+
+        if (!filter_var($replyTo, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
 
         if ($usePrestashopAPI) {
             $success = Mail::Send(
@@ -305,17 +326,28 @@ class AdminViaBillContactController extends ModuleAdminController
                 'contact', // email template file to be use
                 $email_subject, // email subject
                 [
-                    '{email}' => $from, // sender email address
+                    '{email}' => $replyTo, // merchant email address
                     '{message}' => $email_body, // email content
                 ],
                 $to, // receiver email address
                 'Viabill Tech Support', //receiver name
                 null, //from email address
-                null  //from name
+                null, //from name
+                null, // file attachment
+                null, // mode smtp
+                _PS_MAIL_DIR_, // template path
+                false, // die
+                null, // id shop
+                null, // bcc
+                $replyTo // reply to
             );
         } else {
+            if (!filter_var($from, FILTER_VALIDATE_EMAIL)) {
+                return false;
+            }
+
             $headers = 'From: ' . $from . "\r\n";
-            $headers .= 'Reply-To: ' . $to . "\r\n";
+            $headers .= 'Reply-To: ' . $replyTo . "\r\n";
             $headers .= "MIME-Version: 1.0\r\n";
             $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
 
@@ -324,6 +356,43 @@ class AdminViaBillContactController extends ModuleAdminController
         }
 
         return $success;
+    }
+
+    /**
+     * Gets A String Value From A Request Array.
+     *
+     * @param array $data
+     * @param string $key
+     *
+     * @return string
+     */
+    private function getRequestString(array $data, $key)
+    {
+        return (isset($data[$key]) && is_scalar($data[$key])) ? (string) $data[$key] : '';
+    }
+
+    /**
+     * Escapes A Value For Output In HTML.
+     *
+     * @param string $value
+     *
+     * @return string
+     */
+    private function escapeHtml($value)
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+    }
+
+    /**
+     * Removes Line Breaks So A Value Is Safe To Use In A Mail Header.
+     *
+     * @param string $value
+     *
+     * @return string
+     */
+    private function stripLineBreaks($value)
+    {
+        return trim(str_replace(["\r", "\n", '%0a', '%0d', '%0A', '%0D'], ' ', (string) $value));
     }
 
     protected function getActionURL()
