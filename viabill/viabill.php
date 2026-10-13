@@ -107,7 +107,7 @@ class ViaBill extends PaymentModule
         $this->description = 'ViaBill Official';
         $this->tab = 'payments_gateways';
         $this->displayName = $this->l('ViaBill');
-        $this->version = '9.2.3';
+        $this->version = '9.2.4';
         $this->ps_versions_compliancy = ['min' => '1.7.3.0', 'max' => _PS_VERSION_];
         $this->module_key = '026cfbb4e50aac4d9074eb7c9ddc2584';
 

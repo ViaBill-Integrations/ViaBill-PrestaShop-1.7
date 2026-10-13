@@ -108,7 +108,8 @@ class ViaBillCallBackModuleFrontController extends ModuleFrontController
                     ' $_POST=' . DebugLog::export($_POST) .
                     ' $_GET='  . DebugLog::export($_GET)
                 );
-                $this->ajaxDie('ERROR'); // or keep your current behavior
+                http_response_code(400);
+                $this->ajaxDie('ERROR');
             }
 
             // 6) Deserialize using normalized JSON
@@ -136,6 +137,7 @@ class ViaBillCallBackModuleFrontController extends ModuleFrontController
             $debug_str = DebugLog::export($requestContent);
             DebugLog::msg('Callback postProcess / [error msg: '.$exc_msg.'][content: '.$debug_str.']');
 
+            http_response_code(400);
             $this->ajaxDie('ERROR');
         }        
 
@@ -145,8 +147,15 @@ class ViaBillCallBackModuleFrontController extends ModuleFrontController
         $orderValidator = $this->module->getModuleContainer()->get('service.validator.order.callBack');
 
         if (!$orderValidator->validate($callBackResponse)) {
+            DebugLog::msg('Callback REJECTED with HTTP 400: validation failed, the order and the transaction history are not changed (see the validation entries above).', 'error');
+
+            // Invalid signature, URL key, order, reference, amount or currency:
+            // the request itself is wrong, so answer 400.
+            http_response_code(400);
             $this->ajaxDie('NOT VALID ORDER');
         }
+
+        DebugLog::msg('Callback ACCEPTED: validation succeeded, updating the transaction history and the order status.');
 
         // Update the transaction history only once the callback has been
         // authenticated, so unauthenticated requests cannot alter it.
@@ -165,6 +174,7 @@ class ViaBillCallBackModuleFrontController extends ModuleFrontController
         $orderStatusService = $this->module->getModuleContainer()->get('service.order.orderStatus');
         $orderStatusService->changeOrderStatusByCallBack($callBackResponse);
 
+        DebugLog::msg('Callback FINISHED [order: ' . (int) $callBackResponse->getOrderNumber() . ']');
         $this->ajaxDie('FINISHED');
     }
 }

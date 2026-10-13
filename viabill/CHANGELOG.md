@@ -305,6 +305,10 @@
 - Fixed an issue that may occur if multiple ViaBill Payments providers are present.
 
 ### Changed
+## [9.2.4] - 2026-10-13
+- Improved the logging capabilities.
+
+### Changed
 - Merchants no longer register or log in through the ViaBill server to retrieve their credentials. The API key, API secret and PriceTag script are now entered manually, either on the "ViaBill Account Credentials" page (former Authentication page) or in the new "ViaBill Account Credentials" section at the top of the ViaBill Settings page.
 - The API secret is rendered as a masked password field and is never printed back to the page; leaving it empty keeps the currently stored secret.
 

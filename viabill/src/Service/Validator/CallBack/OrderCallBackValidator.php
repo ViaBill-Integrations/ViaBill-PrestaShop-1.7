@@ -17,6 +17,7 @@ use ViaBill\Config\Config;
 use ViaBill\Factory\LoggerFactory;
 use ViaBill\Object\Api\CallBack\CallBackResponse;
 use ViaBill\Service\UserService;
+use ViaBill\Util\DebugLog;
 use ViaBill\Util\SignaturesGenerator;
 
 /**
@@ -98,15 +99,21 @@ class OrderCallBackValidator
 
         $order = new \Order((int) $response->getOrderNumber());
 
-        if (!$this->isOrderObjectLoaded($response)) {
+        // Result of each check, for the debug log.
+        $checks = [];
+
+        $checks['order found'] = $this->isOrderObjectLoaded($response);
+        if (!$checks['order found']) {
             $errors[] = sprintf('Order number %s was not found', (int) $response->getOrderNumber());
         }
 
-        if (!$this->isSignatureMatches($order)) {
+        $checks['callback URL key'] = $this->isSignatureMatches($order);
+        if (!$checks['callback URL key']) {
             $errors[] = 'Signature did not matched';
         }
 
-        if (!$this->isReferenceMatches($response, $order)) {
+        $checks['reference'] = $this->isReferenceMatches($response, $order);
+        if (!$checks['reference']) {
             $errors[] = sprintf(
                 'References did not matched. Got %s but expected %s',
                 $response->getTransaction(),
@@ -114,17 +121,33 @@ class OrderCallBackValidator
             );
         }
 
-        if (!$this->isResponseSignatureMatches($order, $response)) {
+        $checks['signature'] = $this->isResponseSignatureMatches($order, $response);
+        if (!$checks['signature']) {
             $errors[] = 'Response signature does not match';
         }
 
-        if (!$this->isAmountMatches($order, $response)) {
+        $checks['amount/currency'] = $this->isAmountMatches($order, $response);
+        if (!$checks['amount/currency']) {
             $errors[] = sprintf(
                 'Amount or currency did not match the order. Got %s %s',
                 $response->getAmount(),
                 $response->getCurrency()
             );
         }
+
+        $summary = [];
+        foreach ($checks as $check => $passed) {
+            $summary[] = $check . ': ' . ($passed ? 'OK' : 'FAILED');
+        }
+
+        DebugLog::msg(
+            'Callback validation ' . (empty($errors) ? 'SUCCEEDED' : 'FAILED') .
+            ' [order: ' . (int) $response->getOrderNumber() . ']' .
+            '[transaction: ' . $this->forLog($response->getTransaction()) . ']' .
+            '[status: ' . $this->forLog($response->getStatus()) . '] ' .
+            implode(', ', $summary),
+            empty($errors) ? 'debug' : 'error'
+        );
 
         if (!empty($errors)) {
             $logger = $this->loggerFactory->create();
@@ -266,10 +289,20 @@ class OrderCallBackValidator
      */
     public function isResponseSignatureMatches(\Order $order, CallBackResponse $response)
     {
+        $user = $this->userService->getUser();
+
+        // Without a secret the signature can be computed by anyone, so it
+        // proves nothing: reject the callback.
+        if (trim((string) $user->getSecret()) === '') {
+            DebugLog::msg('Callback signature check FAILED: no ViaBill secret key is configured (module logged out?)', 'error');
+
+            return false;
+        }
+
         $currency = new \Currency($order->id_currency);
         $responseSignature = $response->getSignature();
         $expectedSignature = $this->signaturesGenerator->generateCallBackResponseSignature(
-            $this->userService->getUser(),
+            $user,
             $order->reference,
             $order->id,
             $response->getAmount(),
@@ -278,6 +311,59 @@ class OrderCallBackValidator
             $response->getTime()
         );
 
-        return is_string($responseSignature) && Config::hashEquals($expectedSignature, $responseSignature);
+        $matches = is_string($responseSignature) && Config::hashEquals($expectedSignature, $responseSignature);
+
+        // Log the signed values (without the secret) and only the start of
+        // the signatures: enough to find the cause of a mismatch.
+        $signedValues = implode('#', [
+            $order->reference,
+            $order->id,
+            $this->signaturesGenerator->formatAmount($response->getAmount()),
+            $currency->iso_code,
+            $response->getStatus(),
+            $response->getTime(),
+        ]);
+        $message = 'Callback signature check ' . ($matches ? 'OK' : 'FAILED') .
+            ' [signed values: ' . $this->forLog($signedValues) . '#<secret>]' .
+            '[received: ' . $this->signatureForLog($responseSignature) . ']' .
+            '[expected: ' . $this->signatureForLog($expectedSignature) . ']';
+        if (!$matches && is_string($responseSignature) && strtolower(trim($responseSignature)) === $expectedSignature) {
+            $message .= ' (the received signature only differs in letter case or surrounding spaces)';
+        }
+        DebugLog::msg($message, $matches ? 'debug' : 'error');
+
+        return $matches;
+    }
+
+    /**
+     * Shortens A Signature For The Debug Log.
+     *
+     * @param mixed $signature
+     *
+     * @return string
+     */
+    private function signatureForLog($signature)
+    {
+        if (!is_string($signature) || $signature === '') {
+            return 'none';
+        }
+
+        return substr($signature, 0, 12) . '...' . substr($signature, -4) . ' (' . strlen($signature) . ' chars)';
+    }
+
+    /**
+     * Makes A Request Value Safe For A Single Debug Log Line.
+     *
+     * @param mixed $value
+     *
+     * @return string
+     */
+    private function forLog($value)
+    {
+        if (!is_scalar($value)) {
+            return $value === null ? 'none' : gettype($value);
+        }
+
+        return substr(preg_replace('/[\r\n\t]+/', ' ', (string) $value), 0, 200);
     }
 }

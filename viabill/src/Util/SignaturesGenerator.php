@@ -195,6 +195,9 @@ class SignaturesGenerator
     /**
      * Generates CallBack Response Signature.
      *
+     * Unlike the checkout signature, the callback signature never carries the
+     * test flag: it is the same for test and live transactions.
+     *
      * @param ViaBillUser $user
      * @param $transaction
      * @param $orderNumber
