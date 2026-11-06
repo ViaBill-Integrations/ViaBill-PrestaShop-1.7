@@ -16,6 +16,7 @@ use Link;
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use ViaBill\Builder\Template\TagBodyTemplate;
 use ViaBill\Config\Config;
+use ViaBill\Service\LegalNote\LegalNoteService;
 use ViaBill\Service\Validator\Payment\CurrencyValidator;
 
 /**
@@ -97,20 +98,30 @@ class PaymentOptionsBuilder
     private $currencyValidator;
 
     /**
+     * Legal Note Service Variable Declaration.
+     *
+     * @var LegalNoteService
+     */
+    private $legalNoteService;
+
+    /**
      * PaymentOptionsBuilder constructor.
      *
      * @param \ViaBill $module
      * @param TagBodyTemplate $tagBodyTemplate
      * @param CurrencyValidator $currencyValidator
+     * @param LegalNoteService $legalNoteService
      */
     public function __construct(
         \ViaBill $module,
         TagBodyTemplate $tagBodyTemplate,
-        CurrencyValidator $currencyValidator
+        CurrencyValidator $currencyValidator,
+        LegalNoteService $legalNoteService
     ) {
         $this->module = $module;
         $this->tagBodyTemplate = $tagBodyTemplate;
         $this->currencyValidator = $currencyValidator;
+        $this->legalNoteService = $legalNoteService;
     }
 
     /**
@@ -226,9 +237,7 @@ class PaymentOptionsBuilder
 
             $paymentOption->setModuleName($this->module->name);
 
-            if ($this->module->isPriceTagActive($this->controller)) {
-                $this->constructTag($paymentOption, 'monthly');
-            }
+            $this->setAdditionalInformation($paymentOption, 'monthly');
 
             $paymentOptions[] = $paymentOption;
         }
@@ -258,9 +267,7 @@ class PaymentOptionsBuilder
 
                 $tryPaymentOption->setModuleName($this->module->name);
 
-                if ($this->module->isPriceTagActive($this->controller)) {
-                    $this->constructTag($tryPaymentOption, 'tbyb');
-                }
+                $this->setAdditionalInformation($tryPaymentOption, 'tbyb');
 
                 $paymentOptions[] = $tryPaymentOption;                                
             }
@@ -286,13 +293,56 @@ class PaymentOptionsBuilder
     }
 
     /**
-     * Constructs Price Tag.
+     * Sets The Legal Note And The Price Tag (If Active) As The Payment
+     * Option's Additional Information.
      *
      * @param PaymentOption $paymentOption
+     * @param string $payment_method 'monthly' or 'tbyb'
      *
      * @throws \SmartyException
      */
-    private function constructTag(PaymentOption $paymentOption, $payment_method = null)
+    private function setAdditionalInformation(PaymentOption $paymentOption, $payment_method)
+    {
+        $html = $this->getLegalNoteHtml();
+
+        if ($this->module->isPriceTagActive($this->controller)) {
+            $html .= $this->constructTag($payment_method);
+        }
+
+        if ($html !== '') {
+            $paymentOption->setAdditionalInformation($html);
+        }
+    }
+
+    /**
+     * Gets The Legal Note HTML, Or Empty String If It Is Disabled.
+     *
+     * @return string
+     *
+     * @throws \SmartyException
+     */
+    private function getLegalNoteHtml()
+    {
+        $legalNoteText = $this->legalNoteService->getText($this->language);
+        if ($legalNoteText === '') {
+            return '';
+        }
+
+        $this->smarty->assign(['legalNoteText' => $legalNoteText]);
+
+        return $this->smarty->fetch($this->module->getLocalPath() . 'views/templates/front/legal-note.tpl');
+    }
+
+    /**
+     * Constructs Price Tag.
+     *
+     * @param string $payment_method
+     *
+     * @return string Price tag HTML.
+     *
+     * @throws \SmartyException
+     */
+    private function constructTag($payment_method = null)
     {
         $this->tagBodyTemplate->setSmarty($this->smarty);
         $this->tagBodyTemplate->setPrice($this->orderPrice);
@@ -301,7 +351,6 @@ class PaymentOptionsBuilder
         $this->tagBodyTemplate->setCurrency($this->currency);
         $this->tagBodyTemplate->setProductTypes($payment_method);
         $this->smarty->assign($this->tagBodyTemplate->getSmartyParams());
-        $html = $this->tagBodyTemplate->getHtml();
-        $paymentOption->setAdditionalInformation($html);
+        return $this->tagBodyTemplate->getHtml();
     }
 }

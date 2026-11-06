@@ -258,3 +258,17 @@ $_MODULE['<{viabill}prestashop>adminviabillcontactcontroller_b5bccda6d3a04e1d8f7
 $_MODULE['<{viabill}prestashop>adminviabillcustomcodecontroller_6a2f299155d3bf02c96ad29278a4de1c'] = 'Kun medarbejdere med SuperAdmin-profilen kan administrere brugerdefineret CSS- og JavaScript-kode.';
 $_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_2cae2cd5148290c8c24fceba975692a8'] = 'Kun medarbejdere med SuperAdmin-profilen kan ændre PriceTag-scriptet.';
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_2cae2cd5148290c8c24fceba975692a8'] = 'Kun medarbejdere med SuperAdmin-profilen kan ændre PriceTag-scriptet.';
+$_MODULE['<{viabill}prestashop>legalnoteservice_c4781d1cd1718e735c523885269b62bf'] = 'Advarsel! Lån med omtanke - det koster penge.';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_1d085357a65262bee363d72c630e2cd2'] = 'Juridisk meddelelse';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_060f0d2a21d1a72faf4d21b80ab3a2cc'] = 'Den juridiske meddelelse er en kort informationstekst, der vises for kunderne ved kassen, når ViaBill er valgt som betalingsmetode, f.eks. en advarsel om, at det koster penge at låne penge.';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiveret';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_9dffbf69ffba8bc38bc4e01abf4b1675'] = 'Tekst';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_a4cffac3683c8946bb34ebf028d0e5fe'] = 'Lad feltet være tomt for at bruge standardmeddelelsen på det sprog, der er valgt nedenfor.';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_07ebe7d188e409caaf204343495cb2e5'] = 'Standardmeddelelse:';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_4994a8ffeba4ac3140beb89e8d41f174'] = 'Sprog';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_13c552810c343ffc70b3704fd9dddfe0'] = 'Sproget for standardmeddelelsen. "Automatisk" bruger kundens sprog.';
+$_MODULE['<{viabill}prestashop>legalnoteservice_06b9281e396db002010bde1de57262eb'] = 'Automatisk';
+$_MODULE['<{viabill}prestashop>legalnoteservice_78463a384a5aa4fad5fa73e2f506ecfc'] = 'Engelsk';
+$_MODULE['<{viabill}prestashop>legalnoteservice_7bc6f150ce738db3d21cbe0b75aea027'] = 'Dansk';
+$_MODULE['<{viabill}prestashop>legalnoteservice_cb5480c32e71778852b08ae1e8712775'] = 'Spansk';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_a0434ea81d6fe27457ebc555e76ac2bd'] = 'Den juridiske meddelelse for sproget %s indeholder HTML, der ikke er tilladt.';

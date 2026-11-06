@@ -339,6 +339,63 @@ class AdminViaBillSettingsController extends ModuleAdminController
             ],
         ];
 
+        /** @var \ViaBill\Service\LegalNote\LegalNoteService $legalNoteService */
+        $legalNoteService = $this->module->getModuleContainer()->get('service.legalNote');
+
+        // Shops that installed the module before the legal note existed have no
+        // value yet; store the default so that the switch shows "Yes".
+        if (Configuration::get(Config::LEGAL_NOTE_ENABLED) === false) {
+            Configuration::updateValue(Config::LEGAL_NOTE_ENABLED, 1);
+        }
+
+        $legalNoteInfoBlockText =
+            $this->l('The legal note is a short information text shown to customers at checkout when ViaBill is selected as the payment method, such as a warning that borrowing money costs money.');
+
+        $legalNoteTextDesc =
+            $this->l('Leave empty to use the default legal note, in the language selected below.') . ' ' .
+            $this->l('Default legal note:') . ' ' .
+            strip_tags($legalNoteService->getDefaultText((string) Configuration::get(Config::LEGAL_NOTE_LANGUAGE)));
+
+        $this->fields_options[Config::SETTINGS_LEGAL_NOTE_SECTION] = [
+            'title' => $this->l('Legal Note'),
+            'icon' => 'icon-legal',
+            'fields' => [
+                Config::LEGAL_NOTE_INFO_BLOCK_FIELD => [
+                    'type' => 'free',
+                    'desc' => $this->getInfoBlockTemplate($legalNoteInfoBlockText),
+                    'class' => 'hidden',
+                    'form_group_class' => 'viabill-info-block',
+                ],
+                Config::LEGAL_NOTE_ENABLED => [
+                    'title' => $this->l('Enabled'),
+                    'validation' => 'isBool',
+                    'cast' => 'boolval',
+                    'type' => 'bool',
+                ],
+                Config::LEGAL_NOTE_TEXT => [
+                    'title' => $this->l('Text'),
+                    'desc' => $legalNoteTextDesc,
+                    'type' => 'textareaLang',
+                    'lang' => true,
+                    'validation' => 'isCleanHtml',
+                    'cols' => 60,
+                    'rows' => 3,
+                ],
+                Config::LEGAL_NOTE_LANGUAGE => [
+                    'title' => $this->l('Language'),
+                    'desc' => $this->l('Language of the default legal note. "Auto" uses the language of the customer.'),
+                    'type' => 'select',
+                    'list' => $legalNoteService->getLanguages(),
+                    'identifier' => 'id',
+                    'name' => 'name',
+                    'class' => 'fixed-width-xxl',
+                ],
+            ],
+            'submit' => [
+                'title' => $this->l('Save'),
+            ],
+        ];
+
         $this->fields_options[Config::SETTINGS_PAYMENT_CAPTURE_SECTION] = [
             'title' => $this->l('Payment Capture Configuration'),
             'icon' => 'icon-money',
@@ -537,6 +594,37 @@ class AdminViaBillSettingsController extends ModuleAdminController
         }
 
         Configuration::updateValue(Config::API_TAGS_SCRIPT, $tagsScript);
+    }
+
+    /**
+     * Custom save handler for the VB_LEGAL_NOTE_TEXT option (called
+     * automatically by AdminController::processUpdateOptions()).
+     *
+     * The legal note is stored per language and may contain simple HTML (e.g.
+     * a link), so it is saved with the html flag on.
+     *
+     * @param mixed $value Unused, the values are posted per language.
+     */
+    public function updateOptionVbLegalNoteText($value)
+    {
+        $texts = [];
+
+        foreach (Language::getLanguages(false) as $language) {
+            $text = trim((string) Tools::getValue(Config::LEGAL_NOTE_TEXT . '_' . (int) $language['id_lang']));
+
+            if (!Validate::isCleanHtml($text)) {
+                $this->errors[] = sprintf(
+                    $this->l('The legal note for the language %s contains HTML that is not allowed.'),
+                    $language['name']
+                );
+
+                return;
+            }
+
+            $texts[(int) $language['id_lang']] = $text;
+        }
+
+        Configuration::updateValue(Config::LEGAL_NOTE_TEXT, $texts, true);
     }
 
     /**

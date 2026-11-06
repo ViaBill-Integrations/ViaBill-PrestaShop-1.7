@@ -34,6 +34,9 @@ parameters:
             'VB_PAYMENT_CANCELED' : 0
             'VB_PAYMENT_REFUNDED' : 0
             'VB_ENABLE_DEBUG': 0
+            'VB_LEGAL_NOTE_ENABLED': 1
+            'VB_LEGAL_NOTE_TEXT': ''
+            'VB_LEGAL_NOTE_LANGUAGE': 'auto'
 
         hooks:
             - 'moduleRoutes'

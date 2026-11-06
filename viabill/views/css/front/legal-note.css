@@ -1,0 +1,15 @@
+/**
+* NOTICE OF LICENSE
+*
+* @author    Written for or by ViaBill
+* @copyright Copyright (c) Viabill
+* @license   Addons PrestaShop license limitation
+* @see       /LICENSE
+*
+*/
+
+/* Legal note (credit warning) next to the ViaBill payment options, see views/templates/front/legal-note.tpl */
+.viabill-legal-note {
+    font-weight: 600;
+    margin: 0.5em 0;
+}

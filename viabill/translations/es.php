@@ -258,3 +258,17 @@ $_MODULE['<{viabill}prestashop>adminviabillcontactcontroller_b5bccda6d3a04e1d8f7
 $_MODULE['<{viabill}prestashop>adminviabillcustomcodecontroller_6a2f299155d3bf02c96ad29278a4de1c'] = 'Solo los empleados con el perfil SuperAdmin pueden gestionar el código CSS y JavaScript personalizado.';
 $_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_2cae2cd5148290c8c24fceba975692a8'] = 'Solo los empleados con el perfil SuperAdmin pueden cambiar el script de PriceTag.';
 $_MODULE['<{viabill}prestashop>adminviabillauthenticationcontroller_2cae2cd5148290c8c24fceba975692a8'] = 'Solo los empleados con el perfil SuperAdmin pueden cambiar el script de PriceTag.';
+$_MODULE['<{viabill}prestashop>legalnoteservice_c4781d1cd1718e735c523885269b62bf'] = '¡Advertencia! Pide prestado con responsabilidad - cuesta dinero.';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_1d085357a65262bee363d72c630e2cd2'] = 'Aviso legal';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_060f0d2a21d1a72faf4d21b80ab3a2cc'] = 'El aviso legal es un breve texto informativo que se muestra a los clientes en la página de pago cuando se selecciona ViaBill como método de pago, por ejemplo, una advertencia de que pedir dinero prestado cuesta dinero.';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Activado';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_9dffbf69ffba8bc38bc4e01abf4b1675'] = 'Texto';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_a4cffac3683c8946bb34ebf028d0e5fe'] = 'Déjelo vacío para usar el aviso legal predeterminado, en el idioma seleccionado abajo.';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_07ebe7d188e409caaf204343495cb2e5'] = 'Aviso legal predeterminado:';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_4994a8ffeba4ac3140beb89e8d41f174'] = 'Idioma';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_13c552810c343ffc70b3704fd9dddfe0'] = 'Idioma del aviso legal predeterminado. "Automático" usa el idioma del cliente.';
+$_MODULE['<{viabill}prestashop>legalnoteservice_06b9281e396db002010bde1de57262eb'] = 'Automático';
+$_MODULE['<{viabill}prestashop>legalnoteservice_78463a384a5aa4fad5fa73e2f506ecfc'] = 'Inglés';
+$_MODULE['<{viabill}prestashop>legalnoteservice_7bc6f150ce738db3d21cbe0b75aea027'] = 'Danés';
+$_MODULE['<{viabill}prestashop>legalnoteservice_cb5480c32e71778852b08ae1e8712775'] = 'Español';
+$_MODULE['<{viabill}prestashop>adminviabillsettingscontroller_a0434ea81d6fe27457ebc555e76ac2bd'] = 'El aviso legal para el idioma %s contiene HTML no permitido.';

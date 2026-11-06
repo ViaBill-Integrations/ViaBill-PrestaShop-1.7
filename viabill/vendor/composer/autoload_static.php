@@ -99,6 +99,7 @@ class ComposerStaticInit79d9ee46ab900dd3be0d010246681d45
         'ViaBill\\Service\\Handler\\PaymentManagementHandler' => __DIR__ . '/../..' . '/src/Service/Handler/PaymentManagementHandler.php',
         'ViaBill\\Service\\Handler\\RefundPaymentHandler' => __DIR__ . '/../..' . '/src/Service/Handler/RefundPaymentHandler.php',
         'ViaBill\\Service\\Handler\\RenewPaymentHandler' => __DIR__ . '/../..' . '/src/Service/Handler/RenewPaymentHandler.php',
+        'ViaBill\\Service\\LegalNote\\LegalNoteService' => __DIR__ . '/../..' . '/src/Service/LegalNote/LegalNoteService.php',
         'ViaBill\\Service\\MessageService' => __DIR__ . '/../..' . '/src/Service/MessageService.php',
         'ViaBill\\Service\\Order\\CreateOrderService' => __DIR__ . '/../..' . '/src/Service/Order/CreateOrderService.php',
         'ViaBill\\Service\\Order\\OrderListActionsService' => __DIR__ . '/../..' . '/src/Service/Order/OrderListActionsService.php',

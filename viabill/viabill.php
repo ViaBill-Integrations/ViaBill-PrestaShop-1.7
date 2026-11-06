@@ -107,7 +107,7 @@ class ViaBill extends PaymentModule
         $this->description = 'ViaBill Official';
         $this->tab = 'payments_gateways';
         $this->displayName = $this->l('ViaBill');
-        $this->version = '9.2.4';
+        $this->version = '9.2.5';
         $this->ps_versions_compliancy = ['min' => '1.7.3.0', 'max' => _PS_VERSION_];
         $this->module_key = '026cfbb4e50aac4d9074eb7c9ddc2584';
 
@@ -276,6 +276,11 @@ class ViaBill extends PaymentModule
 
         if ($this->context->controller instanceof ViaBillReturnModuleFrontController) {
             $mediaAdapter->addCss($this->context, 'views/css/front/return.css');
+        }
+
+        // The legal note is shown in the payment step, also when the PriceTags are off.
+        if ($this->context->controller->php_self == 'order') {
+            $mediaAdapter->addCss($this->context, 'views/css/front/legal-note.css');
         }
 
         if (!$this->isPriceTagActive($this->context->controller->php_self)) {

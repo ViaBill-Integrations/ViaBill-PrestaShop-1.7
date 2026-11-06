@@ -55,6 +55,7 @@ services:
             - '@ViaBill'
             - '@builder.template.tagBody'
             - '@service.validator.currency'
+            - '@service.legalNote'
 
     builder.template.tagPriceHolder:
         class: 'ViaBill\Builder\Template\DynamicPriceTemplate'
@@ -230,6 +231,11 @@ services:
             - '@service.api.request'
             - '@service.user'
             - '@adapter.tools'
+
+    service.legalNote:
+        class: 'ViaBill\Service\LegalNote\LegalNoteService'
+        arguments:
+            - '@ViaBill'
 # Handlers
     service.handler.paymentManagement:
         class: 'ViaBill\Service\Handler\PaymentManagementHandler'

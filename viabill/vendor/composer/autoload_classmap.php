@@ -84,6 +84,7 @@ return array(
     'ViaBill\\Service\\Handler\\PaymentManagementHandler' => $baseDir . '/src/Service/Handler/PaymentManagementHandler.php',
     'ViaBill\\Service\\Handler\\RefundPaymentHandler' => $baseDir . '/src/Service/Handler/RefundPaymentHandler.php',
     'ViaBill\\Service\\Handler\\RenewPaymentHandler' => $baseDir . '/src/Service/Handler/RenewPaymentHandler.php',
+    'ViaBill\\Service\\LegalNote\\LegalNoteService' => $baseDir . '/src/Service/LegalNote/LegalNoteService.php',
     'ViaBill\\Service\\MessageService' => $baseDir . '/src/Service/MessageService.php',
     'ViaBill\\Service\\Order\\CreateOrderService' => $baseDir . '/src/Service/Order/CreateOrderService.php',
     'ViaBill\\Service\\Order\\OrderListActionsService' => $baseDir . '/src/Service/Order/OrderListActionsService.php',
