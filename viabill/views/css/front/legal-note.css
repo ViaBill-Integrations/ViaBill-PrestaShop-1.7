@@ -8,8 +8,18 @@
 *
 */
 
-/* Legal note (credit warning) next to the ViaBill payment options, see views/templates/front/legal-note.tpl */
+/* Legal note (credit warning) next to the ViaBill payment options, see views/templates/front/legal-note.tpl.
+   Its font style and margins are set inline from the module settings. */
 .viabill-legal-note {
-    font-weight: 600;
-    margin: 0.5em 0;
+    margin: 0;
+}
+
+/* The paragraphs follow the styling set on the legal note box (module settings) */
+.viabill-legal-note p {
+    font-size: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    color: inherit;
+    text-align: inherit;
+    line-height: inherit;
 }

@@ -80,6 +80,12 @@ class AdminViaBillSettingsController extends ModuleAdminController
             $orderStatusService = $this->module->getModuleContainer()->get('service.order.orderStatus');
             $orderStatusService->setEncodedCaptureMultiselectOrderStatuses($orderStatusMultiselect);
 
+            // Stay on the page when a setting was rejected, so that the error
+            // is shown instead of the success message.
+            if (!empty($this->errors)) {
+                return;
+            }
+
             $this->context->cookie->saveSuccessMessage = $this->l('The settings have been successfully updated.');
             Tools::redirectAdmin($this->context->link->getAdminLink('AdminViaBillSettings'));
         }
@@ -342,19 +348,25 @@ class AdminViaBillSettingsController extends ModuleAdminController
         /** @var \ViaBill\Service\LegalNote\LegalNoteService $legalNoteService */
         $legalNoteService = $this->module->getModuleContainer()->get('service.legalNote');
 
-        // Shops that installed the module before the legal note existed have no
-        // value yet; store the default so that the switch shows "Yes".
-        if (Configuration::get(Config::LEGAL_NOTE_ENABLED) === false) {
-            Configuration::updateValue(Config::LEGAL_NOTE_ENABLED, 1);
+        // Shops that installed the module before these settings existed have no
+        // value yet; store the defaults so that the form shows them.
+        $legalNoteDefaults = [
+            Config::LEGAL_NOTE_FONT_STYLE => \ViaBill\Service\LegalNote\LegalNoteService::DEFAULT_FONT_STYLE,
+            Config::LEGAL_NOTE_MARGIN_TOP => \ViaBill\Service\LegalNote\LegalNoteService::DEFAULT_MARGIN_TOP,
+            Config::LEGAL_NOTE_MARGIN_BOTTOM => \ViaBill\Service\LegalNote\LegalNoteService::DEFAULT_MARGIN_BOTTOM,
+            Config::LEGAL_NOTE_MARGIN_LEFT => \ViaBill\Service\LegalNote\LegalNoteService::DEFAULT_MARGIN_LEFT,
+        ];
+        foreach ($legalNoteDefaults as $legalNoteKey => $legalNoteDefault) {
+            if (Configuration::get($legalNoteKey) === false) {
+                Configuration::updateValue($legalNoteKey, $legalNoteDefault);
+            }
         }
 
         $legalNoteInfoBlockText =
             $this->l('The legal note is a short information text shown to customers at checkout when ViaBill is selected as the payment method, such as a warning that borrowing money costs money.');
 
-        $legalNoteTextDesc =
-            $this->l('Leave empty to use the default legal note, in the language selected below.') . ' ' .
-            $this->l('Default legal note:') . ' ' .
-            strip_tags($legalNoteService->getDefaultText((string) Configuration::get(Config::LEGAL_NOTE_LANGUAGE)));
+        $legalNoteLanguage = (string) Configuration::get(Config::LEGAL_NOTE_LANGUAGE) ?: 'auto';
+        $legalNoteTexts = $legalNoteService->getDefaultTexts();
 
         $this->fields_options[Config::SETTINGS_LEGAL_NOTE_SECTION] = [
             'title' => $this->l('Legal Note'),
@@ -366,20 +378,14 @@ class AdminViaBillSettingsController extends ModuleAdminController
                     'class' => 'hidden',
                     'form_group_class' => 'viabill-info-block',
                 ],
-                Config::LEGAL_NOTE_ENABLED => [
-                    'title' => $this->l('Enabled'),
-                    'validation' => 'isBool',
-                    'cast' => 'boolval',
-                    'type' => 'bool',
-                ],
+                // Read only, see views/templates/admin/field-option-settings/helpers/options/options.tpl.
                 Config::LEGAL_NOTE_TEXT => [
                     'title' => $this->l('Text'),
-                    'desc' => $legalNoteTextDesc,
-                    'type' => 'textareaLang',
-                    'lang' => true,
-                    'validation' => 'isCleanHtml',
-                    'cols' => 60,
-                    'rows' => 3,
+                    'desc' => $this->l('The legal note shown at checkout, in the language selected below.'),
+                    'type' => 'viabill_legal_note_text',
+                    'text' => isset($legalNoteTexts[$legalNoteLanguage]) ? $legalNoteTexts[$legalNoteLanguage] : $legalNoteTexts['auto'],
+                    'texts' => $legalNoteTexts,
+                    'language_select' => Config::LEGAL_NOTE_LANGUAGE,
                 ],
                 Config::LEGAL_NOTE_LANGUAGE => [
                     'title' => $this->l('Language'),
@@ -389,6 +395,61 @@ class AdminViaBillSettingsController extends ModuleAdminController
                     'identifier' => 'id',
                     'name' => 'name',
                     'class' => 'fixed-width-xxl',
+                ],
+                Config::LEGAL_NOTE_FONT_SIZE => [
+                    'title' => $this->l('Font size'),
+                    'desc' => $this->l('Font size of the legal note, e.g. 14px, 0.9em or 90%. Leave empty to use the font size of your theme.'),
+                    'type' => 'text',
+                    'class' => 'fixed-width-md',
+                ],
+                Config::LEGAL_NOTE_FONT_STYLE => [
+                    'title' => $this->l('Font style'),
+                    'type' => 'select',
+                    'list' => $legalNoteService->getFontStyles(),
+                    'identifier' => 'id',
+                    'name' => 'name',
+                    'class' => 'fixed-width-xxl',
+                ],
+                Config::LEGAL_NOTE_COLOR => [
+                    'title' => $this->l('Text color'),
+                    'desc' => $this->l('Color code of the legal note text, e.g. #cc0000. Leave empty to use the text color of your theme.'),
+                    // A plain text field: the color picker of the options form cannot be left empty.
+                    'type' => 'text',
+                    'class' => 'fixed-width-md',
+                    'validation' => 'isColor',
+                ],
+                Config::LEGAL_NOTE_ALIGN => [
+                    'title' => $this->l('Text alignment'),
+                    'type' => 'select',
+                    'list' => $legalNoteService->getAlignments(),
+                    'identifier' => 'id',
+                    'name' => 'name',
+                    'class' => 'fixed-width-xxl',
+                ],
+                Config::LEGAL_NOTE_MARGIN_TOP => [
+                    'title' => $this->l('Margin top'),
+                    'desc' => $this->l('Space above the legal note, e.g. 4px or 0.5em. A negative value moves it closer to the payment method name, e.g. -18px in the Classic theme.'),
+                    'type' => 'text',
+                    'class' => 'fixed-width-md',
+                ],
+                Config::LEGAL_NOTE_MARGIN_BOTTOM => [
+                    'title' => $this->l('Margin bottom'),
+                    'desc' => $this->l('Space below the legal note, e.g. 4px or 0.5em.'),
+                    'type' => 'text',
+                    'class' => 'fixed-width-md',
+                ],
+                Config::LEGAL_NOTE_MARGIN_LEFT => [
+                    'title' => $this->l('Margin left'),
+                    'desc' => $this->l('Space to the left of the legal note, e.g. 4px. A negative value moves it to the left, e.g. -20px to line it up with the ViaBill logo in the Classic theme.'),
+                    'type' => 'text',
+                    'class' => 'fixed-width-md',
+                ],
+                Config::LEGAL_NOTE_EXTRA_CSS => [
+                    'title' => $this->l('Extra CSS'),
+                    'desc' => $this->l('Optional CSS declarations applied to the legal note box, separated by semicolons (no selectors or braces), e.g. padding: 8px 12px; background-color: #fff8e1; border-left: 3px solid #f0b849; They are applied after the options above, so they can also override them.'),
+                    'type' => 'textarea',
+                    'cols' => 60,
+                    'rows' => 3,
                 ],
             ],
             'submit' => [
@@ -600,31 +661,134 @@ class AdminViaBillSettingsController extends ModuleAdminController
      * Custom save handler for the VB_LEGAL_NOTE_TEXT option (called
      * automatically by AdminController::processUpdateOptions()).
      *
-     * The legal note is stored per language and may contain simple HTML (e.g.
-     * a link), so it is saved with the html flag on.
+     * The field is read only and shows the default legal note, so nothing is
+     * stored. A text that merchants entered in earlier versions is removed.
      *
-     * @param mixed $value Unused, the values are posted per language.
+     * @param mixed $value Unused, the field is not posted.
      */
     public function updateOptionVbLegalNoteText($value)
     {
-        $texts = [];
+        Configuration::deleteByName(Config::LEGAL_NOTE_TEXT);
+        Configuration::deleteByName(Config::LEGAL_NOTE_ENABLED);
+    }
 
-        foreach (Language::getLanguages(false) as $language) {
-            $text = trim((string) Tools::getValue(Config::LEGAL_NOTE_TEXT . '_' . (int) $language['id_lang']));
+    /**
+     * Custom save handler for the VB_LEGAL_NOTE_MARGIN_TOP option (called
+     * automatically by AdminController::processUpdateOptions()).
+     *
+     * @param string $value
+     */
+    public function updateOptionVbLegalNoteMarginTop($value)
+    {
+        $this->saveLegalNoteMargin(
+            Config::LEGAL_NOTE_MARGIN_TOP,
+            $value,
+            $this->l('The top margin of the legal note is not valid. Use a value such as 4px, -12px or 0.5em.')
+        );
+    }
 
-            if (!Validate::isCleanHtml($text)) {
-                $this->errors[] = sprintf(
-                    $this->l('The legal note for the language %s contains HTML that is not allowed.'),
-                    $language['name']
-                );
+    /**
+     * Custom save handler for the VB_LEGAL_NOTE_MARGIN_BOTTOM option (called
+     * automatically by AdminController::processUpdateOptions()).
+     *
+     * @param string $value
+     */
+    public function updateOptionVbLegalNoteMarginBottom($value)
+    {
+        $this->saveLegalNoteMargin(
+            Config::LEGAL_NOTE_MARGIN_BOTTOM,
+            $value,
+            $this->l('The bottom margin of the legal note is not valid. Use a value such as 4px or 0.5em.')
+        );
+    }
 
-                return;
-            }
+    /**
+     * Custom save handler for the VB_LEGAL_NOTE_MARGIN_LEFT option (called
+     * automatically by AdminController::processUpdateOptions()).
+     *
+     * @param string $value
+     */
+    public function updateOptionVbLegalNoteMarginLeft($value)
+    {
+        $this->saveLegalNoteMargin(
+            Config::LEGAL_NOTE_MARGIN_LEFT,
+            $value,
+            $this->l('The left margin of the legal note is not valid. Use a value such as 4px or -20px.')
+        );
+    }
 
-            $texts[(int) $language['id_lang']] = $text;
+    /**
+     * Save a margin of the legal note in its normalized form (e.g. "-12"
+     * becomes "-12px"). Empty means the default margin.
+     *
+     * @param string $key Config::LEGAL_NOTE_MARGIN_TOP, _BOTTOM or _LEFT
+     * @param string $value
+     * @param string $error Error message if the value is not valid
+     */
+    private function saveLegalNoteMargin($key, $value, $error)
+    {
+        $value = trim((string) $value);
+
+        /** @var \ViaBill\Service\LegalNote\LegalNoteService $legalNoteService */
+        $legalNoteService = $this->module->getModuleContainer()->get('service.legalNote');
+        $margin = $legalNoteService->sanitizeMargin($value);
+
+        if ($value !== '' && $margin === '') {
+            $this->errors[] = $error;
+
+            return;
         }
 
-        Configuration::updateValue(Config::LEGAL_NOTE_TEXT, $texts, true);
+        if ($margin === '') {
+            $margin = $legalNoteService->getDefaultMargin($key);
+        }
+
+        Configuration::updateValue($key, $margin);
+    }
+
+    /**
+     * Custom save handler for the VB_LEGAL_NOTE_FONT_SIZE option (called
+     * automatically by AdminController::processUpdateOptions()).
+     *
+     * The font size is stored in its normalized form (e.g. "14" becomes
+     * "14px"); empty means the font size of the theme.
+     *
+     * @param string $value
+     */
+    public function updateOptionVbLegalNoteFontSize($value)
+    {
+        $value = trim((string) $value);
+
+        /** @var \ViaBill\Service\LegalNote\LegalNoteService $legalNoteService */
+        $legalNoteService = $this->module->getModuleContainer()->get('service.legalNote');
+        $fontSize = $legalNoteService->sanitizeFontSize($value);
+
+        if ($value !== '' && $fontSize === '') {
+            $this->errors[] = $this->l('The font size of the legal note is not valid. Use a value such as 14px, 0.9em or 90%.');
+
+            return;
+        }
+
+        Configuration::updateValue(Config::LEGAL_NOTE_FONT_SIZE, $fontSize);
+    }
+
+    /**
+     * Custom save handler for the VB_LEGAL_NOTE_EXTRA_CSS option (called
+     * automatically by AdminController::processUpdateOptions()).
+     *
+     * Only CSS declarations are kept, see LegalNoteService::sanitizeExtraCss().
+     *
+     * @param string $value
+     */
+    public function updateOptionVbLegalNoteExtraCss($value)
+    {
+        /** @var \ViaBill\Service\LegalNote\LegalNoteService $legalNoteService */
+        $legalNoteService = $this->module->getModuleContainer()->get('service.legalNote');
+
+        Configuration::updateValue(
+            Config::LEGAL_NOTE_EXTRA_CSS,
+            $legalNoteService->sanitizeExtraCss((string) $value)
+        );
     }
 
     /**

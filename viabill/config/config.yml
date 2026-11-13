@@ -37,6 +37,14 @@ parameters:
             'VB_LEGAL_NOTE_ENABLED': 1
             'VB_LEGAL_NOTE_TEXT': ''
             'VB_LEGAL_NOTE_LANGUAGE': 'auto'
+            'VB_LEGAL_NOTE_FONT_SIZE': ''
+            'VB_LEGAL_NOTE_FONT_STYLE': 'normal'
+            'VB_LEGAL_NOTE_COLOR': ''
+            'VB_LEGAL_NOTE_ALIGN': ''
+            'VB_LEGAL_NOTE_EXTRA_CSS': ''
+            'VB_LEGAL_NOTE_MARGIN_TOP': '0px'
+            'VB_LEGAL_NOTE_MARGIN_BOTTOM': '20px'
+            'VB_LEGAL_NOTE_MARGIN_LEFT': '0px'
 
         hooks:
             - 'moduleRoutes'

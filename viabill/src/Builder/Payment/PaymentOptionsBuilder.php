@@ -328,7 +328,10 @@ class PaymentOptionsBuilder
             return '';
         }
 
-        $this->smarty->assign(['legalNoteText' => $legalNoteText]);
+        $this->smarty->assign([
+            'legalNoteText' => $legalNoteText,
+            'legalNoteStyle' => $this->legalNoteService->getStyle(),
+        ]);
 
         return $this->smarty->fetch($this->module->getLocalPath() . 'views/templates/front/legal-note.tpl');
     }

@@ -96,9 +96,21 @@ class Config
     // Legal note (credit warning) at the checkout, see LegalNoteService
     const SETTINGS_LEGAL_NOTE_SECTION = 'VB_LEGAL_NOTE_SECTION';
     const LEGAL_NOTE_INFO_BLOCK_FIELD = 'VB_LEGAL_NOTE_INFO_BLOCK';
+    // No longer used: the legal note is always shown, with the default text.
+    // Kept so that the stored values are removed when the module is uninstalled.
     const LEGAL_NOTE_ENABLED = 'VB_LEGAL_NOTE_ENABLED';
+    // Read-only field that shows the legal note in the selected language.
     const LEGAL_NOTE_TEXT = 'VB_LEGAL_NOTE_TEXT';
     const LEGAL_NOTE_LANGUAGE = 'VB_LEGAL_NOTE_LANGUAGE';
+    // Styling of the legal note, see LegalNoteService::getStyle()
+    const LEGAL_NOTE_FONT_SIZE = 'VB_LEGAL_NOTE_FONT_SIZE';
+    const LEGAL_NOTE_FONT_STYLE = 'VB_LEGAL_NOTE_FONT_STYLE';
+    const LEGAL_NOTE_COLOR = 'VB_LEGAL_NOTE_COLOR';
+    const LEGAL_NOTE_ALIGN = 'VB_LEGAL_NOTE_ALIGN';
+    const LEGAL_NOTE_EXTRA_CSS = 'VB_LEGAL_NOTE_EXTRA_CSS';
+    const LEGAL_NOTE_MARGIN_TOP = 'VB_LEGAL_NOTE_MARGIN_TOP';
+    const LEGAL_NOTE_MARGIN_BOTTOM = 'VB_LEGAL_NOTE_MARGIN_BOTTOM';
+    const LEGAL_NOTE_MARGIN_LEFT = 'VB_LEGAL_NOTE_MARGIN_LEFT';
 
     // Module Conflict
     const SETTINGS_MODULE_CONFLICT_WARNING = 'VB_MODULE_CONFLICT';
